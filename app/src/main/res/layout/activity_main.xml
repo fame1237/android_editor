@@ -14,7 +14,7 @@
             android:id="@+id/scrollLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="158dp"
+            android:layout_above="@+id/layoutSetAlign"
             android:fillViewport="true">
 
         <LinearLayout
@@ -33,6 +33,41 @@
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
+    <LinearLayout
+            android:id="@+id/layoutSetAlign"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_above="@+id/btnLine">
+
+        <Button
+                android:id="@+id/btnLeft"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_above="@+id/btnQuote"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="ชิดซ้าย"/>
+        <Button
+                android:id="@+id/btnCenter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_above="@+id/btnQuote"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="ตรงกลาง"/>
+        <Button
+                android:id="@+id/btnRight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_above="@+id/btnQuote"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="ชิดขวา"/>
+    </LinearLayout>
     <Button
             android:id="@+id/btnLine"
             android:layout_width="match_parent"

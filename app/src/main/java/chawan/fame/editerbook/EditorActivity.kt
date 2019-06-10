@@ -53,8 +53,8 @@ class EditorActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        addEditTextToView(0, "")
-        addEditTextToView(1, "")
+        addEditTextToView(0, "test1test1 test1 test1test1")
+        addEditTextToView(1, "test2test2 test2 test2test2")
         cursorPosition = 1
 
         btnAddImage.setOnClickListener {
@@ -69,6 +69,36 @@ class EditorActivity : AppCompatActivity() {
             addQuote(cursorPosition + 1)
         }
 
+        btnLeft.setOnClickListener {
+            editTextSetTextAlignLeft()
+        }
+
+        btnCenter.setOnClickListener {
+            editTextSetTextAlignCenter()
+        }
+
+        btnRight.setOnClickListener {
+            editTextSetTextAlignRight()
+        }
+
+    }
+
+    private fun editTextSetTextAlignLeft() {
+        if (edtList[cursorPosition] is EditText) {
+            (edtList[cursorPosition] as EditText).gravity = Gravity.LEFT
+        }
+    }
+
+    private fun editTextSetTextAlignCenter() {
+        if (edtList[cursorPosition] is EditText) {
+            (edtList[cursorPosition] as EditText).gravity = Gravity.CENTER
+        }
+    }
+
+    private fun editTextSetTextAlignRight() {
+        if (edtList[cursorPosition] is EditText) {
+            (edtList[cursorPosition] as EditText).gravity = Gravity.RIGHT
+        }
     }
 
     private val ALLOWED_CHARACTERS = "0123456789qwertyuiopasdfghjklzxcvbnm"
@@ -139,8 +169,9 @@ class EditorActivity : AppCompatActivity() {
                     if (position >= 0 && position <= edtList.size) {
                         if (edittext.selectionEnd == 0) {
                             if (position - 1 >= 0 && position - 1 < edtList.size) {
+                                var selectionCursor = previosEdittext.text.toString().length
                                 previosEdittext.setText("${previosEdittext.text}${edittext.text}")
-                                previosEdittext.setSelection(previosEdittext.text.toString().length)
+                                previosEdittext.setSelection(selectionCursor)
                                 layoutEditor.removeView(edittext)
                                 edtList.removeAt(position)
                                 previosEdittext.requestFocus()
@@ -157,8 +188,9 @@ class EditorActivity : AppCompatActivity() {
                     var edittext = edtList[position] as EditText
                     if (edittext.selectionEnd == 0) {
                         var previosEdittext = ((edtList[position - 1] as LinearLayout).getChildAt(1) as EditText)
+                        var selectionCursor = previosEdittext.text.toString().length
                         previosEdittext.setText("${previosEdittext.text}${edittext.text}")
-                        previosEdittext.setSelection(previosEdittext.text.toString().length)
+                        previosEdittext.setSelection(selectionCursor)
                         previosEdittext.requestFocus()
                         previosEdittext.isFocusable = true
                         layoutEditor.removeViewAt(position)
@@ -179,8 +211,9 @@ class EditorActivity : AppCompatActivity() {
                     if (position >= 0 && position <= edtList.size) {
                         if (edittext.selectionEnd == 0) {
                             if (position - 1 >= 0 && position - 1 < edtList.size) {
+                                var selectionCursor = previosEdittext.text.toString().length
                                 previosEdittext.setText("${previosEdittext.text}${edittext.text}")
-                                previosEdittext.setSelection(previosEdittext.text.toString().length)
+                                previosEdittext.setSelection(selectionCursor)
                                 layoutEditor.removeViewAt(position)
                                 edtList.removeAt(position)
                                 previosEdittext.requestFocus()
@@ -191,8 +224,9 @@ class EditorActivity : AppCompatActivity() {
                     var edittext = ((edtList[position] as LinearLayout).getChildAt(1) as EditText)
                     if (edittext.selectionEnd == 0) {
                         var previosEdittext = ((edtList[position - 1] as LinearLayout).getChildAt(1) as EditText)
+                        var selectionCursor = previosEdittext.text.toString().length
                         previosEdittext.setText("${previosEdittext.text}${edittext.text}")
-                        previosEdittext.setSelection(previosEdittext.text.toString().length)
+                        previosEdittext.setSelection(selectionCursor)
                         previosEdittext.requestFocus()
                         previosEdittext.isFocusable = true
                         layoutEditor.removeViewAt(position)

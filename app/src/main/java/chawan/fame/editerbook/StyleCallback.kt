@@ -2,8 +2,7 @@ package chawan.fame.editerbook
 
 import android.graphics.Typeface
 import android.text.SpannableStringBuilder
-import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-import android.text.Spanned.SPAN_INTERMEDIATE
+import android.text.Spanned.*
 import android.text.style.CharacterStyle
 import android.text.style.StyleSpan
 import android.text.style.TypefaceSpan
@@ -13,6 +12,11 @@ import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
+import android.R.attr.editable
+import android.text.Editable
+import android.text.Spanned
+import android.R.attr.editable
+
 
 class StyleCallback : ActionMode.Callback {
 
@@ -40,19 +44,63 @@ class StyleCallback : ActionMode.Callback {
         val end = bodyView!!.selectionEnd
         val ssb = SpannableStringBuilder(bodyView!!.text)
 
-
         when (item.itemId) {
 
             R.id.bold -> {
                 cs = StyleSpan(Typeface.BOLD)
 //                var typeface = ssb.getSpans(start, end, Typeface::class.java)
+                var typeface = ssb.getSpans(start, end, CharacterStyle::class.java)
 
-                var typeface = ssb.getSpans(start, end, StyleSpan::class.java)
 
-                if (typeface.size == 1) {
-                    ssb.setSpan(StyleSpan(Typeface.NORMAL), start, end, SPAN_EXCLUSIVE_EXCLUSIVE)
+                if (typeface.isNotEmpty()) {
+                    typeface.forEach {
+                        if (it is StyleSpan) {
+                            val ess = bodyView!!.editableText.getSpanStart(it)
+                            val ese = bodyView!!.editableText.getSpanEnd(it)
+
+                            if (it.style == Typeface.BOLD) {
+                                if (end > start) {
+                                    if (start >= ese) {
+                                        // User inputs to the end of the existing e span
+                                        // End existing e span
+                                        ssb.removeSpan(it)
+                                        ssb.setSpan(it, ess, start - 1, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                                    } else if (start === ess && end === ese) {
+                                        // Case 1 desc:
+                                        // *BBBBBB*
+                                        // All selected, and un-check e
+                                        ssb.removeSpan(it)
+                                    } else if (start > ess && end < ese) {
+                                        // Case 2 desc:
+                                        // BB*BB*BB
+                                        // *BB* is selected, and un-check e
+                                        ssb.removeSpan(it)
+                                        ssb.setSpan(it, ess, start, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                                        ssb.setSpan(it, end, ese, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                                    } else if (start === ess && end < ese) {
+                                        // Case 3 desc:
+                                        // *BBBB*BB
+                                        // *BBBB* is selected, and un-check e
+                                        ssb.removeSpan(it)
+                                        ssb.setSpan(it, end, ese, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                                    } else if (start > ess && end === ese) {
+                                        // Case 4 desc:
+                                        // BB*BBBB*
+                                        // *BBBB* is selected, and un-check e
+                                        ssb.removeSpan(it)
+                                        ssb.setSpan(it, ess, start, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                                    }
+                                }
+                            } else {
+                                ssb.setSpan(cs, start, end, SPAN_EXCLUSIVE_INCLUSIVE)
+                            }
+                        } else {
+                            ssb.setSpan(cs, start, end, SPAN_EXCLUSIVE_INCLUSIVE)
+                        }
+                    }
+
                 } else {
-                    ssb.setSpan(cs, start, end, SPAN_EXCLUSIVE_EXCLUSIVE)
+                    ssb.setSpan(cs, start, end, SPAN_EXCLUSIVE_INCLUSIVE)
                 }
                 bodyView!!.text = ssb
                 return true
@@ -63,9 +111,9 @@ class StyleCallback : ActionMode.Callback {
                 Log.e("mySpanItalic", ssb.getSpans(start, end, Typeface::class.java).toString())
                 var typeface = ssb.getSpans(start, end, StyleSpan::class.java)
                 if (typeface.size == 1) {
-                    ssb.setSpan(null, start, end, SPAN_EXCLUSIVE_EXCLUSIVE)
+                    ssb.setSpan(null, start, end, SPAN_EXCLUSIVE_INCLUSIVE)
                 } else {
-                    ssb.setSpan(cs, start, end, SPAN_EXCLUSIVE_EXCLUSIVE)
+                    ssb.setSpan(cs, start, end, SPAN_EXCLUSIVE_INCLUSIVE)
                 }
                 bodyView!!.text = ssb
                 return true
