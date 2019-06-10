@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
@@ -16,7 +17,11 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.widget.ImageViewCompat
 import android.support.v7.app.AlertDialog
 import android.text.Editable
+import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.TextWatcher
+import android.text.style.CharacterStyle
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
@@ -327,8 +332,7 @@ class EditorActivity : AppCompatActivity() {
             ScreenUtil.dpToPx(2f)
         )
 
-        llpEditText.gravity = Gravity.CENTER
-
+        editText.setTypeface(null, Typeface.ITALIC)
 
         val llp2 = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,

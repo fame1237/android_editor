@@ -110,11 +110,7 @@ class StyleCallback : ActionMode.Callback {
                 cs = StyleSpan(Typeface.ITALIC)
                 Log.e("mySpanItalic", ssb.getSpans(start, end, Typeface::class.java).toString())
                 var typeface = ssb.getSpans(start, end, StyleSpan::class.java)
-                if (typeface.size == 1) {
-                    ssb.setSpan(null, start, end, SPAN_EXCLUSIVE_INCLUSIVE)
-                } else {
-                    ssb.setSpan(cs, start, end, SPAN_EXCLUSIVE_INCLUSIVE)
-                }
+                ssb.setSpan(cs, start, end, SPAN_EXCLUSIVE_INCLUSIVE)
                 bodyView!!.text = ssb
                 return true
             }
