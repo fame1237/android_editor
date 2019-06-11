@@ -116,7 +116,7 @@ class EditorActivity : AppCompatActivity() {
         return sb.toString()
     }
 
-    fun addEditTextToView(position: Int, text: String) {
+    fun addEditTextToView(position: Int, text: CharSequence) {
         var mEditText = EditText(this)
 
         edtList.add(position, mEditText)
@@ -124,6 +124,7 @@ class EditorActivity : AppCompatActivity() {
 
         var edittext = edtList[position] as EditText
         edittext.setText(text)
+
         edittext.setOnKeyListener { view, keyCode, keyEvent ->
             if (keyCode == EditorInfo.IME_ACTION_SEARCH ||
                 keyCode == EditorInfo.IME_ACTION_DONE ||
@@ -258,17 +259,8 @@ class EditorActivity : AppCompatActivity() {
     fun onNextLine(position: Int) {
         Log.d("test", "test")
         if (edtList[position] is EditText) {
-            var edittext = edtList[position] as EditText
             if (position + 1 <= edtList.size) {
-                var string = edittext.text.toString()
-                    .substring(edittext.selectionEnd, edittext.text.length)
-
-                edittext.setText(edittext.text.toString().substring(0, edittext.selectionEnd))
-
-                addEditTextToView(position + 1, string)
-                var nextEdittext = edtList[position + 1] as EditText
-                nextEdittext.requestFocus()
-                nextEdittext.setSelection(0)
+                setTextOnNextEdittext(position, position + 1)
             }
         } else if (edtList[position] is LinearLayout) {
             var edittext = (edtList[position] as LinearLayout).getChildAt(1) as EditText
@@ -288,6 +280,52 @@ class EditorActivity : AppCompatActivity() {
             }
         }
     }
+
+    fun setTextOnPreviosEdittext(previousPosition: Int, currentPosition: Int) {
+        var edittext = edtList[currentPosition] as EditText
+    }
+
+    fun setTextOnNextEdittext(currentPosition: Int, nextPosition: Int) {
+        var edittext = edtList[currentPosition] as EditText
+        val ssb = SpannableStringBuilder(edittext.text)
+        var string = SpannableStringBuilder(edittext.text)
+
+        var typeface = ssb.getSpans(0, edittext.selectionEnd, CharacterStyle::class.java)
+        if (typeface.isNotEmpty()) {
+            typeface.forEach {
+                val textTypeFaceStartPosition = edittext.editableText.getSpanStart(it)
+                val textTypeFaceEndPosition = edittext.editableText.getSpanEnd(it)
+                ssb.setSpan(
+                    it,
+                    textTypeFaceStartPosition,
+                    textTypeFaceEndPosition,
+                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                )
+            }
+        }
+
+        var nextTypeface = string.getSpans(0, edittext.text.length, CharacterStyle::class.java)
+        if (nextTypeface.isNotEmpty()) {
+            nextTypeface.forEach {
+                val textTypeFaceStartPosition = edittext.editableText.getSpanStart(it)
+                val textTypeFaceEndPosition = edittext.editableText.getSpanEnd(it)
+                ssb.setSpan(
+                    it,
+                    textTypeFaceStartPosition,
+                    textTypeFaceEndPosition,
+                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                )
+            }
+        }
+        addEditTextToView(nextPosition,string.subSequence(edittext.selectionEnd, edittext.text.length))
+        edittext.setText(ssb.subSequence(0, edittext.selectionEnd))
+
+        var nextEdittext = edtList[nextPosition] as EditText
+        nextEdittext.requestFocus()
+        nextEdittext.setSelection(0)
+
+    }
+
 
     private fun addLine(position: Int) {
         val llp1 = RelativeLayout.LayoutParams(
