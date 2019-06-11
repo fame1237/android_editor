@@ -5,17 +5,12 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned.*
 import android.text.style.CharacterStyle
 import android.text.style.StyleSpan
-import android.text.style.TypefaceSpan
 import android.text.style.UnderlineSpan
 import android.util.Log
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
-import android.R.attr.editable
-import android.text.Editable
-import android.text.Spanned
-import android.R.attr.editable
 
 
 class StyleCallback : ActionMode.Callback {
@@ -40,85 +35,117 @@ class StyleCallback : ActionMode.Callback {
 
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         val cs: CharacterStyle
-        val start = bodyView!!.selectionStart
-        val end = bodyView!!.selectionEnd
+        val selectionStart = bodyView!!.selectionStart
+        val selectionEnd = bodyView!!.selectionEnd
         val ssb = SpannableStringBuilder(bodyView!!.text)
 
         when (item.itemId) {
 
             R.id.bold -> {
                 cs = StyleSpan(Typeface.BOLD)
-//                var typeface = ssb.getSpans(start, end, Typeface::class.java)
-                var typeface = ssb.getSpans(start, end, CharacterStyle::class.java)
 
-
+                var typeface = ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
                 if (typeface.isNotEmpty()) {
-                    typeface.forEach {
-                        if (it is StyleSpan) {
-                            val ess = bodyView!!.editableText.getSpanStart(it)
-                            val ese = bodyView!!.editableText.getSpanEnd(it)
 
-                            if (it.style == Typeface.BOLD) {
-                                if (end > start) {
-                                    if (start >= ese) {
-                                        // User inputs to the end of the existing e span
-                                        // End existing e span
-                                        ssb.removeSpan(it)
-                                        ssb.setSpan(it, ess, start - 1, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-                                    } else if (start === ess && end === ese) {
-                                        // Case 1 desc:
-                                        // *BBBBBB*
-                                        // All selected, and un-check e
-                                        ssb.removeSpan(it)
-                                    } else if (start > ess && end < ese) {
-                                        // Case 2 desc:
-                                        // BB*BB*BB
-                                        // *BB* is selected, and un-check e
-                                        ssb.removeSpan(it)
-                                        ssb.setSpan(it, ess, start, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-                                        ssb.setSpan(it, end, ese, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-                                    } else if (start === ess && end < ese) {
-                                        // Case 3 desc:
-                                        // *BBBB*BB
-                                        // *BBBB* is selected, and un-check e
-                                        ssb.removeSpan(it)
-                                        ssb.setSpan(it, end, ese, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-                                    } else if (start > ess && end === ese) {
-                                        // Case 4 desc:
-                                        // BB*BBBB*
-                                        // *BBBB* is selected, and un-check e
-                                        ssb.removeSpan(it)
-                                        ssb.setSpan(it, ess, start, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-                                    }
-                                }
-                            } else {
-                                ssb.setSpan(cs, start, end, SPAN_EXCLUSIVE_INCLUSIVE)
-                            }
-                        } else {
-                            ssb.setSpan(cs, start, end, SPAN_EXCLUSIVE_INCLUSIVE)
-                        }
+                    var isHaveItalic = typeface.filter {
+                        it is StyleSpan && it.style == Typeface.BOLD
                     }
 
+                    if (isHaveItalic.isEmpty()) {
+                        ssb.setSpan(
+                            cs,
+                            selectionStart,
+                            selectionEnd,
+                            SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                    } else {
+                        typeface.forEach {
+                            if (it is StyleSpan) {
+                                if (it.style == Typeface.BOLD)
+                                    setSpan(it, selectionStart, selectionEnd, ssb)
+                            }
+                        }
+                    }
                 } else {
-                    ssb.setSpan(cs, start, end, SPAN_EXCLUSIVE_INCLUSIVE)
+                    ssb.setSpan(
+                        cs,
+                        selectionStart,
+                        selectionEnd,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
                 }
+
                 bodyView!!.text = ssb
                 return true
             }
 
             R.id.italic -> {
                 cs = StyleSpan(Typeface.ITALIC)
-                Log.e("mySpanItalic", ssb.getSpans(start, end, Typeface::class.java).toString())
-                var typeface = ssb.getSpans(start, end, StyleSpan::class.java)
-                ssb.setSpan(cs, start, end, SPAN_EXCLUSIVE_INCLUSIVE)
+
+                var typeface = ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
+                if (typeface.isNotEmpty()) {
+                    var isHaveItalic = typeface.filter {
+                        it is StyleSpan && it.style == Typeface.ITALIC
+                    }
+
+                    if (isHaveItalic.isEmpty()) {
+                        ssb.setSpan(
+                            cs,
+                            selectionStart,
+                            selectionEnd,
+                            SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                    } else {
+                        typeface.forEach {
+                            if (it is StyleSpan) {
+                                if (it.style == Typeface.ITALIC)
+                                    setSpan(it, selectionStart, selectionEnd, ssb)
+                            }
+                        }
+                    }
+                } else {
+                    ssb.setSpan(
+                        cs,
+                        selectionStart,
+                        selectionEnd,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                }
                 bodyView!!.text = ssb
                 return true
             }
 
             R.id.underline -> {
                 cs = UnderlineSpan()
-                Log.e("mySpanUnderline", ssb.getSpans(start, end, UnderlineSpan::class.java).toString())
-                ssb.setSpan(cs, start, end, 1)
+
+                var typeface = ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
+                if (typeface.isNotEmpty()) {
+                    var isHaveItalic = typeface.filter {
+                        it is UnderlineSpan
+                    }
+
+                    if (isHaveItalic.isEmpty()) {
+                        ssb.setSpan(
+                            cs,
+                            selectionStart,
+                            selectionEnd,
+                            SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                    } else {
+                        typeface.forEach {
+                            if (it is UnderlineSpan) {
+                                setSpan(it, selectionStart, selectionEnd, ssb)
+                            }
+                        }
+                    }
+                } else {
+                    ssb.setSpan(
+                        cs,
+                        selectionStart,
+                        selectionEnd,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                }
                 bodyView!!.text = ssb
                 return true
             }
@@ -126,5 +153,212 @@ class StyleCallback : ActionMode.Callback {
         return false
     }
 
+    fun setSpan(
+        typeface: CharacterStyle, selectionStart: Int, selectionEnd: Int,
+        ssb: SpannableStringBuilder
+    ) {
+
+        if (typeface is StyleSpan) {
+            val textBoldStartPosition = bodyView!!.editableText.getSpanStart(typeface)
+            val textBoldEndPosition = bodyView!!.editableText.getSpanEnd(typeface)
+            if (selectionEnd > selectionStart) {
+                if (selectionStart >= textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+                    ssb.setSpan(
+                        typeface,
+                        textBoldStartPosition,
+                        selectionStart - 1,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                } else if (selectionStart == textBoldStartPosition && selectionEnd == textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+                } else if (selectionStart > textBoldStartPosition && selectionEnd < textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+
+                    var spanLeft = StyleSpan(typeface.style)
+                    var spanRight = StyleSpan(typeface.style)
+
+                    ssb.setSpan(
+                        spanLeft,
+                        textBoldStartPosition,
+                        selectionStart,
+                        SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+
+                    ssb.setSpan(
+                        spanRight,
+                        selectionEnd,
+                        textBoldEndPosition,
+                        SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+
+                } else if (selectionStart == textBoldStartPosition && selectionEnd < textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+
+                    var newSpan = StyleSpan(typeface.style)
+                    ssb.setSpan(
+                        newSpan,
+                        selectionEnd,
+                        textBoldEndPosition,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                } else if (selectionStart == textBoldStartPosition && selectionEnd > textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+                    ssb.setSpan(
+                        typeface,
+                        selectionStart,
+                        selectionEnd,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                } else if (selectionStart < textBoldStartPosition && selectionEnd == textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+                    ssb.setSpan(
+                        typeface,
+                        selectionStart,
+                        selectionEnd,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                } else if (selectionStart > textBoldStartPosition && selectionEnd == textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+
+                    var newSpan = StyleSpan(typeface.style)
+                    ssb.setSpan(
+                        newSpan,
+                        textBoldStartPosition,
+                        selectionStart,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                } else if (selectionStart < textBoldStartPosition && selectionEnd > textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+                    ssb.setSpan(
+                        typeface,
+                        selectionStart,
+                        selectionEnd,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                }
+            }
+        } else if (typeface is UnderlineSpan) {
+            val textBoldStartPosition = bodyView!!.editableText.getSpanStart(typeface)
+            val textBoldEndPosition = bodyView!!.editableText.getSpanEnd(typeface)
+            if (selectionEnd > selectionStart) {
+                if (selectionStart >= textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+                    ssb.setSpan(
+                        typeface,
+                        textBoldStartPosition,
+                        selectionStart - 1,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                } else if (selectionStart == textBoldStartPosition && selectionEnd == textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+                } else if (selectionStart > textBoldStartPosition && selectionEnd < textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+
+                    var spanLeft = UnderlineSpan()
+                    var spanRight = UnderlineSpan()
+
+                    ssb.setSpan(
+                        spanLeft,
+                        textBoldStartPosition,
+                        selectionStart,
+                        SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+
+                    ssb.setSpan(
+                        spanRight,
+                        selectionEnd,
+                        textBoldEndPosition,
+                        SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+
+                } else if (selectionStart == textBoldStartPosition && selectionEnd < textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+
+                    var newSpan = UnderlineSpan()
+                    ssb.setSpan(
+                        newSpan,
+                        selectionEnd,
+                        textBoldEndPosition,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                } else if (selectionStart == textBoldStartPosition && selectionEnd > textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+                    ssb.setSpan(
+                        typeface,
+                        selectionStart,
+                        selectionEnd,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                } else if (selectionStart < textBoldStartPosition && selectionEnd == textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+                    ssb.setSpan(
+                        typeface,
+                        selectionStart,
+                        selectionEnd,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                } else if (selectionStart > textBoldStartPosition && selectionEnd == textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+
+                    var newSpan = UnderlineSpan()
+                    ssb.setSpan(
+                        newSpan,
+                        textBoldStartPosition,
+                        selectionStart,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                } else if (selectionStart < textBoldStartPosition && selectionEnd > textBoldEndPosition) {
+                    ssb.removeSpan(typeface)
+                    ssb.setSpan(
+                        typeface,
+                        selectionStart,
+                        selectionEnd,
+                        SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                }
+            }
+        }
+
+    }
+
+    //    private fun checkAndMergeSpan(editable: Editable, start: Int, end: Int, clazzE: Class<E>) {
+//        var leftSpan: E? = null
+//        val leftSpans = editable.getSpans<E>(start, start, clazzE)
+//        if (leftSpans.size > 0) {
+//            leftSpan = leftSpans[0]
+//        }
+//
+//        var rightSpan: E? = null
+//        val rightSpans = editable.getSpans<E>(end, end, clazzE)
+//        if (rightSpans.size > 0) {
+//            rightSpan = rightSpans[0]
+//        }
+//
+//
+//        val leftSpanStart = editable.getSpanStart(leftSpan)
+//        val rightSpanEnd = editable.getSpanEnd(rightSpan)
+//        removeAllSpans(editable, start, end, clazzE)
+//        if (leftSpan != null && rightSpan != null) {
+//            val eSpan = newSpan()
+//            editable.setSpan(eSpan, leftSpanStart, rightSpanEnd, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+//        } else if (leftSpan != null && rightSpan == null) {
+//            val eSpan = newSpan()
+//            editable.setSpan(eSpan, leftSpanStart, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+//        } else if (leftSpan == null && rightSpan != null) {
+//            val eSpan = newSpan()
+//            editable.setSpan(eSpan, start, rightSpanEnd, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+//        } else {
+//            val eSpan = newSpan()
+//            editable.setSpan(eSpan, start, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+//        }
+//    }
+//
+//    private fun removeAllSpans(editable: Editable, start: Int, end: Int, clazzE: Class<E>) {
+//        val allSpans = editable.getSpans<E>(start, end, clazzE)
+//        for (span in allSpans) {
+//            editable.removeSpan(span)
+//        }
+//    }
     override fun onDestroyActionMode(mode: ActionMode) {}
 }
