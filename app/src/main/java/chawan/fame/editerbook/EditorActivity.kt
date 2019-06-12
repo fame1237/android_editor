@@ -446,6 +446,7 @@ class EditorActivity : AppCompatActivity() {
         //layout quote
     }
 
+
     private fun pickFromGallery() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && ActivityCompat.checkSelfPermission(
                 this,
