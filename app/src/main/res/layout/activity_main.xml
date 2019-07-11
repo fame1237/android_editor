@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_above="@+id/btnLine">
+            android:layout_above="@+id/layoutObject">
 
         <Button
                 android:id="@+id/btnLeft"
@@ -69,33 +69,45 @@
                 android:layout_marginEnd="8dp"
                 android:text="ชิดขวา"/>
     </LinearLayout>
-    <Button
-            android:id="@+id/btnLine"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/btnQuote"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="Add Line"/>
 
-    <Button
-            android:id="@+id/btnQuote"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/btnAddImage"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="Add Quote"/>
-
-    <Button
-            android:id="@+id/btnAddImage"
+    <LinearLayout
+            android:id="@+id/layoutObject"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="Add Image"/>
+            android:orientation="horizontal">
+
+        <Button
+                android:id="@+id/btnLine"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/btnQuote"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Add Line"/>
+
+        <Button
+                android:id="@+id/btnQuote"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/btnAddImage"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Add Quote"/>
+
+        <Button
+                android:id="@+id/btnAddImage"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Add Image"/>
+    </LinearLayout>
 
     <!--<android.support.v7.widget.RecyclerView-->
     <!--android:id="@+id/rvEditor"-->

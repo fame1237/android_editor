@@ -14,14 +14,12 @@ import android.os.Bundle
 import android.support.annotation.NonNull
 import android.support.annotation.Nullable
 import android.support.v4.app.ActivityCompat
-import android.support.v4.widget.ImageViewCompat
 import android.support.v7.app.AlertDialog
 import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextWatcher
 import android.text.style.CharacterStyle
-import android.text.style.StyleSpan
 import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
@@ -31,7 +29,6 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import chawan.fame.editerbook.glide.GlideApp
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.yalantis.ucrop.UCrop
@@ -67,7 +64,12 @@ class EditorActivity : AppCompatActivity() {
         }
 
         btnLine.setOnClickListener {
+            addEditTextToView(cursorPosition + 1, "")
             addLine(cursorPosition + 1)
+            addEditTextToView(cursorPosition + 1, "")
+            if (edtList[cursorPosition] is EditText) {
+                (edtList[cursorPosition] as EditText).requestFocus()
+            }
         }
 
         btnQuote.setOnClickListener {
@@ -160,8 +162,8 @@ class EditorActivity : AppCompatActivity() {
             }
         }
 
-
         edittext.customSelectionActionModeCallback = StyleCallback(edittext)
+        cursorPosition = position
     }
 
     fun onPreviousLine(position: Int) {
@@ -170,27 +172,14 @@ class EditorActivity : AppCompatActivity() {
         } else {
             if (edtList[position] is EditText) {
                 if (edtList[position - 1] is EditText) {
-                    var edittext = edtList[position] as EditText
-                    var previosEdittext = edtList[position - 1] as EditText
-                    if (position >= 0 && position <= edtList.size) {
-                        if (edittext.selectionEnd == 0) {
-                            if (position - 1 >= 0 && position - 1 < edtList.size) {
-                                var selectionCursor = previosEdittext.text.toString().length
-                                previosEdittext.setText("${previosEdittext.text}${edittext.text}")
-                                previosEdittext.setSelection(selectionCursor)
-                                layoutEditor.removeView(edittext)
-                                edtList.removeAt(position)
-                                previosEdittext.requestFocus()
-                            }
-                        }
-                    }
+                    setTextOnPreviosEdittext(position, position - 1)
                 } else if (edtList[position - 1] is ImageView) {
                     var edittext = edtList[position] as EditText
                     if (edittext.selectionEnd == 0) {
                         layoutEditor.removeViewAt(position - 1)
                         edtList.removeAt(position - 1)
                     }
-                } else if (edtList[position - 1] is LinearLayout) {
+                } else if (edtList[position - 1] is LinearLayout && (edtList[position - 1] as LinearLayout).tag == "QUOTE_LAYOUT") {
                     var edittext = edtList[position] as EditText
                     if (edittext.selectionEnd == 0) {
                         var previosEdittext = ((edtList[position - 1] as LinearLayout).getChildAt(1) as EditText)
@@ -203,14 +192,14 @@ class EditorActivity : AppCompatActivity() {
                         edtList.removeAt(position)
                         showKeyboard()
                     }
-                } else if (edtList[position - 1] is RelativeLayout) {
+                } else if (edtList[position - 1] is LinearLayout && (edtList[position - 1] as LinearLayout).tag == "LINE_LAYOUT") {
                     var edittext = edtList[position] as EditText
                     if (edittext.selectionEnd == 0) {
                         layoutEditor.removeViewAt(position - 1)
                         edtList.removeAt(position - 1)
                     }
                 }
-            } else if (edtList[position] is LinearLayout) {
+            } else if (edtList[position] is LinearLayout && (edtList[position] as LinearLayout).tag == "QUOTE_LAYOUT") {
                 if (edtList[position - 1] is EditText) {
                     var edittext = ((edtList[position] as LinearLayout).getChildAt(1) as EditText)
                     var previosEdittext = edtList[position - 1] as EditText
@@ -226,7 +215,7 @@ class EditorActivity : AppCompatActivity() {
                             }
                         }
                     }
-                } else if (edtList[position - 1] is LinearLayout) {
+                } else if (edtList[position - 1] is LinearLayout && (edtList[position - 1] as LinearLayout).tag == "QUOTE_LAYOUT") {
                     var edittext = ((edtList[position] as LinearLayout).getChildAt(1) as EditText)
                     if (edittext.selectionEnd == 0) {
                         var previosEdittext = ((edtList[position - 1] as LinearLayout).getChildAt(1) as EditText)
@@ -245,7 +234,7 @@ class EditorActivity : AppCompatActivity() {
                         layoutEditor.removeViewAt(position - 1)
                         edtList.removeAt(position - 1)
                     }
-                } else if (edtList[position - 1] is RelativeLayout) {
+                } else if (edtList[position - 1] is LinearLayout && (edtList[position - 1] as LinearLayout).tag == "LINE_LAYOUT") {
                     var edittext = ((edtList[position] as LinearLayout).getChildAt(1) as EditText)
                     if (edittext.selectionEnd == 0) {
                         layoutEditor.removeViewAt(position - 1)
@@ -262,7 +251,7 @@ class EditorActivity : AppCompatActivity() {
             if (position + 1 <= edtList.size) {
                 setTextOnNextEdittext(position, position + 1)
             }
-        } else if (edtList[position] is LinearLayout) {
+        } else if (edtList[position] is LinearLayout && (edtList[position] as LinearLayout).tag == "QUOTE_LAYOUT") {
             var edittext = (edtList[position] as LinearLayout).getChildAt(1) as EditText
             if (position + 1 <= edtList.size) {
                 var string = edittext.text.toString()
@@ -281,8 +270,74 @@ class EditorActivity : AppCompatActivity() {
         }
     }
 
-    fun setTextOnPreviosEdittext(previousPosition: Int, currentPosition: Int) {
-        var edittext = edtList[currentPosition] as EditText
+    fun setTextOnPreviosEdittext(currentPosition: Int, previousPosition: Int) {
+        var editText = edtList[currentPosition] as EditText
+        var previosEdittext = edtList[previousPosition] as EditText
+
+        if (editText.selectionEnd == 0) {
+            if (previousPosition >= 0 && previousPosition < edtList.size) {
+                var selectionCursor = previosEdittext.text.toString().length
+                val currentStringSSB = SpannableStringBuilder(editText.text)
+                var prevousStringSSB = SpannableStringBuilder(previosEdittext.text)
+
+                var typeface = currentStringSSB.getSpans(0, editText.text.length, CharacterStyle::class.java)
+                if (typeface.isNotEmpty()) {
+                    typeface.forEach {
+                        val textTypeFaceStartPosition = editText.editableText.getSpanStart(it)
+                        val textTypeFaceEndPosition = editText.editableText.getSpanEnd(it)
+                        currentStringSSB.setSpan(
+                            it,
+                            textTypeFaceStartPosition,
+                            textTypeFaceEndPosition,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
+                }
+
+                var previousTypeface =
+                    prevousStringSSB.getSpans(0, previosEdittext.text.length, CharacterStyle::class.java)
+                if (previousTypeface.isNotEmpty()) {
+                    previousTypeface.forEach {
+                        val textTypeFaceStartPosition = previosEdittext.editableText.getSpanStart(it)
+                        val textTypeFaceEndPosition = previosEdittext.editableText.getSpanEnd(it)
+                        prevousStringSSB.setSpan(
+                            it,
+                            textTypeFaceStartPosition,
+                            textTypeFaceEndPosition,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
+                }
+
+                if (prevousStringSSB.toString() != "")
+                    previosEdittext.text = prevousStringSSB.append(currentStringSSB)
+                else
+                    previosEdittext.text = currentStringSSB
+
+                var previousStringSSB2 = SpannableStringBuilder(previosEdittext.text)
+                var previousTypeface2 =
+                    previousStringSSB2.getSpans(0, previosEdittext.text.length, CharacterStyle::class.java)
+                if (previousTypeface2.isNotEmpty()) {
+                    previousTypeface2.forEach {
+                        val textTypeFaceStartPosition = previosEdittext.editableText.getSpanStart(it)
+                        val textTypeFaceEndPosition = previosEdittext.editableText.getSpanEnd(it)
+                        previousStringSSB2.setSpan(
+                            it,
+                            textTypeFaceStartPosition,
+                            textTypeFaceEndPosition,
+                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                    }
+                }
+
+                previosEdittext.text = previousStringSSB2
+                previosEdittext.setSelection(selectionCursor)
+
+                layoutEditor.removeView(editText)
+                edtList.removeAt(currentPosition)
+                previosEdittext.requestFocus()
+            }
+        }
     }
 
     fun setTextOnNextEdittext(currentPosition: Int, nextPosition: Int) {
@@ -309,7 +364,7 @@ class EditorActivity : AppCompatActivity() {
             nextTypeface.forEach {
                 val textTypeFaceStartPosition = edittext.editableText.getSpanStart(it)
                 val textTypeFaceEndPosition = edittext.editableText.getSpanEnd(it)
-                ssb.setSpan(
+                string.setSpan(
                     it,
                     textTypeFaceStartPosition,
                     textTypeFaceEndPosition,
@@ -317,7 +372,7 @@ class EditorActivity : AppCompatActivity() {
                 )
             }
         }
-        addEditTextToView(nextPosition,string.subSequence(edittext.selectionEnd, edittext.text.length))
+        addEditTextToView(nextPosition, string.subSequence(edittext.selectionEnd, edittext.text.length))
         edittext.setText(ssb.subSequence(0, edittext.selectionEnd))
 
         var nextEdittext = edtList[nextPosition] as EditText
@@ -328,7 +383,7 @@ class EditorActivity : AppCompatActivity() {
 
 
     private fun addLine(position: Int) {
-        val llp1 = RelativeLayout.LayoutParams(
+        val llp1 = LinearLayout.LayoutParams(
             ScreenUtil.dpToPx(200f),
             ScreenUtil.dpToPx(2f)
         )
@@ -338,13 +393,15 @@ class EditorActivity : AppCompatActivity() {
         view1.setBackgroundColor(this.resources.getColor(R.color.background_default))
         view1.layoutParams = llp1
 
-        var relativeLine = RelativeLayout(this)
-        relativeLine.gravity = Gravity.CENTER
-        relativeLine.addView(view1)
+        var linearLine = LinearLayout(this)
+        linearLine.gravity = Gravity.CENTER
+        linearLine.orientation = LinearLayout.VERTICAL
+        linearLine.tag = "LINE_LAYOUT"
+        linearLine.addView(view1)
 
+        edtList.add(position, linearLine)
+        layoutEditor.addView(linearLine, position)
         cursorPosition = position
-        edtList.add(cursorPosition, relativeLine)
-        layoutEditor.addView(relativeLine, cursorPosition)
     }
 
     private fun showKeyboard() {
@@ -480,6 +537,7 @@ class EditorActivity : AppCompatActivity() {
 
         cursorPosition = position
         edtList.add(position, linearBlockVertical)
+        linearBlockVertical.tag = "QUOTE_LAYOUT"
         layoutEditor.addView(linearBlockVertical, position)
         //layout quote
     }
@@ -591,8 +649,13 @@ class EditorActivity : AppCompatActivity() {
                 .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
                 .into(image)
 
-            edtList.add(cursorPosition, image)
-            layoutEditor.addView(image, cursorPosition)
+            edtList.add(cursorPosition + 1, image)
+            layoutEditor.addView(image, cursorPosition + 1)
+
+            addEditTextToView(cursorPosition + 2, "")
+            if (edtList[cursorPosition] is EditText) {
+                (edtList[cursorPosition] as EditText).requestFocus()
+            }
 
         } else {
         }
