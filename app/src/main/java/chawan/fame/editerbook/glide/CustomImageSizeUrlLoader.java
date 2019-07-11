@@ -1,6 +1,6 @@
 package chawan.fame.editerbook.glide;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.bumptech.glide.load.Options;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.ModelCache;

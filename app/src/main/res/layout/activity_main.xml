@@ -8,9 +8,9 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:scrollbars="vertical"
-        tools:context=".EditorActivity">
+        tools:context=".ui.editor.EditorActivity">
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -32,7 +32,7 @@
 
             </LinearLayout>
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
             android:id="@+id/layoutSetAlign"
