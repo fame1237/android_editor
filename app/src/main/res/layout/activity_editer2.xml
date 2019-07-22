@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.rveditor.EditerActivity2">
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvEditor"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+
+    <LinearLayout
+            android:id="@+id/layoutSetAlign"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_above="@+id/layoutObject">
+
+        <Button
+                android:id="@+id/btnLeft"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_above="@+id/btnQuote"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="ชิดซ้าย"/>
+        <Button
+                android:id="@+id/btnCenter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_above="@+id/btnQuote"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="ตรงกลาง"/>
+        <Button
+                android:id="@+id/btnRight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_above="@+id/btnQuote"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="ชิดขวา"/>
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/layoutObject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
+
+        <Button
+                android:id="@+id/btnLine"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/btnQuote"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Add Line"/>
+
+        <Button
+                android:id="@+id/btnQuote"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/btnAddImage"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Add Quote"/>
+
+        <Button
+                android:id="@+id/btnAddImage"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Add Image"/>
+    </LinearLayout>
+
+</LinearLayout>

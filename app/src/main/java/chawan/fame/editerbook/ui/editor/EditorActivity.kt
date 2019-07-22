@@ -62,10 +62,23 @@ class EditorActivity : AppCompatActivity() {
         initView()
     }
 
+    override fun onDestroy() {
+        saveData()
+        super.onDestroy()
+    }
+
+    private fun saveData() {
+
+    }
+
+    private fun readData() {
+
+    }
+
     private fun initView() {
+        readData()
         addEditTextToView(0, "test1test1 test1 test1test1")
         addEditTextToView(1, "test2test2 test2 test2test2")
-        cursorPosition = 1
 
         btnAddImage.setOnClickListener {
             pickFromGallery()
@@ -81,7 +94,11 @@ class EditorActivity : AppCompatActivity() {
         }
 
         btnQuote.setOnClickListener {
-            addQuote(cursorPosition + 1)
+            if (mViewModel.getViewType(cursorPosition) == EditerViewType.EDIT_TEXT) {
+                addQuote(cursorPosition, mViewModel.getText(cursorPosition))
+            } else if (mViewModel.getViewType(cursorPosition) == EditerViewType.QUOTE) {
+                removeQuote(cursorPosition, mViewModel.getText(cursorPosition))
+            }
         }
 
         btnLeft.setOnClickListener {
@@ -119,13 +136,14 @@ class EditorActivity : AppCompatActivity() {
     fun addEditTextToView(position: Int, text: CharSequence) {
         var mEditText = EditText(this)
 
-        mViewModel.addView(position, EditerViewType.EDIT_TEXT, mEditText)
+//        mViewModel.addView(position, EditerViewType.EDIT_TEXT, mEditText)
         layoutEditor.addView(mEditText, position)
 
-        var edittext = mViewModel.getView(position) as EditText
-        edittext.setText(text)
+//        var mEditText = mViewModel.getView(position) as EditText
+        mViewModel.updateText(position, text.toString(), TextStyle.NORMAL)
+        mEditText.setText(text)
 
-        edittext.setOnKeyListener { view, keyCode, keyEvent ->
+        mEditText.setOnKeyListener { view, keyCode, keyEvent ->
             if (keyCode == EditorInfo.IME_ACTION_SEARCH ||
                 keyCode == EditorInfo.IME_ACTION_DONE ||
                 keyEvent.action == KeyEvent.ACTION_DOWN &&
@@ -143,7 +161,7 @@ class EditorActivity : AppCompatActivity() {
             }
         }
 
-        edittext.addTextChangedListener(object : TextWatcher {
+        mEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
             }
 
@@ -159,14 +177,15 @@ class EditorActivity : AppCompatActivity() {
             }
         })
 
-        edittext.setOnFocusChangeListener { view, b ->
+        mEditText.setOnFocusChangeListener { view, b ->
             if (b) {
                 cursorPosition = mViewModel.getIndexOf(mEditText)
             }
         }
 
-        edittext.customSelectionActionModeCallback = StyleCallback(edittext)
+        mEditText.customSelectionActionModeCallback = StyleCallback(mEditText)
         cursorPosition = position
+        mEditText.isFocusable = true
     }
 
     fun onPreviousLine(position: Int) {
@@ -408,7 +427,7 @@ class EditorActivity : AppCompatActivity() {
         linearLine.tag = "LINE_LAYOUT"
         linearLine.addView(view1)
 
-        mViewModel.addView(position, EditerViewType.LINE, linearLine)
+//        mViewModel.addView(position, EditerViewType.LINE, linearLine)
         layoutEditor.addView(linearLine, position)
         cursorPosition = position
     }
@@ -418,7 +437,13 @@ class EditorActivity : AppCompatActivity() {
         imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
     }
 
-    private fun addQuote(position: Int) {
+    private fun removeQuote(position: Int, text: String) {
+        mViewModel.removeViewAt(position)
+        layoutEditor.removeViewAt(position)
+        addEditTextToView(position, text)
+    }
+
+    private fun addQuote(position: Int, text: String) {
         // layout quote
         var editText = EditText(this)
         val llp1 = LinearLayout.LayoutParams(
@@ -437,6 +462,7 @@ class EditorActivity : AppCompatActivity() {
         )
 
         editText.setTypeface(null, Typeface.ITALIC)
+        editText.setText(text)
 
         val llp2 = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -548,11 +574,30 @@ class EditorActivity : AppCompatActivity() {
             }
         }
 
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (p0.toString() == null) {
+                    mViewModel.updateText(position, "", TextStyle.NORMAL)
+                } else {
+                    mViewModel.updateText(position, p0.toString(), TextStyle.NORMAL)
+                }
+            }
+        })
+
+
         cursorPosition = position
-        mViewModel.addView(position, EditerViewType.QUOTE, linearBlockVertical)
+        mViewModel.removeViewAt(position)
+//        mViewModel.addView(position, EditerViewType.QUOTE, linearBlockVertical)
         linearBlockVertical.tag = "QUOTE_LAYOUT"
+        layoutEditor.removeViewAt(position)
         layoutEditor.addView(linearBlockVertical, position)
-        //layout quote
+        editText.isFocusable = true
     }
 
 
@@ -662,7 +707,7 @@ class EditorActivity : AppCompatActivity() {
                 .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
                 .into(image)
 
-            mViewModel.addView(cursorPosition + 1, EditerViewType.IMAGE, image)
+//            mViewModel.addView(cursorPosition + 1, EditerViewType.IMAGE, image)
             layoutEditor.addView(image, cursorPosition + 1)
 
             addEditTextToView(cursorPosition + 2, "")
@@ -673,5 +718,6 @@ class EditorActivity : AppCompatActivity() {
         } else {
         }
     }
+
 
 }

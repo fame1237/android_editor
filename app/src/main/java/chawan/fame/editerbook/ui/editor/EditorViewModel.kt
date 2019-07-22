@@ -1,5 +1,9 @@
 package chawan.fame.editerbook.ui.editor
 
+import android.util.Log
+import android.view.Gravity
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.lifecycle.ViewModel
 import chawan.fame.editerbook.model.editor.Data
 import chawan.fame.editerbook.model.editor.EditerModel
@@ -10,19 +14,78 @@ import chawan.fame.editerbook.model.editor.TextStyle
 class EditorViewModel : ViewModel() {
     var editerModel: MutableList<EditerModel> = mutableListOf()
 
-    fun addView(position: Int,viewType: EditerViewType, view: Any) {
-        var model = EditerModel()
+    fun addView(position: Int, viewType: EditerViewType, text: String, isFocus: Boolean = false) {
+        val model = EditerModel()
+        val data = Data()
+        data.text = text
+        data.style = TextStyle.NORMAL
         model.viewType = viewType
-        model.mViewObject = view
-        editerModel.add(position,model)
+        model.isFocus = isFocus
+        model.data = data
+
+        editerModel.forEach {
+            it.isFocus = false
+        }
+
+        editerModel.add(position, model)
     }
 
-    fun updateText(position: Int, text: String, style: TextStyle) {
-        var model = editerModel.get(position)
-        var data = Data()
+    fun updateText(position: Int, text: String, style: TextStyle, isFocus: Boolean = false) {
+
+        val model = editerModel[position]
+        val data = model.data!!
         data.text = text
         data.style = style
         model.data = data
+        if (isFocus) {
+            editerModel.forEach {
+                it.isFocus = false
+            }
+            model.isFocus = isFocus
+        }
+        Log.d("Check", toString())
+    }
+
+    fun updateAlignLeft(position: Int) {
+        val model = editerModel[position]
+        val data = model.data!!
+        data.alight = Gravity.START
+        model.data = data
+    }
+
+    fun updateAlignCenter(position: Int) {
+        val model = editerModel[position]
+        val data = model.data!!
+        data.alight = Gravity.CENTER
+        model.data = data
+    }
+
+    fun updateAlignRight(position: Int) {
+        val model = editerModel[position]
+        val data = model.data!!
+        data.alight = Gravity.END
+        model.data = data
+    }
+
+    fun addImageModel(position: Int, src: String) {
+        val model = EditerModel()
+        val data = Data()
+        data.text = ""
+        data.src = src
+        data.style = TextStyle.NORMAL
+        model.viewType = EditerViewType.IMAGE
+        model.data = data
+
+        editerModel.forEach {
+            it.isFocus = false
+        }
+
+        editerModel.add(position, model)
+    }
+
+
+    fun getModel(): MutableList<EditerModel> {
+        return editerModel
     }
 
     fun removeViewAt(position: Int) {
@@ -41,6 +104,22 @@ class EditorViewModel : ViewModel() {
         return editerModel[position].viewType!!
     }
 
+    fun getText(position: Int): String {
+        if (editerModel[position].mViewObject is EditText) {
+            return (editerModel[position].mViewObject as EditText).text.toString()
+        } else if (editerModel[position].viewType == EditerViewType.QUOTE && editerModel[position].mViewObject is LinearLayout) {
+            return ((editerModel[position].mViewObject as LinearLayout).getChildAt(1) as EditText).text.toString()
+        }
+        return ""
+    }
+
+    fun getTextFromModel(position: Int): String {
+        editerModel[position].data?.let {
+            return it.text
+        }
+        return ""
+    }
+
     fun getIndexOf(view: Any): Int {
         editerModel.forEachIndexed { index, editerModel ->
             if (editerModel.mViewObject == view) {
@@ -49,4 +128,10 @@ class EditorViewModel : ViewModel() {
         }
         return 0
     }
+
+    override fun toString(): String {
+        return "EditorViewModel(editerModel=$editerModel)"
+    }
+
+
 }
