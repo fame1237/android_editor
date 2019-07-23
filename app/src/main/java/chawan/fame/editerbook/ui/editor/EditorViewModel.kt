@@ -9,6 +9,7 @@ import chawan.fame.editerbook.model.editor.Data
 import chawan.fame.editerbook.model.editor.EditerModel
 import chawan.fame.editerbook.model.editor.EditerViewType
 import chawan.fame.editerbook.model.editor.TextStyle
+import chawan.fame.editerbook.util.GenerateKey
 
 
 class EditorViewModel : ViewModel() {
@@ -19,6 +20,7 @@ class EditorViewModel : ViewModel() {
         val data = Data()
         data.text = text
         data.style = TextStyle.NORMAL
+        model.id = GenerateKey.getKey(editerModel)
         model.viewType = viewType
         model.isFocus = isFocus
         model.data = data
@@ -74,6 +76,7 @@ class EditorViewModel : ViewModel() {
         data.src = src
         data.style = TextStyle.NORMAL
         model.viewType = EditerViewType.IMAGE
+        model.id = GenerateKey.getKey(editerModel)
         model.data = data
 
         editerModel.forEach {
@@ -81,6 +84,41 @@ class EditorViewModel : ViewModel() {
         }
 
         editerModel.add(position, model)
+
+        val model2 = EditerModel()
+        val data2 = Data()
+        data2.text = ""
+        data2.style = TextStyle.NORMAL
+        model2.viewType = EditerViewType.EDIT_TEXT
+        model2.isFocus = true
+        model2.id = GenerateKey.getKey(editerModel)
+        model2.data = data
+
+        editerModel.forEach {
+            it.isFocus = false
+        }
+
+        editerModel.add(position + 1, model2)
+    }
+
+    fun changeToQuote(position: Int) {
+        editerModel.forEach {
+            it.isFocus = false
+        }
+
+        val model = editerModel[position]
+        model.isFocus = true
+        model.viewType = EditerViewType.QUOTE
+    }
+
+    fun changeToEditText(position: Int) {
+        editerModel.forEach {
+            it.isFocus = false
+        }
+
+        val model = editerModel[position]
+        model.isFocus = true
+        model.viewType = EditerViewType.EDIT_TEXT
     }
 
 

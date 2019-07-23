@@ -108,12 +108,26 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         btnAddImage.setOnClickListener {
             pickFromGallery()
         }
+
+        btnQuote.setOnClickListener {
+            if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.EDIT_TEXT) {
+                adapter?.let {
+                    mViewModel.changeToQuote(cursorPosition)
+                    it.updateCurrentItem(cursorPosition)
+                }
+            } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.QUOTE) {
+                adapter?.let {
+                    mViewModel.changeToEditText(cursorPosition)
+                    it.updateCurrentItem(cursorPosition)
+                }
+            }
+        }
     }
 
     private fun addImageToModel(image: String) {
         adapter?.let {
             mViewModel.addImageModel(cursorPosition + 1, image)
-            it.upDateItem(cursorPosition + 1)
+            it.upDateImageItem(cursorPosition)
         }
     }
 

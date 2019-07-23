@@ -1,21 +1,20 @@
 package chawan.fame.editerbook.ui.editor
 
 import android.content.Context
+import android.graphics.Typeface
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.R
-import chawan.fame.editerbook.extension.setSelectionChangedListener
+import chawan.fame.editerbook.extension.filterGetIndex
 import chawan.fame.editerbook.glide.GlideApp
 import chawan.fame.editerbook.model.editor.EditerModel
 import chawan.fame.editerbook.model.editor.EditerViewType
@@ -49,14 +48,13 @@ class EditerAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: MyViewHolder, position: Int) {
-        viewHolder.layoutRecycle.setOnClickListener {
-            listener.updateCursorPosition(position)
-        }
+
+        viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
 
         if (model[position].viewType == EditerViewType.EDIT_TEXT) {
             viewHolder.layoutTextView.visibility = View.VISIBLE
             viewHolder.layoutImage.visibility = View.GONE
-            viewHolder.myCustomEditTextListener.updatePosition(viewHolder.adapterPosition)
+            viewHolder.layoutQuote.visibility = View.GONE
 
             if (model[position].data != null) {
                 viewHolder.edt.setText(model[position].data!!.text)
@@ -72,16 +70,37 @@ class EditerAdapter(
             viewHolder.edt.gravity = model[position].data!!.alight
 
         } else if (model[position].viewType == EditerViewType.IMAGE) {
-            viewHolder.layoutTextView.visibility = View.GONE
-            viewHolder.layoutImage.visibility = View.VISIBLE
-
             GlideApp
                 .with(context)
                 .load(ImageUtil.decodeBase64(model[position].data!!.src))
                 .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
                 .into(viewHolder.image)
+
+            viewHolder.layoutTextView.visibility = View.GONE
+            viewHolder.layoutQuote.visibility = View.GONE
+            viewHolder.layoutImage.visibility = View.VISIBLE
+        } else if (model[position].viewType == EditerViewType.QUOTE) {
+            viewHolder.layoutTextView.visibility = View.GONE
+            viewHolder.layoutImage.visibility = View.GONE
+            viewHolder.layoutQuote.visibility = View.VISIBLE
+
+            if (model[position].data != null) {
+                viewHolder.edtQuote.setText(model[position].data!!.text)
+            }
+
+            viewHolder.edtQuote.gravity = Gravity.CENTER
+            viewHolder.edtQuote.setTypeface(null, Typeface.ITALIC)
+
+            if (model[position].isFocus) {
+                viewHolder.edtQuote.post {
+                    if (viewHolder.edtQuote.requestFocus()) {
+                        model[position].isFocus = false
+                    }
+                }
+            }
         }
     }
+
 
     fun upDateItem(position: Int) {
         model.forEachIndexed { index, editerModel ->
@@ -92,6 +111,19 @@ class EditerAdapter(
 
         Log.e("data", model.toString())
         notifyItemInserted(position)
+        notifyItemChanged(position - 1, false)
+    }
+
+    fun upDateImageItem(position: Int) {
+        model.forEachIndexed { index, editerModel ->
+            editerModel.data?.let {
+                Log.e("data:$index", it.toString())
+            }
+        }
+
+        Log.e("data", model.toString())
+        notifyItemInserted(position)
+        notifyItemInserted(position + 1)
         notifyItemChanged(position - 1, false)
     }
 
@@ -114,16 +146,26 @@ class EditerAdapter(
         return model.size
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
     override fun getItemId(position: Int): Long {
-        return position.toLong()
+        return model[position].id
+    }
+
+    override fun setHasStableIds(hasStableIds: Boolean) {
+        super.setHasStableIds(true)
     }
 
     class MyViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) : RecyclerView.ViewHolder(v) {
         var layoutRecycle = v.findViewById<LinearLayout>(R.id.layoutRecycle)
         var layoutTextView = v.findViewById<LinearLayout>(R.id.layoutTextView)
-        var layoutImage = v.findViewById<LinearLayout>(R.id.layoutImage)
+        var layoutQuote = v.findViewById<LinearLayout>(R.id.layoutQuote)
+        var layoutImage = v.findViewById<RelativeLayout>(R.id.layoutImage)
         var image = v.findViewById<ImageView>(R.id.image)
         var edt = v.findViewById<EditText>(R.id.edt)
+        var edtQuote = v.findViewById<EditText>(R.id.edtQuote)
         var myCustomEditTextListener = customEditTextListener
 
         init {
@@ -131,6 +173,11 @@ class EditerAdapter(
             edt.onFocusChangeListener = myCustomEditTextListener
             edt.setOnKeyListener(myCustomEditTextListener)
             edt.setAccessibilityDelegate(myCustomEditTextListener)
+
+            edtQuote.addTextChangedListener(myCustomEditTextListener)
+            edtQuote.onFocusChangeListener = myCustomEditTextListener
+            edtQuote.setOnKeyListener(myCustomEditTextListener)
+            edtQuote.setAccessibilityDelegate(myCustomEditTextListener)
         }
     }
 
@@ -139,10 +186,10 @@ class EditerAdapter(
         View.OnKeyListener,
         View.AccessibilityDelegate() {
 
-        private var position: Int = 0
+        private var keyId: Long = -1
 
-        fun updatePosition(position: Int) {
-            this.position = position
+        fun updatePosition(keyId: Long) {
+            this.keyId = keyId
         }
 
         override fun sendAccessibilityEvent(host: View?, eventType: Int) {
@@ -159,8 +206,13 @@ class EditerAdapter(
                 keyEvent.action == KeyEvent.ACTION_DOWN &&
                 keyEvent.keyCode == KeyEvent.KEYCODE_ENTER
             ) {
+
+                var index = model.filterGetIndex {
+                    it.id == keyId
+                }
+
                 listener.onNextLine(
-                    position + 1,
+                    index + 1,
                     (view as EditText).text.toString().substring(
                         view.selectionEnd,
                         view.text.toString().length
@@ -178,12 +230,19 @@ class EditerAdapter(
             } else if (keyEvent.action == KeyEvent.ACTION_DOWN &&
                 keyEvent.keyCode == KeyEvent.KEYCODE_DEL
             ) {
-                if (position > 0 && (view as EditText).selectionEnd == 0) {
+
+                var index = model.filterGetIndex {
+                    it.id == keyId
+                }
+
+                if (index > 0 && (view as EditText).selectionEnd == 0) {
                     var text = view.text.toString().substring(
                         view.selectionStart,
                         view.text.toString().length
                     )
-                    listener.onPreviousLine(position, model[position - 1].data!!.text + text)
+
+
+                    listener.onPreviousLine(index, model[index - 1].data!!.text + text)
                 }
                 return false
             } else {
@@ -193,7 +252,10 @@ class EditerAdapter(
 
         override fun onFocusChange(p0: View?, p1: Boolean) {
             if (p1) {
-                listener.updateCursorPosition(position)
+                var index = model.filterGetIndex {
+                    it.id == keyId
+                }
+                listener.updateCursorPosition(index)
             }
         }
 
@@ -202,7 +264,10 @@ class EditerAdapter(
         }
 
         override fun onTextChanged(charSequence: CharSequence, i: Int, i2: Int, i3: Int) {
-            listener.onUpdateText(position, charSequence.toString())
+            var index = model.filterGetIndex {
+                it.id == keyId
+            }
+            listener.onUpdateText(index, charSequence.toString())
         }
 
         override fun afterTextChanged(editable: Editable) {

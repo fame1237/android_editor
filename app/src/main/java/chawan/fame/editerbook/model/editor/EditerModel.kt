@@ -2,14 +2,13 @@ package chawan.fame.editerbook.model.editor
 
 
 class EditerModel {
+    var id: Long = 0
     var viewType: EditerViewType? = null
     var data: Data? = null
     var mViewObject: Any? = null
     var isFocus = false
 
-    override fun toString(): String {
-        return "EditerModel(viewType=$viewType, data=$data, mViewObject=$mViewObject)"
-    }
+
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -27,6 +26,10 @@ class EditerModel {
         result = 31 * result + (data?.hashCode() ?: 0)
         result = 31 * result + (mViewObject?.hashCode() ?: 0)
         return result
+    }
+
+    override fun toString(): String {
+        return "EditerModel(id=$id, viewType=$viewType, data=$data, mViewObject=$mViewObject, isFocus=$isFocus)"
     }
 }
 
