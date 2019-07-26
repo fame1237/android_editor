@@ -18,6 +18,43 @@
 
 
     <LinearLayout
+            android:id="@+id/layoutSetStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_above="@+id/layoutObject">
+
+        <Button
+                android:id="@+id/btnBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_above="@+id/btnQuote"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Bold"/>
+        <Button
+                android:id="@+id/btnItalic"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_above="@+id/btnQuote"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Italic"/>
+        <Button
+                android:id="@+id/btnUnderline"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_above="@+id/btnQuote"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="underline"/>
+
+    </LinearLayout>
+
+    <LinearLayout
             android:id="@+id/layoutSetAlign"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

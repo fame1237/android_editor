@@ -6,9 +6,7 @@ class InlineStyleRanges {
     var lenght = 0
     var style: TextStyle? = null
 
-    override fun toString(): String {
-        return "InlineStyleRanges(offset=$offset, lenght=$lenght, style=$style)"
-    }
+
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -26,6 +24,10 @@ class InlineStyleRanges {
         result = 31 * result + lenght
         result = 31 * result + (style?.hashCode() ?: 0)
         return result
+    }
+
+    override fun toString(): String {
+        return "InlineStyleRanges(offset=$offset, lenght=$lenght, style=$style)"
     }
 }
 

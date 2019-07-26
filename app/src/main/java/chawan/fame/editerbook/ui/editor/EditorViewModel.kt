@@ -9,17 +9,19 @@ import chawan.fame.editerbook.model.editor.Data
 import chawan.fame.editerbook.model.editor.EditerModel
 import chawan.fame.editerbook.model.editor.EditerViewType
 import chawan.fame.editerbook.model.editor.TextStyle
+import chawan.fame.editerbook.util.CheckStyle
 import chawan.fame.editerbook.util.GenerateKey
 
 
 class EditorViewModel : ViewModel() {
     var editerModel: MutableList<EditerModel> = mutableListOf()
 
-    fun addView(position: Int, viewType: EditerViewType, text: String, isFocus: Boolean = false) {
+    fun addView(position: Int, viewType: EditerViewType, text: CharSequence, isFocus: Boolean = false) {
         val model = EditerModel()
         val data = Data()
-        data.text = text
+        data.text = text.toString()
         data.style = TextStyle.NORMAL
+        data.inlineStyleRange = CheckStyle.checkSpan(null, text)
         model.id = GenerateKey.getKey(editerModel)
         model.viewType = viewType
         model.isFocus = isFocus
@@ -32,20 +34,28 @@ class EditorViewModel : ViewModel() {
         editerModel.add(position, model)
     }
 
-    fun updateText(position: Int, text: String, style: TextStyle, isFocus: Boolean = false) {
-
+    fun updateText(
+        position: Int, text: CharSequence, style: TextStyle,
+        isFocus: Boolean = false,
+        updateStyle: Boolean
+    ) {
         val model = editerModel[position]
         val data = model.data!!
-        data.text = text
+        data.text = text.toString()
+        if (updateStyle) {
+            data.inlineStyleRange.clear()
+            data.inlineStyleRange = CheckStyle.checkSpan(null, text)
+        }
         data.style = style
         model.data = data
+
         if (isFocus) {
             editerModel.forEach {
                 it.isFocus = false
             }
             model.isFocus = isFocus
         }
-        Log.d("Check", toString())
+        Log.e("inline", data.inlineStyleRange.toString())
     }
 
     fun updateAlignLeft(position: Int) {
@@ -68,6 +78,15 @@ class EditorViewModel : ViewModel() {
         data.alight = Gravity.END
         model.data = data
     }
+
+    fun updateStyle(position: Int, editText: EditText) {
+        val model = editerModel[position]
+        val data = model.data!!
+        data.inlineStyleRange.clear()
+        data.inlineStyleRange = CheckStyle.checkSpan(editText, "")
+        Log.e("inline", data.inlineStyleRange.toString())
+    }
+
 
     fun addImageModel(position: Int, src: String) {
         val model = EditerModel()
@@ -97,6 +116,38 @@ class EditorViewModel : ViewModel() {
         editerModel.forEach {
             it.isFocus = false
         }
+
+        editerModel.add(position + 1, model2)
+    }
+
+    fun addLine(position: Int) {
+        val model = EditerModel()
+        val data = Data()
+        data.text = ""
+        model.viewType = EditerViewType.LINE
+        model.id = GenerateKey.getKey(editerModel)
+        model.data = data
+
+        editerModel.add(position, model)
+    }
+
+    fun addLineWithEditText(position: Int) {
+        val model = EditerModel()
+        val data = Data()
+        data.text = ""
+        model.viewType = EditerViewType.LINE
+        model.id = GenerateKey.getKey(editerModel)
+        model.data = data
+
+        editerModel.add(position, model)
+
+        val model2 = EditerModel()
+        val data2 = Data()
+        data2.text = ""
+        data2.style = TextStyle.NORMAL
+        model2.viewType = EditerViewType.EDIT_TEXT
+        model2.id = GenerateKey.getKey(editerModel)
+        model2.data = data
 
         editerModel.add(position + 1, model2)
     }

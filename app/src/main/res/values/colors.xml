@@ -6,5 +6,6 @@
 
     <color name="background_default">#F2F2F2</color>
     <color name="white">#FFFFFF</color>
+    <color name="grey">#8c8c8c</color>
 
 </resources>

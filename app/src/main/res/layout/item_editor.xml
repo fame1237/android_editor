@@ -3,9 +3,7 @@
               android:id="@+id/layoutRecycle"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:focusable="true"
-              android:focusableInTouchMode="true">
+              android:layout_height="wrap_content">
 
     <LinearLayout
             android:id="@+id/layoutTextView"
@@ -59,7 +57,7 @@
             <View
                     android:layout_width="0dp"
                     android:layout_height="10dp"
-                    android:background="@color/background_default"
+                    android:background="@color/grey"
                     android:layout_weight="1"/>
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -69,8 +67,9 @@
             <View
                     android:layout_width="0dp"
                     android:layout_height="10dp"
-                    android:background="@color/background_default"
+                    android:background="@color/grey"
                     android:layout_weight="1"/>
+
         </LinearLayout>
 
         <EditText
@@ -90,7 +89,7 @@
             <View
                     android:layout_width="0dp"
                     android:layout_height="10dp"
-                    android:background="@color/background_default"
+                    android:background="@color/grey"
                     android:layout_weight="1"/>
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -100,10 +99,26 @@
             <View
                     android:layout_width="0dp"
                     android:layout_height="10dp"
-                    android:background="@color/background_default"
+                    android:background="@color/grey"
                     android:layout_weight="1"/>
 
         </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/layoutLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/grey"
+        />
 
     </LinearLayout>
 </LinearLayout>

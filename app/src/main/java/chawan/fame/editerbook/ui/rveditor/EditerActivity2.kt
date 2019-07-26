@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
@@ -23,6 +25,7 @@ import chawan.fame.editerbook.model.editor.TextStyle
 import chawan.fame.editerbook.ui.editor.EditerAdapter
 import chawan.fame.editerbook.ui.editor.EditorViewModel
 import chawan.fame.editerbook.util.ImageUtil
+import chawan.fame.editerbook.util.SetStyle
 import com.yalantis.ucrop.UCrop
 import kotlinx.android.synthetic.main.activity_editer2.*
 import java.io.File
@@ -32,17 +35,21 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     var adapter: EditerAdapter? = null
     lateinit var mViewModel: EditorViewModel
     var cursorPosition = 0
+    var edtView: View? = null
+
     val REQUEST_SELECT_PICTURE = 10000
     var REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101
     private var mAlertDialog: AlertDialog? = null
     private val FICTIONLOG_IMAGE = "fictionlog_image"
 
-    override fun updateCursorPosition(position: Int) {
+    override fun updateCursorPosition(position: Int, view: View) {
+        edtView = null
         cursorPosition = position
+        edtView = view
         Log.e("MyCursorPosition", cursorPosition.toString())
     }
 
-    override fun onNextLine(position: Int, text: String) {
+    override fun onNextLine(position: Int, text: CharSequence) {
         mViewModel.addView(
             position,
             EditerViewType.EDIT_TEXT,
@@ -58,25 +65,35 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         }
     }
 
-    override fun onPreviousLine(position: Int, text: String) {
-        mViewModel.updateText(
-            position - 1,
-            text,
-            TextStyle.NORMAL,
-            true
-        )
+    override fun onPreviousLine(position: Int, text: CharSequence) {
+        var viewType = mViewModel.getModel()[position - 1].viewType
 
-        mViewModel.removeViewAt(position)
-        adapter?.let {
-            it.upDateRemoveItem(position)
-            rvEditor.post {
-                rvEditor.scrollToPosition(position - 1)
+        if (viewType == EditerViewType.IMAGE || viewType == EditerViewType.LINE) {
+            mViewModel.removeViewAt(position - 1)
+            adapter?.let {
+                it.upDateRemoveItemWithoutCurrentChange(position - 1)
+            }
+        } else {
+            mViewModel.updateText(
+                position - 1,
+                text,
+                TextStyle.NORMAL,
+                true,
+                true
+            )
+
+            mViewModel.removeViewAt(position)
+            adapter?.let {
+                it.upDateRemoveItem(position)
+                rvEditor.post {
+                    rvEditor.scrollToPosition(position - 1)
+                }
             }
         }
     }
 
-    override fun onUpdateText(position: Int, text: String) {
-        mViewModel.updateText(position, text, TextStyle.NORMAL)
+    override fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean) {
+        mViewModel.updateText(position, text, TextStyle.NORMAL, false, updateStyle)
     }
 
 
@@ -85,7 +102,6 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         setContentView(R.layout.activity_editer2)
         mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
         mViewModel.addView(0, EditerViewType.EDIT_TEXT, "")
-        mViewModel.addView(1, EditerViewType.EDIT_TEXT, "")
         initView()
     }
 
@@ -93,6 +109,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         adapter = EditerAdapter(this, this, mViewModel.getModel())
         rvEditor.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rvEditor.adapter = adapter
+
         btnLeft.setOnClickListener {
             editTextSetTextAlignLeft()
         }
@@ -110,16 +127,79 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         }
 
         btnQuote.setOnClickListener {
-            if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.EDIT_TEXT) {
-                adapter?.let {
-                    mViewModel.changeToQuote(cursorPosition)
-                    it.updateCurrentItem(cursorPosition)
+            if (cursorPosition <= mViewModel.getSize()) {
+                if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.EDIT_TEXT) {
+                    adapter?.let {
+                        mViewModel.changeToQuote(cursorPosition)
+                        it.updateCurrentItem(cursorPosition)
+                    }
+                } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.QUOTE) {
+                    adapter?.let {
+                        mViewModel.changeToEditText(cursorPosition)
+                        it.updateCurrentItem(cursorPosition)
+                    }
                 }
-            } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.QUOTE) {
-                adapter?.let {
-                    mViewModel.changeToEditText(cursorPosition)
-                    it.updateCurrentItem(cursorPosition)
-                }
+            }
+        }
+        btnLine.setOnClickListener {
+            addLine()
+        }
+
+        btnBold.setOnClickListener {
+            setBold()
+        }
+
+        btnItalic.setOnClickListener {
+            setItalic()
+        }
+
+        btnUnderline.setOnClickListener {
+            setUnderLine()
+        }
+    }
+
+
+    private fun setBold() {
+        edtView?.let {
+            if (edtView is EditText) {
+                Log.e("selectionStart", (edtView as EditText).selectionStart.toString())
+                Log.e("selectionEnd", (edtView as EditText).selectionEnd.toString())
+                SetStyle.setBold(edtView as EditText)
+                mViewModel.updateStyle(cursorPosition, edtView as EditText)
+            }
+        }
+    }
+
+    private fun setItalic() {
+        edtView?.let {
+            if (edtView is EditText) {
+                Log.e("selectionStart", (edtView as EditText).selectionStart.toString())
+                Log.e("selectionEnd", (edtView as EditText).selectionEnd.toString())
+                SetStyle.setItalic(edtView as EditText)
+                mViewModel.updateStyle(cursorPosition, edtView as EditText)
+            }
+        }
+    }
+
+    private fun setUnderLine() {
+        edtView?.let {
+            if (edtView is EditText) {
+                Log.e("selectionStart", (edtView as EditText).selectionStart.toString())
+                Log.e("selectionEnd", (edtView as EditText).selectionEnd.toString())
+                SetStyle.setUnderLine(edtView as EditText)
+                mViewModel.updateStyle(cursorPosition, edtView as EditText)
+            }
+        }
+    }
+
+    private fun addLine() {
+        adapter?.let {
+            if (cursorPosition + 1 >= mViewModel.getSize()) {
+                mViewModel.addLineWithEditText(cursorPosition + 1)
+                it.upDateLineItemWithEditText(cursorPosition)
+            } else {
+                mViewModel.addLine(cursorPosition + 1)
+                it.upDateLineItem(cursorPosition)
             }
         }
     }

@@ -140,7 +140,7 @@ class EditorActivity : AppCompatActivity() {
         layoutEditor.addView(mEditText, position)
 
 //        var mEditText = mViewModel.getView(position) as EditText
-        mViewModel.updateText(position, text.toString(), TextStyle.NORMAL)
+//        mViewModel.updateText(position, text.toString(), TextStyle.NORMAL)
         mEditText.setText(text)
 
         mEditText.setOnKeyListener { view, keyCode, keyEvent ->
@@ -170,9 +170,9 @@ class EditorActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if (p0.toString() == null) {
-                    mViewModel.updateText(position, "", TextStyle.NORMAL)
+//                    mViewModel.updateText(position, "", TextStyle.NORMAL)
                 } else {
-                    mViewModel.updateText(position, p0.toString(), TextStyle.NORMAL)
+//                    mViewModel.updateText(position, p0.toString(), TextStyle.NORMAL)
                 }
             }
         })
@@ -583,9 +583,9 @@ class EditorActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if (p0.toString() == null) {
-                    mViewModel.updateText(position, "", TextStyle.NORMAL)
+//                    mViewModel.updateText(position, "", TextStyle.NORMAL)
                 } else {
-                    mViewModel.updateText(position, p0.toString(), TextStyle.NORMAL)
+//                    mViewModel.updateText(position, p0.toString(), TextStyle.NORMAL)
                 }
             }
         })

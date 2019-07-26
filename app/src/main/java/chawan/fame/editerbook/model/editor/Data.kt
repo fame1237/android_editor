@@ -10,9 +10,6 @@ class Data {
     var inlineStyleRange: MutableList<InlineStyleRanges> = mutableListOf()
     var alight = Gravity.START
 
-    override fun toString(): String {
-        return "Data(text='$text', src='$src', style=$style, inlineStyleRange=$inlineStyleRange, alight=$alight)"
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -34,6 +31,10 @@ class Data {
         result = 31 * result + inlineStyleRange.hashCode()
         result = 31 * result + alight
         return result
+    }
+
+    override fun toString(): String {
+        return "Data(text='$text', src='$src', style=$style, inlineStyleRange=$inlineStyleRange, alight=$alight)"
     }
 
 

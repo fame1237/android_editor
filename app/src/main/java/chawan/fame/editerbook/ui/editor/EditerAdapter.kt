@@ -3,7 +3,11 @@ package chawan.fame.editerbook.ui.editor
 import android.content.Context
 import android.graphics.Typeface
 import android.text.Editable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.TextWatcher
+import android.text.style.StyleSpan
+import android.text.style.UnderlineSpan
 import android.util.Log
 import android.view.*
 import android.view.accessibility.AccessibilityEvent
@@ -18,6 +22,8 @@ import chawan.fame.editerbook.extension.filterGetIndex
 import chawan.fame.editerbook.glide.GlideApp
 import chawan.fame.editerbook.model.editor.EditerModel
 import chawan.fame.editerbook.model.editor.EditerViewType
+import chawan.fame.editerbook.model.editor.TextStyle
+import chawan.fame.editerbook.util.CheckStyle
 import chawan.fame.editerbook.util.ImageUtil
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -36,10 +42,10 @@ class EditerAdapter(
 
 
     interface OnChange {
-        fun onNextLine(position: Int, text: String)
-        fun onPreviousLine(position: Int, text: String)
-        fun onUpdateText(position: Int, text: String)
-        fun updateCursorPosition(position: Int)
+        fun onNextLine(position: Int, text: CharSequence)
+        fun onPreviousLine(position: Int, text: CharSequence)
+        fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean)
+        fun updateCursorPosition(position: Int, view: View)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): MyViewHolder {
@@ -55,9 +61,29 @@ class EditerAdapter(
             viewHolder.layoutTextView.visibility = View.VISIBLE
             viewHolder.layoutImage.visibility = View.GONE
             viewHolder.layoutQuote.visibility = View.GONE
+            viewHolder.layoutLine.visibility = View.GONE
 
             if (model[position].data != null) {
-                viewHolder.edt.setText(model[position].data!!.text)
+                val ss1 = SpannableString(model[position].data!!.text)
+                model[position].data!!.inlineStyleRange.forEach {
+                    var offset = it.offset
+                    var lenght = it.lenght
+                    when {
+                        it.style == TextStyle.BOLD -> ss1.setSpan(
+                            StyleSpan(Typeface.BOLD), offset,
+                            offset + lenght, 0
+                        )
+                        it.style == TextStyle.ITALIC -> ss1.setSpan(
+                            StyleSpan(Typeface.ITALIC), offset,
+                            offset + lenght, 0
+                        )
+                        it.style == TextStyle.UNDERLINE -> ss1.setSpan(
+                            UnderlineSpan(), offset,
+                            offset + lenght, 0
+                        )
+                    }
+                }
+                viewHolder.edt.setText(ss1)
             }
 
             if (model[position].isFocus) {
@@ -78,10 +104,12 @@ class EditerAdapter(
 
             viewHolder.layoutTextView.visibility = View.GONE
             viewHolder.layoutQuote.visibility = View.GONE
+            viewHolder.layoutLine.visibility = View.GONE
             viewHolder.layoutImage.visibility = View.VISIBLE
         } else if (model[position].viewType == EditerViewType.QUOTE) {
             viewHolder.layoutTextView.visibility = View.GONE
             viewHolder.layoutImage.visibility = View.GONE
+            viewHolder.layoutLine.visibility = View.GONE
             viewHolder.layoutQuote.visibility = View.VISIBLE
 
             if (model[position].data != null) {
@@ -98,6 +126,11 @@ class EditerAdapter(
                     }
                 }
             }
+        } else if (model[position].viewType == EditerViewType.LINE) {
+            viewHolder.layoutTextView.visibility = View.GONE
+            viewHolder.layoutQuote.visibility = View.GONE
+            viewHolder.layoutImage.visibility = View.GONE
+            viewHolder.layoutLine.visibility = View.VISIBLE
         }
     }
 
@@ -112,6 +145,29 @@ class EditerAdapter(
         Log.e("data", model.toString())
         notifyItemInserted(position)
         notifyItemChanged(position - 1, false)
+    }
+
+    fun upDateLineItem(position: Int) {
+        model.forEachIndexed { index, editerModel ->
+            editerModel.data?.let {
+                Log.e("data:$index", it.toString())
+            }
+        }
+
+        Log.e("data", model.toString())
+        notifyItemInserted(position + 1)
+    }
+
+    fun upDateLineItemWithEditText(position: Int) {
+        model.forEachIndexed { index, editerModel ->
+            editerModel.data?.let {
+                Log.e("data:$index", it.toString())
+            }
+        }
+
+        Log.e("data", model.toString())
+        notifyItemInserted(position + 1)
+        notifyItemInserted(position + 2)
     }
 
     fun upDateImageItem(position: Int) {
@@ -137,6 +193,16 @@ class EditerAdapter(
         notifyItemChanged(position - 1, false)
     }
 
+    fun upDateRemoveItemWithoutCurrentChange(position: Int) {
+        model.forEachIndexed { index, editerModel ->
+            editerModel.data?.let {
+                Log.e("data:$index", it.toString())
+            }
+        }
+        notifyItemRemoved(position)
+//        notifyItemChanged(position, false)
+    }
+
     fun updateCurrentItem(position: Int) {
         notifyItemChanged(position, false)
     }
@@ -159,9 +225,9 @@ class EditerAdapter(
     }
 
     class MyViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) : RecyclerView.ViewHolder(v) {
-        var layoutRecycle = v.findViewById<LinearLayout>(R.id.layoutRecycle)
         var layoutTextView = v.findViewById<LinearLayout>(R.id.layoutTextView)
         var layoutQuote = v.findViewById<LinearLayout>(R.id.layoutQuote)
+        var layoutLine = v.findViewById<LinearLayout>(R.id.layoutLine)
         var layoutImage = v.findViewById<RelativeLayout>(R.id.layoutImage)
         var image = v.findViewById<ImageView>(R.id.image)
         var edt = v.findViewById<EditText>(R.id.edt)
@@ -211,20 +277,39 @@ class EditerAdapter(
                     it.id == keyId
                 }
 
-                listener.onNextLine(
-                    index + 1,
-                    (view as EditText).text.toString().substring(
+                val ss1 = SpannableString(
+                    (view as EditText).text.subSequence(0, view.selectionEnd)
+                )
+
+                CheckStyle.checkSpan(null, ss1).forEach {
+                    var offset = it.offset
+                    var lenght = it.lenght
+                    when {
+                        it.style == TextStyle.BOLD -> ss1.setSpan(
+                            StyleSpan(Typeface.BOLD), offset,
+                            offset + lenght, 0
+                        )
+                        it.style == TextStyle.ITALIC -> ss1.setSpan(
+                            StyleSpan(Typeface.ITALIC), offset,
+                            offset + lenght, 0
+                        )
+                        it.style == TextStyle.UNDERLINE -> ss1.setSpan(
+                            UnderlineSpan(), offset,
+                            offset + lenght, 0
+                        )
+                    }
+                }
+
+                val ss2 = SpannableString(
+                    view.text.subSequence(
                         view.selectionEnd,
                         view.text.toString().length
                     )
                 )
 
-                view.setText(
-                    view.text.toString().substring(
-                        0,
-                        view.selectionEnd
-                    )
-                )
+                listener.onNextLine(index + 1, ss2)
+
+                view.setText(ss1)
 
                 return true
             } else if (keyEvent.action == KeyEvent.ACTION_DOWN &&
@@ -235,14 +320,36 @@ class EditerAdapter(
                     it.id == keyId
                 }
 
-                if (index > 0 && (view as EditText).selectionEnd == 0) {
-                    var text = view.text.toString().substring(
+                val ssPrevios = SpannableStringBuilder(model[index - 1].data!!.text)
+
+                model[index - 1].data!!.inlineStyleRange.forEach {
+                    var offset = it.offset
+                    var lenght = it.lenght
+                    when {
+                        it.style == TextStyle.BOLD -> ssPrevios.setSpan(
+                            StyleSpan(Typeface.BOLD), offset,
+                            offset + lenght, 0
+                        )
+                        it.style == TextStyle.ITALIC -> ssPrevios.setSpan(
+                            StyleSpan(Typeface.ITALIC), offset,
+                            offset + lenght, 0
+                        )
+                        it.style == TextStyle.UNDERLINE -> ssPrevios.setSpan(
+                            UnderlineSpan(), offset,
+                            offset + lenght, 0
+                        )
+                    }
+                }
+
+                val ssCurrent = SpannableStringBuilder(
+                    (view as EditText).text.subSequence(
                         view.selectionStart,
                         view.text.toString().length
                     )
+                )
 
-
-                    listener.onPreviousLine(index, model[index - 1].data!!.text + text)
+                if (index > 0 && view.selectionEnd == 0) {
+                    listener.onPreviousLine(index, ssPrevios.append(ssCurrent))
                 }
                 return false
             } else {
@@ -255,7 +362,7 @@ class EditerAdapter(
                 var index = model.filterGetIndex {
                     it.id == keyId
                 }
-                listener.updateCursorPosition(index)
+                listener.updateCursorPosition(index, p0!!)
             }
         }
 
@@ -267,7 +374,11 @@ class EditerAdapter(
             var index = model.filterGetIndex {
                 it.id == keyId
             }
-            listener.onUpdateText(index, charSequence.toString())
+            if (model[index].viewType == EditerViewType.QUOTE) {
+                listener.onUpdateText(index, charSequence, false)
+            } else {
+                listener.onUpdateText(index, charSequence, true)
+            }
         }
 
         override fun afterTextChanged(editable: Editable) {
