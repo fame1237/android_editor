@@ -1,7 +1,9 @@
 package chawan.fame.editerbook.ui.editor
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.text.Editable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -96,16 +98,25 @@ class EditerAdapter(
             viewHolder.edt.gravity = model[position].data!!.alight
 
         } else if (model[position].viewType == EditerViewType.IMAGE) {
-            GlideApp
-                .with(context)
-                .load(ImageUtil.decodeBase64(model[position].data!!.src))
-                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
-                .into(viewHolder.image)
-
             viewHolder.layoutTextView.visibility = View.GONE
             viewHolder.layoutQuote.visibility = View.GONE
             viewHolder.layoutLine.visibility = View.GONE
             viewHolder.layoutImage.visibility = View.VISIBLE
+
+            GlideApp
+                .with(context)
+                .load(ImageUtil.decodeBase64(model[position].data!!.src))
+                .fitCenter()
+                .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
+                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
+                .into(viewHolder.image)
+
+            viewHolder.layoutRecycle?.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+
+
         } else if (model[position].viewType == EditerViewType.QUOTE) {
             viewHolder.layoutTextView.visibility = View.GONE
             viewHolder.layoutImage.visibility = View.GONE
@@ -226,6 +237,7 @@ class EditerAdapter(
 
     class MyViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) : RecyclerView.ViewHolder(v) {
         var layoutTextView = v.findViewById<LinearLayout>(R.id.layoutTextView)
+        var layoutRecycle = v.findViewById<LinearLayout>(R.id.layoutRecycle)
         var layoutQuote = v.findViewById<LinearLayout>(R.id.layoutQuote)
         var layoutLine = v.findViewById<LinearLayout>(R.id.layoutLine)
         var layoutImage = v.findViewById<RelativeLayout>(R.id.layoutImage)
