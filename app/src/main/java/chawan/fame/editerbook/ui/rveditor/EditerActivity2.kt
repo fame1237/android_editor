@@ -141,6 +141,23 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                 }
             }
         }
+
+        btnHeader.setOnClickListener {
+            if (cursorPosition <= mViewModel.getSize()) {
+                if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.EDIT_TEXT) {
+                    adapter?.let {
+                        mViewModel.changeToHeader(cursorPosition)
+                        it.updateCurrentItem(cursorPosition)
+                    }
+                } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.HEADER) {
+                    adapter?.let {
+                        mViewModel.changeToEditText(cursorPosition)
+                        it.updateCurrentItem(cursorPosition)
+                    }
+                }
+            }
+        }
+
         btnLine.setOnClickListener {
             addLine()
         }
@@ -155,6 +172,9 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
         btnUnderline.setOnClickListener {
             setUnderLine()
+        }
+        btnTextStrikeOut.setOnClickListener {
+            setStrikethrough()
         }
     }
 
@@ -192,6 +212,17 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         }
     }
 
+    private fun setStrikethrough() {
+        edtView?.let {
+            if (edtView is EditText) {
+                Log.e("selectionStart", (edtView as EditText).selectionStart.toString())
+                Log.e("selectionEnd", (edtView as EditText).selectionEnd.toString())
+                SetStyle.setStrikethrough(edtView as EditText)
+                mViewModel.updateStyle(cursorPosition, edtView as EditText)
+            }
+        }
+    }
+
     private fun addLine() {
         adapter?.let {
             if (cursorPosition + 1 >= mViewModel.getSize()) {
@@ -213,21 +244,21 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
     private fun editTextSetTextAlignLeft() {
         adapter?.let {
-            mViewModel.updateAlignLeft(cursorPosition)
+            mViewModel.updateAlignLeft(cursorPosition, (edtView as EditText).selectionEnd)
             it.updateCurrentItem(cursorPosition)
         }
     }
 
     private fun editTextSetTextAlignCenter() {
         adapter?.let {
-            mViewModel.updateAlignCenter(cursorPosition)
+            mViewModel.updateAlignCenter(cursorPosition, (edtView as EditText).selectionEnd)
             it.updateCurrentItem(cursorPosition)
         }
     }
 
     private fun editTextSetTextAlignRight() {
         adapter?.let {
-            mViewModel.updateAlignRight(cursorPosition)
+            mViewModel.updateAlignRight(cursorPosition, (edtView as EditText).selectionEnd)
             it.updateCurrentItem(cursorPosition)
         }
     }

@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
+import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
 import android.util.Log
@@ -63,6 +64,7 @@ class EditerAdapter(
             viewHolder.layoutTextView.visibility = View.VISIBLE
             viewHolder.layoutImage.visibility = View.GONE
             viewHolder.layoutQuote.visibility = View.GONE
+            viewHolder.layoutHeader.visibility = View.GONE
             viewHolder.layoutLine.visibility = View.GONE
 
             if (model[position].data != null) {
@@ -83,6 +85,10 @@ class EditerAdapter(
                             UnderlineSpan(), offset,
                             offset + lenght, 0
                         )
+                        it.style == TextStyle.STRIKE_THROUGH -> ss1.setSpan(
+                            StrikethroughSpan(), offset,
+                            offset + lenght, 0
+                        )
                     }
                 }
                 viewHolder.edt.setText(ss1)
@@ -96,11 +102,13 @@ class EditerAdapter(
                 }
             }
             viewHolder.edt.gravity = model[position].data!!.alight
+            viewHolder.edt.setSelection(model[position].data!!.selection)
 
         } else if (model[position].viewType == EditerViewType.IMAGE) {
             viewHolder.layoutTextView.visibility = View.GONE
             viewHolder.layoutQuote.visibility = View.GONE
             viewHolder.layoutLine.visibility = View.GONE
+            viewHolder.layoutHeader.visibility = View.GONE
             viewHolder.layoutImage.visibility = View.VISIBLE
 
             GlideApp
@@ -121,6 +129,7 @@ class EditerAdapter(
             viewHolder.layoutTextView.visibility = View.GONE
             viewHolder.layoutImage.visibility = View.GONE
             viewHolder.layoutLine.visibility = View.GONE
+            viewHolder.layoutHeader.visibility = View.GONE
             viewHolder.layoutQuote.visibility = View.VISIBLE
 
             if (model[position].data != null) {
@@ -137,10 +146,33 @@ class EditerAdapter(
                     }
                 }
             }
+        } else if (model[position].viewType == EditerViewType.HEADER) {
+            viewHolder.layoutTextView.visibility = View.GONE
+            viewHolder.layoutImage.visibility = View.GONE
+            viewHolder.layoutLine.visibility = View.GONE
+            viewHolder.layoutQuote.visibility = View.GONE
+            viewHolder.layoutHeader.visibility = View.VISIBLE
+
+            if (model[position].data != null) {
+                viewHolder.edtHeader.setText(model[position].data!!.text)
+            }
+
+            viewHolder.edtHeader.gravity = model[position].data!!.alight
+
+            viewHolder.edtHeader.setTypeface(null, Typeface.BOLD)
+
+            if (model[position].isFocus) {
+                viewHolder.edtHeader.post {
+                    if (viewHolder.edtHeader.requestFocus()) {
+                        model[position].isFocus = false
+                    }
+                }
+            }
         } else if (model[position].viewType == EditerViewType.LINE) {
             viewHolder.layoutTextView.visibility = View.GONE
             viewHolder.layoutQuote.visibility = View.GONE
             viewHolder.layoutImage.visibility = View.GONE
+            viewHolder.layoutHeader.visibility = View.GONE
             viewHolder.layoutLine.visibility = View.VISIBLE
         }
     }
@@ -237,12 +269,14 @@ class EditerAdapter(
 
     class MyViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) : RecyclerView.ViewHolder(v) {
         var layoutTextView = v.findViewById<LinearLayout>(R.id.layoutTextView)
+        var layoutHeader = v.findViewById<LinearLayout>(R.id.layoutHeader)
         var layoutRecycle = v.findViewById<LinearLayout>(R.id.layoutRecycle)
         var layoutQuote = v.findViewById<LinearLayout>(R.id.layoutQuote)
         var layoutLine = v.findViewById<LinearLayout>(R.id.layoutLine)
         var layoutImage = v.findViewById<RelativeLayout>(R.id.layoutImage)
         var image = v.findViewById<ImageView>(R.id.image)
         var edt = v.findViewById<EditText>(R.id.edt)
+        var edtHeader = v.findViewById<EditText>(R.id.edtHeader)
         var edtQuote = v.findViewById<EditText>(R.id.edtQuote)
         var myCustomEditTextListener = customEditTextListener
 
@@ -251,6 +285,11 @@ class EditerAdapter(
             edt.onFocusChangeListener = myCustomEditTextListener
             edt.setOnKeyListener(myCustomEditTextListener)
             edt.setAccessibilityDelegate(myCustomEditTextListener)
+
+            edtHeader.addTextChangedListener(myCustomEditTextListener)
+            edtHeader.onFocusChangeListener = myCustomEditTextListener
+            edtHeader.setOnKeyListener(myCustomEditTextListener)
+            edtHeader.setAccessibilityDelegate(myCustomEditTextListener)
 
             edtQuote.addTextChangedListener(myCustomEditTextListener)
             edtQuote.onFocusChangeListener = myCustomEditTextListener

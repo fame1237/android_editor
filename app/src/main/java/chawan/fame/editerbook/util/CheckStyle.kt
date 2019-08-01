@@ -4,6 +4,7 @@ import android.graphics.Typeface
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.CharacterStyle
+import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
 import android.util.Log
@@ -58,6 +59,18 @@ object CheckStyle {
                         inlineStyleRangesList.add(inlineStyleRanges)
                 } else if (it is UnderlineSpan) {
                     inlineStyleRanges.style = TextStyle.UNDERLINE
+                    inlineStyleRanges.offset = textTypeFaceStartPosition
+                    inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
+                    var filterList = inlineStyleRangesList.filter {
+                        it.lenght == inlineStyleRanges.lenght &&
+                                it.offset == inlineStyleRanges.offset &&
+                                it.style == inlineStyleRanges.style
+                    }
+                    if (filterList.isEmpty())
+                        inlineStyleRangesList.add(inlineStyleRanges)
+
+                } else if (it is StrikethroughSpan) {
+                    inlineStyleRanges.style = TextStyle.STRIKE_THROUGH
                     inlineStyleRanges.offset = textTypeFaceStartPosition
                     inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
                     var filterList = inlineStyleRangesList.filter {

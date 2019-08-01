@@ -26,6 +26,7 @@ class EditorViewModel : ViewModel() {
         model.viewType = viewType
         model.isFocus = isFocus
         model.data = data
+        data.selection = 0
 
         editerModel.forEach {
             it.isFocus = false
@@ -48,6 +49,7 @@ class EditorViewModel : ViewModel() {
         }
         data.style = style
         model.data = data
+        data.selection = 0
 
         if (isFocus) {
             editerModel.forEach {
@@ -58,23 +60,26 @@ class EditorViewModel : ViewModel() {
         Log.e("inline", data.inlineStyleRange.toString())
     }
 
-    fun updateAlignLeft(position: Int) {
+    fun updateAlignLeft(position: Int, selection: Int) {
         val model = editerModel[position]
         val data = model.data!!
+        data.selection = selection
         data.alight = Gravity.START
         model.data = data
     }
 
-    fun updateAlignCenter(position: Int) {
+    fun updateAlignCenter(position: Int, selection: Int) {
         val model = editerModel[position]
         val data = model.data!!
+        data.selection = selection
         data.alight = Gravity.CENTER
         model.data = data
     }
 
-    fun updateAlignRight(position: Int) {
+    fun updateAlignRight(position: Int, selection: Int) {
         val model = editerModel[position]
         val data = model.data!!
+        data.selection = selection
         data.alight = Gravity.END
         model.data = data
     }
@@ -160,6 +165,16 @@ class EditorViewModel : ViewModel() {
         val model = editerModel[position]
         model.isFocus = true
         model.viewType = EditerViewType.QUOTE
+    }
+
+    fun changeToHeader(position: Int) {
+        editerModel.forEach {
+            it.isFocus = false
+        }
+
+        val model = editerModel[position]
+        model.isFocus = true
+        model.viewType = EditerViewType.HEADER
     }
 
     fun changeToEditText(position: Int) {

@@ -21,6 +21,22 @@
 
     </LinearLayout>
 
+    <LinearLayout
+            android:id="@+id/layoutHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/edtHeader"
+                android:textSize="20sp"/>
+
+    </LinearLayout>
+
     <RelativeLayout
             android:id="@+id/layoutImage"
             android:layout_width="wrap_content"
@@ -77,6 +93,7 @@
                 android:id="@+id/edtQuote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/white"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"/>
 
@@ -118,8 +135,7 @@
         <View
                 android:layout_width="match_parent"
                 android:layout_height="5dp"
-                android:background="@color/grey"
-        />
+                android:background="@color/grey"/>
 
     </LinearLayout>
 </LinearLayout>
