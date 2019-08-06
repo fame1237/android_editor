@@ -19,8 +19,10 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.R
+import chawan.fame.editerbook.StyleCallback
 import chawan.fame.editerbook.extension.filterGetIndex
 import chawan.fame.editerbook.glide.GlideApp
 import chawan.fame.editerbook.model.editor.EditerModel
@@ -28,6 +30,7 @@ import chawan.fame.editerbook.model.editor.EditerViewType
 import chawan.fame.editerbook.model.editor.TextStyle
 import chawan.fame.editerbook.util.CheckStyle
 import chawan.fame.editerbook.util.ImageUtil
+import chawan.fame.editerbook.view.EditTextSelectable
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 
@@ -38,7 +41,7 @@ import com.bumptech.glide.request.RequestOptions
 
 
 class EditerAdapter(
-    private val context: Context,
+    val context: Context,
     var listener: OnChange,
     var model: MutableList<EditerModel>
 ) : RecyclerView.Adapter<EditerAdapter.MyViewHolder>() {
@@ -47,8 +50,10 @@ class EditerAdapter(
     interface OnChange {
         fun onNextLine(position: Int, text: CharSequence)
         fun onPreviousLine(position: Int, text: CharSequence)
+        fun onCursorChange(position: Int, startPosition: Int, endPosition: Int, edt: AppCompatEditText)
         fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean)
         fun updateCursorPosition(position: Int, view: View)
+        fun onUpdateBold()
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): MyViewHolder {
@@ -267,7 +272,7 @@ class EditerAdapter(
         super.setHasStableIds(true)
     }
 
-    class MyViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) : RecyclerView.ViewHolder(v) {
+    inner class MyViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) : RecyclerView.ViewHolder(v) {
         var layoutTextView = v.findViewById<LinearLayout>(R.id.layoutTextView)
         var layoutHeader = v.findViewById<LinearLayout>(R.id.layoutHeader)
         var layoutRecycle = v.findViewById<LinearLayout>(R.id.layoutRecycle)
@@ -275,7 +280,7 @@ class EditerAdapter(
         var layoutLine = v.findViewById<LinearLayout>(R.id.layoutLine)
         var layoutImage = v.findViewById<RelativeLayout>(R.id.layoutImage)
         var image = v.findViewById<ImageView>(R.id.image)
-        var edt = v.findViewById<EditText>(R.id.edt)
+        var edt = v.findViewById<EditTextSelectable>(R.id.edt)
         var edtHeader = v.findViewById<EditText>(R.id.edtHeader)
         var edtQuote = v.findViewById<EditText>(R.id.edtQuote)
         var myCustomEditTextListener = customEditTextListener
@@ -285,6 +290,8 @@ class EditerAdapter(
             edt.onFocusChangeListener = myCustomEditTextListener
             edt.setOnKeyListener(myCustomEditTextListener)
             edt.setAccessibilityDelegate(myCustomEditTextListener)
+            edt.addOnSelectionChangedListener(myCustomEditTextListener)
+            edt.customSelectionActionModeCallback = StyleCallback(edt, listener)
 
             edtHeader.addTextChangedListener(myCustomEditTextListener)
             edtHeader.onFocusChangeListener = myCustomEditTextListener
@@ -295,10 +302,12 @@ class EditerAdapter(
             edtQuote.onFocusChangeListener = myCustomEditTextListener
             edtQuote.setOnKeyListener(myCustomEditTextListener)
             edtQuote.setAccessibilityDelegate(myCustomEditTextListener)
+
         }
     }
 
     inner class MyCustomEditTextListener : TextWatcher,
+        EditTextSelectable.onSelectionChangedListener,
         View.OnFocusChangeListener,
         View.OnKeyListener,
         View.AccessibilityDelegate() {
@@ -376,19 +385,21 @@ class EditerAdapter(
                 model[index - 1].data!!.inlineStyleRange.forEach {
                     var offset = it.offset
                     var lenght = it.lenght
-                    when {
-                        it.style == TextStyle.BOLD -> ssPrevios.setSpan(
-                            StyleSpan(Typeface.BOLD), offset,
-                            offset + lenght, 0
-                        )
-                        it.style == TextStyle.ITALIC -> ssPrevios.setSpan(
-                            StyleSpan(Typeface.ITALIC), offset,
-                            offset + lenght, 0
-                        )
-                        it.style == TextStyle.UNDERLINE -> ssPrevios.setSpan(
-                            UnderlineSpan(), offset,
-                            offset + lenght, 0
-                        )
+                    if (offset + lenght < ssPrevios.length) {
+                        when {
+                            it.style == TextStyle.BOLD -> ssPrevios.setSpan(
+                                StyleSpan(Typeface.BOLD), offset,
+                                offset + lenght, 0
+                            )
+                            it.style == TextStyle.ITALIC -> ssPrevios.setSpan(
+                                StyleSpan(Typeface.ITALIC), offset,
+                                offset + lenght, 0
+                            )
+                            it.style == TextStyle.UNDERLINE -> ssPrevios.setSpan(
+                                UnderlineSpan(), offset,
+                                offset + lenght, 0
+                            )
+                        }
                     }
                 }
 
@@ -435,5 +446,13 @@ class EditerAdapter(
         override fun afterTextChanged(editable: Editable) {
             // no op
         }
+
+        override fun onSelectionChanged(selStart: Int, selEnd: Int, editText: AppCompatEditText?) {
+//            var index = model.filterGetIndex {
+//                it.id == keyId
+//            }
+//            listener.onCursorChange(index, selStart, selEnd, editText!!)
+        }
+
     }
 }

@@ -15,7 +15,9 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,8 +31,10 @@ import chawan.fame.editerbook.util.SetStyle
 import com.yalantis.ucrop.UCrop
 import kotlinx.android.synthetic.main.activity_editer2.*
 import java.io.File
+import java.util.*
 
 class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
+
 
     var adapter: EditerAdapter? = null
     lateinit var mViewModel: EditorViewModel
@@ -41,6 +45,8 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     var REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101
     private var mAlertDialog: AlertDialog? = null
     private val FICTIONLOG_IMAGE = "fictionlog_image"
+    private var timer = Timer()
+    private var timerIsRun = false
 
     override fun updateCursorPosition(position: Int, view: View) {
         edtView = null
@@ -63,6 +69,11 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                 rvEditor.scrollToPosition(position)
             }
         }
+    }
+
+    override fun onCursorChange(position: Int, startPosition: Int, endPosition: Int, edt: AppCompatEditText) {
+        Log.e("startPosition", startPosition.toString())
+        Log.e("endPosition", endPosition.toString())
     }
 
     override fun onPreviousLine(position: Int, text: CharSequence) {
@@ -103,6 +114,29 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
         mViewModel.addView(0, EditerViewType.EDIT_TEXT, "")
         initView()
+        initViewModel()
+    }
+
+    private fun initViewModel() {
+        mViewModel.editorModelLiveData.observe(this, Observer {
+            if (timerIsRun) {
+                timer.cancel()
+                timer = Timer()
+                timerIsRun = false
+                timer.schedule(object : TimerTask() {
+                    override fun run() {
+                        Log.d("onDataChange", it.toString())
+                    }
+                }, 10000)
+            } else {
+                timerIsRun = true
+                timer.schedule(object : TimerTask() {
+                    override fun run() {
+                        Log.d("onDataChange", it.toString())
+                    }
+                }, 10000)
+            }
+        })
     }
 
     private fun initView() {
@@ -142,40 +176,40 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
             }
         }
 
-        btnHeader.setOnClickListener {
-            if (cursorPosition <= mViewModel.getSize()) {
-                if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.EDIT_TEXT) {
-                    adapter?.let {
-                        mViewModel.changeToHeader(cursorPosition)
-                        it.updateCurrentItem(cursorPosition)
-                    }
-                } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.HEADER) {
-                    adapter?.let {
-                        mViewModel.changeToEditText(cursorPosition)
-                        it.updateCurrentItem(cursorPosition)
-                    }
-                }
-            }
-        }
+//        btnHeader.setOnClickListener {
+//            if (cursorPosition <= mViewModel.getSize()) {
+//                if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.EDIT_TEXT) {
+//                    adapter?.let {
+//                        mViewModel.changeToHeader(cursorPosition)
+//                        it.updateCurrentItem(cursorPosition)
+//                    }
+//                } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.HEADER) {
+//                    adapter?.let {
+//                        mViewModel.changeToEditText(cursorPosition)
+//                        it.updateCurrentItem(cursorPosition)
+//                    }
+//                }
+//            }
+//        }
 
         btnLine.setOnClickListener {
             addLine()
         }
 
-        btnBold.setOnClickListener {
-            setBold()
-        }
-
-        btnItalic.setOnClickListener {
-            setItalic()
-        }
-
-        btnUnderline.setOnClickListener {
-            setUnderLine()
-        }
-        btnTextStrikeOut.setOnClickListener {
-            setStrikethrough()
-        }
+//        btnBold.setOnClickListener {
+//            setBold()
+//        }
+//
+//        btnItalic.setOnClickListener {
+//            setItalic()
+//        }
+//
+//        btnUnderline.setOnClickListener {
+//            setUnderLine()
+//        }
+//        btnTextStrikeOut.setOnClickListener {
+//            setStrikethrough()
+//        }
     }
 
 
@@ -188,6 +222,10 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                 mViewModel.updateStyle(cursorPosition, edtView as EditText)
             }
         }
+    }
+
+    override fun onUpdateBold() {
+        mViewModel.updateStyle(cursorPosition, edtView as EditText)
     }
 
     private fun setItalic() {

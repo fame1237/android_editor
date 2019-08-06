@@ -19,39 +19,41 @@ object SetStyle {
         val selectionEnd = bodyView!!.selectionEnd
         val ssb = SpannableStringBuilder(bodyView!!.text)
 
-        var typeface = ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
-        if (typeface.isNotEmpty()) {
+        if (selectionEnd == selectionStart) {
+        } else {
+            var typeface = ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
+            if (typeface.isNotEmpty()) {
+                var isHaveItalic = typeface.filter {
+                    it is StyleSpan && it.style == Typeface.BOLD
+                }
 
-            var isHaveItalic = typeface.filter {
-                it is StyleSpan && it.style == Typeface.BOLD
-            }
-
-            if (isHaveItalic.isEmpty()) {
+                if (isHaveItalic.isEmpty()) {
+                    ssb.setSpan(
+                        cs,
+                        selectionStart,
+                        selectionEnd,
+                        Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                } else {
+                    typeface.forEach {
+                        if (it is StyleSpan) {
+                            if (it.style == Typeface.BOLD)
+                                setSpan(it, selectionStart, selectionEnd, ssb, bodyView)
+                        }
+                    }
+                }
+            } else {
                 ssb.setSpan(
                     cs,
                     selectionStart,
                     selectionEnd,
                     Spanned.SPAN_EXCLUSIVE_INCLUSIVE
                 )
-            } else {
-                typeface.forEach {
-                    if (it is StyleSpan) {
-                        if (it.style == Typeface.BOLD)
-                            setSpan(it, selectionStart, selectionEnd, ssb, bodyView)
-                    }
-                }
             }
-        } else {
-            ssb.setSpan(
-                cs,
-                selectionStart,
-                selectionEnd,
-                Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-            )
-        }
 
-        bodyView.text = ssb
-        bodyView.setSelection(selectionEnd)
+            bodyView.text = ssb
+            bodyView.setSelection(selectionEnd)
+        }
     }
 
     fun setItalic(bodyView: EditText) {
@@ -352,7 +354,7 @@ object SetStyle {
                     }
                 }
             }
-        }else if (typeface is StrikethroughSpan) {
+        } else if (typeface is StrikethroughSpan) {
             val textBoldStartPosition = bodyView!!.editableText.getSpanStart(typeface)
             val textBoldEndPosition = bodyView!!.editableText.getSpanEnd(typeface)
             if (selectionEnd > selectionStart) {

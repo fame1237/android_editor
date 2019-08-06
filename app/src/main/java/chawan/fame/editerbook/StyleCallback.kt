@@ -2,8 +2,10 @@ package chawan.fame.editerbook
 
 import android.graphics.Typeface
 import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.Spanned.*
 import android.text.style.CharacterStyle
+import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
 import android.util.Log
@@ -11,14 +13,18 @@ import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
+import chawan.fame.editerbook.ui.editor.EditerAdapter
+import chawan.fame.editerbook.util.SetStyle
 
 
 class StyleCallback : ActionMode.Callback {
 
     var bodyView: EditText? = null
+    var listener: EditerAdapter.OnChange? = null
 
-    constructor(bodyView: EditText) {
+    constructor(bodyView: EditText, listener: EditerAdapter.OnChange) {
         this.bodyView = bodyView
+        this.listener = listener
     }
 
 
@@ -76,6 +82,8 @@ class StyleCallback : ActionMode.Callback {
                 }
 
                 bodyView!!.text = ssb
+//                listener?.onUpdateBold()
+                bodyView!!.setSelection(selectionEnd)
                 return true
             }
 
@@ -112,6 +120,7 @@ class StyleCallback : ActionMode.Callback {
                     )
                 }
                 bodyView!!.text = ssb
+                bodyView!!.setSelection(selectionEnd)
                 return true
             }
 
@@ -147,6 +156,42 @@ class StyleCallback : ActionMode.Callback {
                     )
                 }
                 bodyView!!.text = ssb
+                bodyView!!.setSelection(selectionEnd)
+                return true
+            }
+
+            R.id.strikeOut -> {
+                val cs = StrikethroughSpan()
+                var typeface = ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
+                if (typeface.isNotEmpty()) {
+                    var isHaveItalic = typeface.filter {
+                        it is UnderlineSpan
+                    }
+
+                    if (isHaveItalic.isEmpty()) {
+                        ssb.setSpan(
+                            cs,
+                            selectionStart,
+                            selectionEnd,
+                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                    } else {
+                        typeface.forEach {
+                            if (it is UnderlineSpan) {
+                                setSpan(it, selectionStart, selectionEnd, ssb)
+                            }
+                        }
+                    }
+                } else {
+                    ssb.setSpan(
+                        cs,
+                        selectionStart,
+                        selectionEnd,
+                        Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                }
+                bodyView!!.text = ssb
+                bodyView!!.setSelection(selectionEnd)
                 return true
             }
         }
@@ -165,12 +210,17 @@ class StyleCallback : ActionMode.Callback {
                 when {
                     selectionStart >= textBoldEndPosition -> {
                         ssb.removeSpan(typeface)
-                        ssb.setSpan(
-                            typeface,
-                            textBoldStartPosition,
-                            selectionStart - 1,
-                            SPAN_EXCLUSIVE_INCLUSIVE
-                        )
+                        if (selectionStart - 1 > textBoldStartPosition) {
+                            ssb.setSpan(
+                                typeface,
+                                textBoldStartPosition,
+                                selectionStart - 1,
+                                SPAN_EXCLUSIVE_INCLUSIVE
+                            )
+                        } else {
+                            Log.e("Error selectionStart", selectionStart.toString())
+                            Log.e("Error BoldStartPosition", textBoldStartPosition.toString())
+                        }
                     }
                     selectionStart == textBoldStartPosition && selectionEnd == textBoldEndPosition -> ssb.removeSpan(
                         typeface
@@ -332,6 +382,95 @@ class StyleCallback : ActionMode.Callback {
                             selectionStart,
                             selectionEnd,
                             SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                    }
+                }
+            }
+        } else if (typeface is StrikethroughSpan) {
+            val textBoldStartPosition = bodyView!!.editableText.getSpanStart(typeface)
+            val textBoldEndPosition = bodyView!!.editableText.getSpanEnd(typeface)
+            if (selectionEnd > selectionStart) {
+                when {
+                    selectionStart >= textBoldEndPosition -> {
+                        ssb.removeSpan(typeface)
+                        ssb.setSpan(
+                            typeface,
+                            textBoldStartPosition,
+                            selectionStart - 1,
+                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                    }
+                    selectionStart == textBoldStartPosition && selectionEnd == textBoldEndPosition -> {
+                        ssb.removeSpan(typeface)
+                    }
+                    selectionStart > textBoldStartPosition && selectionEnd < textBoldEndPosition -> {
+                        ssb.removeSpan(typeface)
+
+                        var spanLeft = StrikethroughSpan()
+                        var spanRight = StrikethroughSpan()
+
+                        ssb.setSpan(
+                            spanLeft,
+                            textBoldStartPosition,
+                            selectionStart,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+
+                        ssb.setSpan(
+                            spanRight,
+                            selectionEnd,
+                            textBoldEndPosition,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+
+                    }
+                    selectionStart == textBoldStartPosition && selectionEnd < textBoldEndPosition -> {
+                        ssb.removeSpan(typeface)
+
+                        var newSpan = StrikethroughSpan()
+                        ssb.setSpan(
+                            newSpan,
+                            selectionEnd,
+                            textBoldEndPosition,
+                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                    }
+                    selectionStart == textBoldStartPosition && selectionEnd > textBoldEndPosition -> {
+                        ssb.removeSpan(typeface)
+                        ssb.setSpan(
+                            typeface,
+                            selectionStart,
+                            selectionEnd,
+                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                    }
+                    selectionStart < textBoldStartPosition && selectionEnd == textBoldEndPosition -> {
+                        ssb.removeSpan(typeface)
+                        ssb.setSpan(
+                            typeface,
+                            selectionStart,
+                            selectionEnd,
+                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                    }
+                    selectionStart > textBoldStartPosition && selectionEnd == textBoldEndPosition -> {
+                        ssb.removeSpan(typeface)
+
+                        var newSpan = StrikethroughSpan()
+                        ssb.setSpan(
+                            newSpan,
+                            textBoldStartPosition,
+                            selectionStart,
+                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                    }
+                    selectionStart < textBoldStartPosition && selectionEnd > textBoldEndPosition -> {
+                        ssb.removeSpan(typeface)
+                        ssb.setSpan(
+                            typeface,
+                            selectionStart,
+                            selectionEnd,
+                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                 }

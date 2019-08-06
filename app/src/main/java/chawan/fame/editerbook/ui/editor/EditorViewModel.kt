@@ -4,7 +4,9 @@ import android.util.Log
 import android.view.Gravity
 import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import chawan.fame.editerbook.extension.SingleLiveEvent
 import chawan.fame.editerbook.model.editor.Data
 import chawan.fame.editerbook.model.editor.EditerModel
 import chawan.fame.editerbook.model.editor.EditerViewType
@@ -15,6 +17,7 @@ import chawan.fame.editerbook.util.GenerateKey
 
 class EditorViewModel : ViewModel() {
     var editerModel: MutableList<EditerModel> = mutableListOf()
+    var editorModelLiveData = SingleLiveEvent<MutableList<EditerModel>>()
 
     fun addView(position: Int, viewType: EditerViewType, text: CharSequence, isFocus: Boolean = false) {
         val model = EditerModel()
@@ -33,6 +36,7 @@ class EditorViewModel : ViewModel() {
         }
 
         editerModel.add(position, model)
+        editorModelLiveData.postValue(editerModel)
     }
 
     fun updateText(
@@ -57,7 +61,8 @@ class EditorViewModel : ViewModel() {
             }
             model.isFocus = isFocus
         }
-        Log.e("inline", data.inlineStyleRange.toString())
+
+        editorModelLiveData.postValue(editerModel)
     }
 
     fun updateAlignLeft(position: Int, selection: Int) {
@@ -66,6 +71,7 @@ class EditorViewModel : ViewModel() {
         data.selection = selection
         data.alight = Gravity.START
         model.data = data
+        editorModelLiveData.postValue(editerModel)
     }
 
     fun updateAlignCenter(position: Int, selection: Int) {
@@ -74,6 +80,7 @@ class EditorViewModel : ViewModel() {
         data.selection = selection
         data.alight = Gravity.CENTER
         model.data = data
+        editorModelLiveData.postValue(editerModel)
     }
 
     fun updateAlignRight(position: Int, selection: Int) {
@@ -82,6 +89,7 @@ class EditorViewModel : ViewModel() {
         data.selection = selection
         data.alight = Gravity.END
         model.data = data
+        editorModelLiveData.postValue(editerModel)
     }
 
     fun updateStyle(position: Int, editText: EditText) {
@@ -89,7 +97,7 @@ class EditorViewModel : ViewModel() {
         val data = model.data!!
         data.inlineStyleRange.clear()
         data.inlineStyleRange = CheckStyle.checkSpan(editText, "")
-        Log.e("inline", data.inlineStyleRange.toString())
+        editorModelLiveData.postValue(editerModel)
     }
 
 
@@ -123,6 +131,7 @@ class EditorViewModel : ViewModel() {
         }
 
         editerModel.add(position + 1, model2)
+        editorModelLiveData.postValue(editerModel)
     }
 
     fun addLine(position: Int) {
@@ -134,6 +143,7 @@ class EditorViewModel : ViewModel() {
         model.data = data
 
         editerModel.add(position, model)
+        editorModelLiveData.postValue(editerModel)
     }
 
     fun addLineWithEditText(position: Int) {
@@ -155,6 +165,7 @@ class EditorViewModel : ViewModel() {
         model2.data = data
 
         editerModel.add(position + 1, model2)
+        editorModelLiveData.postValue(editerModel)
     }
 
     fun changeToQuote(position: Int) {
@@ -165,6 +176,7 @@ class EditorViewModel : ViewModel() {
         val model = editerModel[position]
         model.isFocus = true
         model.viewType = EditerViewType.QUOTE
+        editorModelLiveData.postValue(editerModel)
     }
 
     fun changeToHeader(position: Int) {
@@ -175,6 +187,7 @@ class EditorViewModel : ViewModel() {
         val model = editerModel[position]
         model.isFocus = true
         model.viewType = EditerViewType.HEADER
+        editorModelLiveData.postValue(editerModel)
     }
 
     fun changeToEditText(position: Int) {
@@ -185,6 +198,7 @@ class EditorViewModel : ViewModel() {
         val model = editerModel[position]
         model.isFocus = true
         model.viewType = EditerViewType.EDIT_TEXT
+        editorModelLiveData.postValue(editerModel)
     }
 
 

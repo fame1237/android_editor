@@ -4,17 +4,22 @@
 
     <item android:id="@+id/italic"
           android:icon="@drawable/ic_text_italic"
-          android:title="Italic"
+          android:title="ตัวเอียง"
           app:showAsAction="always"/>
 
     <item android:id="@+id/bold"
           app:showAsAction="always"
           android:icon="@drawable/ic_text_bold"
-          android:title="Bold"/>
+          android:title="ตัวหนา"/>
 
     <item android:id="@+id/underline"
           app:showAsAction="always"
           android:icon="@drawable/ic_text_underline"
-          android:title="Underline"/>
+          android:title="เส้นใต้"/>
+
+    <item android:id="@+id/strikeOut"
+          app:showAsAction="always"
+          android:icon="@drawable/ic_text_underline"
+          android:title="ขีดฆ่า"/>
 
 </menu>

@@ -183,7 +183,7 @@ class EditorActivity : AppCompatActivity() {
             }
         }
 
-        mEditText.customSelectionActionModeCallback = StyleCallback(mEditText)
+//        mEditText.customSelectionActionModeCallback = StyleCallback(mEditText)
         cursorPosition = position
         mEditText.isFocusable = true
     }
