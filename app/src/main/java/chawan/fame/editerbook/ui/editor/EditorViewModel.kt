@@ -163,6 +163,7 @@ class EditorViewModel : ViewModel() {
         model2.viewType = EditerViewType.EDIT_TEXT
         model2.id = GenerateKey.getKey(editerModel)
         model2.data = data
+        model2.isFocus = true
 
         editerModel.add(position + 1, model2)
         editorModelLiveData.postValue(editerModel)

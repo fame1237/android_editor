@@ -41,9 +41,9 @@ import com.bumptech.glide.request.RequestOptions
 
 
 class EditerAdapter(
-    val context: Context,
-    var listener: OnChange,
-    var model: MutableList<EditerModel>
+        val context: Context,
+        var listener: OnChange,
+        var model: MutableList<EditerModel>
 ) : RecyclerView.Adapter<EditerAdapter.MyViewHolder>() {
 
 
@@ -79,20 +79,20 @@ class EditerAdapter(
                     var lenght = it.lenght
                     when {
                         it.style == TextStyle.BOLD -> ss1.setSpan(
-                            StyleSpan(Typeface.BOLD), offset,
-                            offset + lenght, 0
+                                StyleSpan(Typeface.BOLD), offset,
+                                offset + lenght, 0
                         )
                         it.style == TextStyle.ITALIC -> ss1.setSpan(
-                            StyleSpan(Typeface.ITALIC), offset,
-                            offset + lenght, 0
+                                StyleSpan(Typeface.ITALIC), offset,
+                                offset + lenght, 0
                         )
                         it.style == TextStyle.UNDERLINE -> ss1.setSpan(
-                            UnderlineSpan(), offset,
-                            offset + lenght, 0
+                                UnderlineSpan(), offset,
+                                offset + lenght, 0
                         )
                         it.style == TextStyle.STRIKE_THROUGH -> ss1.setSpan(
-                            StrikethroughSpan(), offset,
-                            offset + lenght, 0
+                                StrikethroughSpan(), offset,
+                                offset + lenght, 0
                         )
                     }
                 }
@@ -116,17 +116,16 @@ class EditerAdapter(
             viewHolder.layoutHeader.visibility = View.GONE
             viewHolder.layoutImage.visibility = View.VISIBLE
 
-            GlideApp
-                .with(context)
-                .load(ImageUtil.decodeBase64(model[position].data!!.src))
-                .fitCenter()
-                .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
-                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
-                .into(viewHolder.image)
+            GlideApp.with(context)
+                    .load(ImageUtil.decodeBase64(model[position].data!!.src))
+                    .fitCenter()
+                    .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
+                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
+                    .into(viewHolder.image)
 
             viewHolder.layoutRecycle?.layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
             )
 
 
@@ -307,10 +306,10 @@ class EditerAdapter(
     }
 
     inner class MyCustomEditTextListener : TextWatcher,
-        EditTextSelectable.onSelectionChangedListener,
-        View.OnFocusChangeListener,
-        View.OnKeyListener,
-        View.AccessibilityDelegate() {
+            EditTextSelectable.onSelectionChangedListener,
+            View.OnFocusChangeListener,
+            View.OnKeyListener,
+            View.AccessibilityDelegate() {
 
         private var keyId: Long = -1
 
@@ -328,9 +327,9 @@ class EditerAdapter(
 
         override fun onKey(view: View, keyCode: Int, keyEvent: KeyEvent): Boolean {
             if (keyCode == EditorInfo.IME_ACTION_SEARCH ||
-                keyCode == EditorInfo.IME_ACTION_DONE ||
-                keyEvent.action == KeyEvent.ACTION_DOWN &&
-                keyEvent.keyCode == KeyEvent.KEYCODE_ENTER
+                    keyCode == EditorInfo.IME_ACTION_DONE ||
+                    keyEvent.action == KeyEvent.ACTION_DOWN &&
+                    keyEvent.keyCode == KeyEvent.KEYCODE_ENTER
             ) {
 
                 var index = model.filterGetIndex {
@@ -338,7 +337,7 @@ class EditerAdapter(
                 }
 
                 val ss1 = SpannableString(
-                    (view as EditText).text.subSequence(0, view.selectionEnd)
+                        (view as EditText).text.subSequence(0, view.selectionEnd)
                 )
 
                 CheckStyle.checkSpan(null, ss1).forEach {
@@ -346,25 +345,25 @@ class EditerAdapter(
                     var lenght = it.lenght
                     when {
                         it.style == TextStyle.BOLD -> ss1.setSpan(
-                            StyleSpan(Typeface.BOLD), offset,
-                            offset + lenght, 0
+                                StyleSpan(Typeface.BOLD), offset,
+                                offset + lenght, 0
                         )
                         it.style == TextStyle.ITALIC -> ss1.setSpan(
-                            StyleSpan(Typeface.ITALIC), offset,
-                            offset + lenght, 0
+                                StyleSpan(Typeface.ITALIC), offset,
+                                offset + lenght, 0
                         )
                         it.style == TextStyle.UNDERLINE -> ss1.setSpan(
-                            UnderlineSpan(), offset,
-                            offset + lenght, 0
+                                UnderlineSpan(), offset,
+                                offset + lenght, 0
                         )
                     }
                 }
 
                 val ss2 = SpannableString(
-                    view.text.subSequence(
-                        view.selectionEnd,
-                        view.text.toString().length
-                    )
+                        view.text.subSequence(
+                                view.selectionEnd,
+                                view.text.toString().length
+                        )
                 )
 
                 listener.onNextLine(index + 1, ss2)
@@ -373,44 +372,42 @@ class EditerAdapter(
 
                 return true
             } else if (keyEvent.action == KeyEvent.ACTION_DOWN &&
-                keyEvent.keyCode == KeyEvent.KEYCODE_DEL
+                    keyEvent.keyCode == KeyEvent.KEYCODE_DEL
             ) {
 
                 var index = model.filterGetIndex {
                     it.id == keyId
                 }
-
-                val ssPrevios = SpannableStringBuilder(model[index - 1].data!!.text)
-
-                model[index - 1].data!!.inlineStyleRange.forEach {
-                    var offset = it.offset
-                    var lenght = it.lenght
-                    if (offset + lenght < ssPrevios.length) {
-                        when {
-                            it.style == TextStyle.BOLD -> ssPrevios.setSpan(
-                                StyleSpan(Typeface.BOLD), offset,
-                                offset + lenght, 0
-                            )
-                            it.style == TextStyle.ITALIC -> ssPrevios.setSpan(
-                                StyleSpan(Typeface.ITALIC), offset,
-                                offset + lenght, 0
-                            )
-                            it.style == TextStyle.UNDERLINE -> ssPrevios.setSpan(
-                                UnderlineSpan(), offset,
-                                offset + lenght, 0
-                            )
+                if (index > 0 && (view as EditText).selectionEnd == 0) {
+                    val ssPrevios = SpannableStringBuilder(model[index - 1].data!!.text)
+                    model[index - 1].data!!.inlineStyleRange.forEach {
+                        var offset = it.offset
+                        var lenght = it.lenght
+                        if (offset + lenght < ssPrevios.length) {
+                            when {
+                                it.style == TextStyle.BOLD -> ssPrevios.setSpan(
+                                        StyleSpan(Typeface.BOLD), offset,
+                                        offset + lenght, 0
+                                )
+                                it.style == TextStyle.ITALIC -> ssPrevios.setSpan(
+                                        StyleSpan(Typeface.ITALIC), offset,
+                                        offset + lenght, 0
+                                )
+                                it.style == TextStyle.UNDERLINE -> ssPrevios.setSpan(
+                                        UnderlineSpan(), offset,
+                                        offset + lenght, 0
+                                )
+                            }
                         }
                     }
-                }
 
-                val ssCurrent = SpannableStringBuilder(
-                    (view as EditText).text.subSequence(
-                        view.selectionStart,
-                        view.text.toString().length
+                    val ssCurrent = SpannableStringBuilder(
+                            view.text.subSequence(
+                                    view.selectionStart,
+                                    view.text.toString().length
+                            )
                     )
-                )
 
-                if (index > 0 && view.selectionEnd == 0) {
                     listener.onPreviousLine(index, ssPrevios.append(ssCurrent))
                 }
                 return false

@@ -35,18 +35,17 @@ import java.util.*
 
 class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
-
-    var adapter: EditerAdapter? = null
     lateinit var mViewModel: EditorViewModel
+    var adapter: EditerAdapter? = null
     var cursorPosition = 0
     var edtView: View? = null
+    var mAlertDialog: AlertDialog? = null
+    var timer = Timer()
+    var timerIsRun = false
 
+    val FICTIONLOG_IMAGE = "fictionlog_image"
     val REQUEST_SELECT_PICTURE = 10000
-    var REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101
-    private var mAlertDialog: AlertDialog? = null
-    private val FICTIONLOG_IMAGE = "fictionlog_image"
-    private var timer = Timer()
-    private var timerIsRun = false
+    val REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101
 
     override fun updateCursorPosition(position: Int, view: View) {
         edtView = null
@@ -57,10 +56,10 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
     override fun onNextLine(position: Int, text: CharSequence) {
         mViewModel.addView(
-            position,
-            EditerViewType.EDIT_TEXT,
-            text,
-            true
+                position,
+                EditerViewType.EDIT_TEXT,
+                text,
+                true
         )
 
         adapter?.let {
@@ -86,11 +85,11 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
             }
         } else {
             mViewModel.updateText(
-                position - 1,
-                text,
-                TextStyle.NORMAL,
-                true,
-                true
+                    position - 1,
+                    text,
+                    TextStyle.NORMAL,
+                    true,
+                    true
             )
 
             mViewModel.removeViewAt(position)
@@ -144,17 +143,17 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         rvEditor.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rvEditor.adapter = adapter
 
-        btnLeft.setOnClickListener {
-            editTextSetTextAlignLeft()
-        }
-
-        btnCenter.setOnClickListener {
-            editTextSetTextAlignCenter()
-        }
-
-        btnRight.setOnClickListener {
-            editTextSetTextAlignRight()
-        }
+//        btnLeft.setOnClickListener {
+//            editTextSetTextAlignLeft()
+//        }
+//
+//        btnCenter.setOnClickListener {
+//            editTextSetTextAlignCenter()
+//        }
+//
+//        btnRight.setOnClickListener {
+//            editTextSetTextAlignRight()
+//        }
 
         btnAddImage.setOnClickListener {
             pickFromGallery()
@@ -176,21 +175,21 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
             }
         }
 
-//        btnHeader.setOnClickListener {
-//            if (cursorPosition <= mViewModel.getSize()) {
-//                if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.EDIT_TEXT) {
-//                    adapter?.let {
-//                        mViewModel.changeToHeader(cursorPosition)
-//                        it.updateCurrentItem(cursorPosition)
-//                    }
-//                } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.HEADER) {
-//                    adapter?.let {
-//                        mViewModel.changeToEditText(cursorPosition)
-//                        it.updateCurrentItem(cursorPosition)
-//                    }
-//                }
-//            }
-//        }
+        btnHeader.setOnClickListener {
+            if (cursorPosition <= mViewModel.getSize()) {
+                if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.EDIT_TEXT) {
+                    adapter?.let {
+                        mViewModel.changeToHeader(cursorPosition)
+                        it.updateCurrentItem(cursorPosition)
+                    }
+                } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.HEADER) {
+                    adapter?.let {
+                        mViewModel.changeToEditText(cursorPosition)
+                        it.updateCurrentItem(cursorPosition)
+                    }
+                }
+            }
+        }
 
         btnLine.setOnClickListener {
             addLine()
@@ -303,14 +302,14 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
     private fun pickFromGallery() {
         if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
+                        this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermission(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                "Storage read permission is needed to pick files.",
-                REQUEST_STORAGE_READ_ACCESS_PERMISSION
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    "Storage read permission is needed to pick files.",
+                    REQUEST_STORAGE_READ_ACCESS_PERMISSION
             )
         } else {
             val intent = Intent()
@@ -324,12 +323,12 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     private fun requestPermission(permission: String, rationale: String, requestCode: Int) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
             showPermissionAlertDialog("Permission needed", rationale,
-                DialogInterface.OnClickListener { dialog, which ->
-                    ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(permission), requestCode
-                    )
-                }, "OK", DialogInterface.OnClickListener { dialog, which -> }, "Cancel"
+                    DialogInterface.OnClickListener { dialog, which ->
+                        ActivityCompat.requestPermissions(
+                                this,
+                                arrayOf(permission), requestCode
+                        )
+                    }, "OK", DialogInterface.OnClickListener { dialog, which -> }, "Cancel"
             )
         } else {
             ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
@@ -337,11 +336,11 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     }
 
     private fun showPermissionAlertDialog(
-        @Nullable title: String, @Nullable message: String,
-        @Nullable onPositiveButtonClickListener: DialogInterface.OnClickListener,
-        @NonNull positiveText: String,
-        @Nullable onNegativeButtonClickListener: DialogInterface.OnClickListener,
-        @NonNull negativeText: String
+            @Nullable title: String, @Nullable message: String,
+            @Nullable onPositiveButtonClickListener: DialogInterface.OnClickListener,
+            @NonNull positiveText: String,
+            @Nullable onNegativeButtonClickListener: DialogInterface.OnClickListener,
+            @NonNull negativeText: String
     ) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle(title)
@@ -379,11 +378,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
     private fun basisConfig(uCrop: UCrop): UCrop {
         var uCrop = uCrop
-        val displayMetrics = this.resources.displayMetrics
-        val dpHeight = displayMetrics.heightPixels / displayMetrics.density
-        val dpWidth = displayMetrics.widthPixels / displayMetrics.density
         uCrop = uCrop.useSourceImageAspectRatio()
-        uCrop = uCrop.withMaxResultSize(dpWidth.toInt(), dpHeight.toInt())
         return uCrop
     }
 
