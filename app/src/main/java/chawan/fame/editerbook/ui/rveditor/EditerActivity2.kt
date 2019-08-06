@@ -5,9 +5,11 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
@@ -17,6 +19,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,6 +38,7 @@ import java.util.*
 
 class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
+
     lateinit var mViewModel: EditorViewModel
     var adapter: EditerAdapter? = null
     var cursorPosition = 0
@@ -47,19 +51,137 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     val REQUEST_SELECT_PICTURE = 10000
     val REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101
 
+
     override fun updateCursorPosition(position: Int, view: View) {
         edtView = null
         cursorPosition = position
         edtView = view
-        Log.e("MyCursorPosition", cursorPosition.toString())
+
+        mViewModel.getModel()[position].data?.let {
+            when (it.alight) {
+                Gravity.START -> {
+                    setAlightLeftOrange()
+                }
+                Gravity.CENTER -> {
+                    setAlightCenterOrange()
+                }
+                Gravity.RIGHT -> {
+                    setAlightRightOrange()
+                }
+            }
+        }
+
+        when {
+            mViewModel.getModel()[position].viewType == EditerViewType.QUOTE -> {
+                btnQuote.setColorFilter(
+                    ContextCompat.getColor(this, R.color.colorOrange)
+                    , PorterDuff.Mode.SRC_IN
+                )
+                btnHeader.setColorFilter(
+                    ContextCompat.getColor(this, R.color.grey_image)
+                    , PorterDuff.Mode.SRC_IN
+                )
+            }
+            mViewModel.getModel()[position].viewType == EditerViewType.HEADER -> {
+                btnQuote.setColorFilter(
+                    ContextCompat.getColor(this, R.color.grey_image)
+                    , PorterDuff.Mode.SRC_IN
+                )
+                btnHeader.setColorFilter(
+                    ContextCompat.getColor(this, R.color.colorOrange)
+                    , PorterDuff.Mode.SRC_IN
+                )
+            }
+            else -> {
+                btnQuote.setColorFilter(
+                    ContextCompat.getColor(this, R.color.grey_image)
+                    , PorterDuff.Mode.SRC_IN
+                )
+                btnHeader.setColorFilter(
+                    ContextCompat.getColor(this, R.color.grey_image)
+                    , PorterDuff.Mode.SRC_IN
+                )
+            }
+        }
     }
+
+    fun setAlightLeftOrange() {
+        alignLeft.setColorFilter(
+            ContextCompat.getColor(this, R.color.colorOrange)
+            , PorterDuff.Mode.SRC_IN
+        )
+
+        alignCenter.setColorFilter(
+            ContextCompat.getColor(this, R.color.grey_image)
+            , PorterDuff.Mode.SRC_IN
+        )
+
+        alignRight.setColorFilter(
+            ContextCompat.getColor(this, R.color.grey_image)
+            , PorterDuff.Mode.SRC_IN
+        )
+
+        indent.setColorFilter(
+            ContextCompat.getColor(this, R.color.grey_image)
+            , PorterDuff.Mode.SRC_IN
+        )
+    }
+
+    fun setAlightCenterOrange() {
+        alignLeft.setColorFilter(
+            ContextCompat.getColor(this, R.color.grey_image)
+            , PorterDuff.Mode.SRC_IN
+        )
+
+        alignCenter.setColorFilter(
+            ContextCompat.getColor(this, R.color.colorOrange)
+            , PorterDuff.Mode.SRC_IN
+        )
+
+        alignRight.setColorFilter(
+            ContextCompat.getColor(this, R.color.grey_image)
+            , PorterDuff.Mode.SRC_IN
+        )
+
+        indent.setColorFilter(
+            ContextCompat.getColor(this, R.color.grey_image)
+            , PorterDuff.Mode.SRC_IN
+        )
+    }
+
+    fun setAlightRightOrange() {
+        alignLeft.setColorFilter(
+            ContextCompat.getColor(this, R.color.grey_image)
+            , PorterDuff.Mode.SRC_IN
+        )
+
+        alignCenter.setColorFilter(
+            ContextCompat.getColor(this, R.color.grey_image)
+            , PorterDuff.Mode.SRC_IN
+        )
+
+        alignRight.setColorFilter(
+            ContextCompat.getColor(this, R.color.colorOrange)
+            , PorterDuff.Mode.SRC_IN
+        )
+
+        indent.setColorFilter(
+            ContextCompat.getColor(this, R.color.grey_image)
+            , PorterDuff.Mode.SRC_IN
+        )
+    }
+
+    fun setIndentOrange() {
+
+    }
+
 
     override fun onNextLine(position: Int, text: CharSequence) {
         mViewModel.addView(
-                position,
-                EditerViewType.EDIT_TEXT,
-                text,
-                true
+            position,
+            EditerViewType.EDIT_TEXT,
+            text,
+            true
         )
 
         adapter?.let {
@@ -85,11 +207,11 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
             }
         } else {
             mViewModel.updateText(
-                    position - 1,
-                    text,
-                    TextStyle.NORMAL,
-                    true,
-                    true
+                position - 1,
+                text,
+                TextStyle.NORMAL,
+                true,
+                true
             )
 
             mViewModel.removeViewAt(position)
@@ -111,7 +233,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editer2)
         mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
-        mViewModel.addView(0, EditerViewType.EDIT_TEXT, "")
+        mViewModel.addView(0, EditerViewType.EDIT_TEXT, "", true)
         initView()
         initViewModel()
     }
@@ -143,17 +265,39 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         rvEditor.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rvEditor.adapter = adapter
 
-//        btnLeft.setOnClickListener {
-//            editTextSetTextAlignLeft()
-//        }
-//
-//        btnCenter.setOnClickListener {
-//            editTextSetTextAlignCenter()
-//        }
-//
-//        btnRight.setOnClickListener {
-//            editTextSetTextAlignRight()
-//        }
+        btnAlighment.setOnClickListener {
+            if (cardAlighment.visibility == View.VISIBLE) {
+                cardAlighment.visibility = View.GONE
+                btnAlighment.setColorFilter(
+                    ContextCompat.getColor(this, R.color.grey_image)
+                    , PorterDuff.Mode.SRC_IN
+                )
+            } else {
+                cardAlighment.visibility = View.VISIBLE
+                btnAlighment.setColorFilter(
+                    ContextCompat.getColor(this, R.color.colorOrange)
+                    , PorterDuff.Mode.SRC_IN
+                )
+            }
+        }
+
+        alignLeft.setOnClickListener {
+            editTextSetTextAlignLeft()
+            setAlightLeftOrange()
+        }
+
+        alignCenter.setOnClickListener {
+            editTextSetTextAlignCenter()
+            setAlightCenterOrange()
+        }
+
+        alignRight.setOnClickListener {
+            editTextSetTextAlignRight()
+            setAlightRightOrange()
+        }
+
+        indent.setOnClickListener {
+        }
 
         btnAddImage.setOnClickListener {
             pickFromGallery()
@@ -166,11 +310,21 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                         mViewModel.changeToQuote(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
                     }
+
+                    btnQuote.setColorFilter(
+                        ContextCompat.getColor(this, R.color.colorOrange)
+                        , PorterDuff.Mode.SRC_IN
+                    )
                 } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.QUOTE) {
                     adapter?.let {
                         mViewModel.changeToEditText(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
                     }
+
+                    btnQuote.setColorFilter(
+                        ContextCompat.getColor(this, R.color.grey_image)
+                        , PorterDuff.Mode.SRC_IN
+                    )
                 }
             }
         }
@@ -181,12 +335,20 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                     adapter?.let {
                         mViewModel.changeToHeader(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
+                        btnHeader.setColorFilter(
+                            ContextCompat.getColor(this, R.color.colorOrange)
+                            , PorterDuff.Mode.SRC_IN
+                        )
                     }
                 } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.HEADER) {
                     adapter?.let {
                         mViewModel.changeToEditText(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
                     }
+                    btnHeader.setColorFilter(
+                        ContextCompat.getColor(this, R.color.grey_image)
+                        , PorterDuff.Mode.SRC_IN
+                    )
                 }
             }
         }
@@ -195,20 +357,6 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
             addLine()
         }
 
-//        btnBold.setOnClickListener {
-//            setBold()
-//        }
-//
-//        btnItalic.setOnClickListener {
-//            setItalic()
-//        }
-//
-//        btnUnderline.setOnClickListener {
-//            setUnderLine()
-//        }
-//        btnTextStrikeOut.setOnClickListener {
-//            setStrikethrough()
-//        }
     }
 
 
@@ -281,35 +429,41 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
     private fun editTextSetTextAlignLeft() {
         adapter?.let {
-            mViewModel.updateAlignLeft(cursorPosition, (edtView as EditText).selectionEnd)
-            it.updateCurrentItem(cursorPosition)
+            if (edtView is EditText) {
+                mViewModel.updateAlignLeft(cursorPosition, (edtView as EditText).selectionEnd)
+                it.updateCurrentItem(cursorPosition)
+            }
         }
     }
 
     private fun editTextSetTextAlignCenter() {
         adapter?.let {
-            mViewModel.updateAlignCenter(cursorPosition, (edtView as EditText).selectionEnd)
-            it.updateCurrentItem(cursorPosition)
+            if (edtView is EditText) {
+                mViewModel.updateAlignCenter(cursorPosition, (edtView as EditText).selectionEnd)
+                it.updateCurrentItem(cursorPosition)
+            }
         }
     }
 
     private fun editTextSetTextAlignRight() {
         adapter?.let {
-            mViewModel.updateAlignRight(cursorPosition, (edtView as EditText).selectionEnd)
-            it.updateCurrentItem(cursorPosition)
+            if (edtView is EditText) {
+                mViewModel.updateAlignRight(cursorPosition, (edtView as EditText).selectionEnd)
+                it.updateCurrentItem(cursorPosition)
+            }
         }
     }
 
     private fun pickFromGallery() {
         if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermission(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    "Storage read permission is needed to pick files.",
-                    REQUEST_STORAGE_READ_ACCESS_PERMISSION
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                "Storage read permission is needed to pick files.",
+                REQUEST_STORAGE_READ_ACCESS_PERMISSION
             )
         } else {
             val intent = Intent()
@@ -323,12 +477,12 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     private fun requestPermission(permission: String, rationale: String, requestCode: Int) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
             showPermissionAlertDialog("Permission needed", rationale,
-                    DialogInterface.OnClickListener { dialog, which ->
-                        ActivityCompat.requestPermissions(
-                                this,
-                                arrayOf(permission), requestCode
-                        )
-                    }, "OK", DialogInterface.OnClickListener { dialog, which -> }, "Cancel"
+                DialogInterface.OnClickListener { dialog, which ->
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(permission), requestCode
+                    )
+                }, "OK", DialogInterface.OnClickListener { dialog, which -> }, "Cancel"
             )
         } else {
             ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
@@ -336,11 +490,11 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     }
 
     private fun showPermissionAlertDialog(
-            @Nullable title: String, @Nullable message: String,
-            @Nullable onPositiveButtonClickListener: DialogInterface.OnClickListener,
-            @NonNull positiveText: String,
-            @Nullable onNegativeButtonClickListener: DialogInterface.OnClickListener,
-            @NonNull negativeText: String
+        @Nullable title: String, @Nullable message: String,
+        @Nullable onPositiveButtonClickListener: DialogInterface.OnClickListener,
+        @NonNull positiveText: String,
+        @Nullable onNegativeButtonClickListener: DialogInterface.OnClickListener,
+        @NonNull negativeText: String
     ) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle(title)

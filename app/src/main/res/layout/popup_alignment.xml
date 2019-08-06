@@ -5,10 +5,10 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
-    app:bl_arrowDirection="top"
+    app:bl_arrowDirection="bottom"
     app:bl_arrowHeight="12dp"
     app:bl_arrowWidth="16dp"
-    app:bl_bubbleColor="@color/white"
+    app:bl_bubbleColor="@color/grey"
     app:bl_cornersRadius="16dp">
 
     <LinearLayout
