@@ -65,6 +65,22 @@ class EditorViewModel : ViewModel() {
         editorModelLiveData.postValue(editerModel)
     }
 
+    fun updateFocus(position: Int, focus: Boolean) {
+        editerModel.forEach {
+            it.isFocus = false
+        }
+        val model = editerModel[position]
+        model.isFocus = focus
+    }
+
+    fun showBorder(position: Int, isShow: Boolean) {
+        editerModel.forEach {
+            it.showBorder = false
+        }
+        val model = editerModel[position]
+        model.showBorder = isShow
+    }
+
     fun updateAlignLeft(position: Int, selection: Int) {
         val model = editerModel[position]
         val data = model.data!!

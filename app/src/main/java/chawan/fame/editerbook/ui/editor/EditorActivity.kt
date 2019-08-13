@@ -129,7 +129,7 @@ class EditorActivity : AppCompatActivity() {
 
     private fun editTextSetTextAlignRight() {
         if (mViewModel.getViewType(cursorPosition) == EditerViewType.EDIT_TEXT) {
-            (mViewModel.getView(cursorPosition) as EditText).gravity = Gravity.RIGHT
+            (mViewModel.getView(cursorPosition) as EditText).gravity = Gravity.END
         }
     }
 

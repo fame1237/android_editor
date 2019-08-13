@@ -7,6 +7,7 @@ class EditerModel {
     var data: Data? = null
     var mViewObject: Any? = null
     var isFocus = false
+    var showBorder = false
 
     override fun toString(): String {
         return "EditerModel(id=$id, viewType=$viewType, data=$data, mViewObject=$mViewObject, isFocus=$isFocus)"

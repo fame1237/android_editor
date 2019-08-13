@@ -51,6 +51,9 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     val REQUEST_SELECT_PICTURE = 10000
     val REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101
 
+    override fun setShowBorderFalse(position: Int) {
+        mViewModel.showBorder(position, false)
+    }
 
     override fun updateCursorPosition(position: Int, view: View) {
         edtView = null
@@ -65,7 +68,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                 Gravity.CENTER -> {
                     setAlightCenterOrange()
                 }
-                Gravity.RIGHT -> {
+                Gravity.END -> {
                     setAlightRightOrange()
                 }
             }
@@ -200,25 +203,39 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     override fun onPreviousLine(position: Int, text: CharSequence) {
         var viewType = mViewModel.getModel()[position - 1].viewType
 
-        if (viewType == EditerViewType.IMAGE || viewType == EditerViewType.LINE) {
-            mViewModel.removeViewAt(position - 1)
-            adapter?.let {
-                it.upDateRemoveItemWithoutCurrentChange(position - 1)
+        when (viewType) {
+            EditerViewType.IMAGE -> {
+                mViewModel.updateFocus(position, false)
+                mViewModel.showBorder(position - 1, true)
+                adapter?.let {
+                    it.updateCurrentItem(position)
+                    it.updateCurrentItem(position - 1)
+                    rvEditor.post {
+                        rvEditor.scrollToPosition(position - 1)
+                    }
+                }
             }
-        } else {
-            mViewModel.updateText(
-                position - 1,
-                text,
-                TextStyle.NORMAL,
-                true,
-                true
-            )
+            EditerViewType.LINE -> {
+                mViewModel.removeViewAt(position - 1)
+                adapter?.let {
+                    it.upDateRemoveItemWithoutCurrentChange(position - 1)
+                }
+            }
+            else -> {
+                mViewModel.updateText(
+                    position - 1,
+                    text,
+                    TextStyle.NORMAL,
+                    true,
+                    true
+                )
 
-            mViewModel.removeViewAt(position)
-            adapter?.let {
-                it.upDateRemoveItem(position)
-                rvEditor.post {
-                    rvEditor.scrollToPosition(position - 1)
+                mViewModel.removeViewAt(position)
+                adapter?.let {
+                    it.upDateRemoveItem(position)
+                    rvEditor.post {
+                        rvEditor.scrollToPosition(position - 1)
+                    }
                 }
             }
         }
@@ -248,14 +265,14 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                     override fun run() {
                         Log.d("onDataChange", it.toString())
                     }
-                }, 10000)
+                }, 5000)
             } else {
                 timerIsRun = true
                 timer.schedule(object : TimerTask() {
                     override fun run() {
                         Log.d("onDataChange", it.toString())
                     }
-                }, 10000)
+                }, 5000)
             }
         })
     }
