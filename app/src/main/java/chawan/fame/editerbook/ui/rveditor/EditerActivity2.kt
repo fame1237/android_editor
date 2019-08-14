@@ -24,8 +24,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import chawan.fame.editerbook.EditorBookApplication
 import chawan.fame.editerbook.R
+import chawan.fame.editerbook.extension.toClass
 import chawan.fame.editerbook.extension.toJson
+import chawan.fame.editerbook.model.editor.EditerModel
 import chawan.fame.editerbook.model.editor.EditerViewType
 import chawan.fame.editerbook.model.editor.TextStyle
 import chawan.fame.editerbook.ui.editor.EditerAdapter
@@ -33,8 +36,14 @@ import chawan.fame.editerbook.ui.editor.EditorViewModel
 import chawan.fame.editerbook.ui.reader.ReaderContentActivity
 import chawan.fame.editerbook.util.ImageUtil
 import chawan.fame.editerbook.util.SetStyle
+import co.fictionlog.fictionlog.data.local.database.table.EditerTable
 import com.yalantis.ucrop.UCrop
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_editer2.*
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.File
 import java.util.*
 
@@ -252,9 +261,23 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editer2)
         mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
-        mViewModel.addView(0, EditerViewType.EDIT_TEXT, "", true)
-        initView()
-        initViewModel()
+        EditorBookApplication.database!!.editerQuery().getContent(0)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { model ->
+                if (model.isNotEmpty()) {
+                    var editerModel: MutableList<EditerModel> = mutableListOf()
+                    val json = JSONArray(model[0].content)
+                    for (i in 0 until json.length()) {
+                        editerModel.add((json.get(i) as JSONObject).toClass(EditerModel::class.java))
+                    }
+                    mViewModel.setModel(editerModel)
+                } else {
+                    mViewModel.addView(0, EditerViewType.EDIT_TEXT, "", true)
+                }
+                initView()
+                initViewModel()
+            }
     }
 
     private fun initViewModel() {
@@ -265,16 +288,29 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                 timerIsRun = false
                 timer.schedule(object : TimerTask() {
                     override fun run() {
+                        Single.fromCallable {
+                            EditorBookApplication.database!!.editerQuery().insertContent(EditerTable(0, it.toJson()))
+                        }
+                            .subscribeOn(Schedulers.computation())
+                            .subscribe { _ ->
+                                Log.d("onDataChange", it.toJson())
+                            }
+
                         initButton(it.toJson())
-                        Log.d("onDataChange", it.toJson())
                     }
                 }, 5000)
             } else {
                 timerIsRun = true
                 timer.schedule(object : TimerTask() {
                     override fun run() {
+                        Single.fromCallable {
+                            EditorBookApplication.database!!.editerQuery().insertContent(EditerTable(0, it.toJson()))
+                        }
+                            .subscribeOn(Schedulers.computation())
+                            .subscribe { _ ->
+                                Log.d("onDataChange", it.toJson())
+                            }
                         initButton(it.toJson())
-                        Log.d("onDataChange", it.toJson())
                     }
                 }, 5000)
             }
@@ -574,4 +610,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 }

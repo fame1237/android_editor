@@ -17,6 +17,10 @@ class EditorViewModel : ViewModel() {
     var editerModel: MutableList<EditerModel> = mutableListOf()
     var editorModelLiveData = SingleLiveEvent<MutableList<EditerModel>>()
 
+    fun setModel(model: MutableList<EditerModel>) {
+        this.editerModel = model
+    }
+
     fun addView(position: Int, viewType: EditerViewType, text: CharSequence, isFocus: Boolean = false) {
         val model = EditerModel()
         val data = Data()
@@ -225,7 +229,7 @@ class EditorViewModel : ViewModel() {
         editerModel.removeAt(position)
     }
 
-    fun removeViewAndKeepFocus(removePosition: Int,keepFocusPostion:Int){
+    fun removeViewAndKeepFocus(removePosition: Int, keepFocusPostion: Int) {
         val model = editerModel[keepFocusPostion]
         model.isFocus = true
         editerModel.removeAt(removePosition)

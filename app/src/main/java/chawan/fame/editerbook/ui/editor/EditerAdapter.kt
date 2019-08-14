@@ -291,16 +291,16 @@ class EditerAdapter(
         }
     }
 
-    inner class MyCustomViewListener : View.OnFocusChangeListener {
-        override fun onFocusChange(p0: View?, p1: Boolean) {
-            if (p1) {
-
-            } else {
-
-            }
-        }
-
-    }
+//    inner class MyCustomViewListener : View.OnFocusChangeListener {
+//        override fun onFocusChange(p0: View?, p1: Boolean) {
+//            if (p1) {
+//
+//            } else {
+//
+//            }
+//        }
+//
+//    }
 
     inner class MyCustomEditTextListener : TextWatcher,
         EditTextSelectable.onSelectionChangedListener,
