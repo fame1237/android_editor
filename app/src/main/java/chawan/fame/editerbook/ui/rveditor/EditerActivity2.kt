@@ -25,10 +25,12 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.R
+import chawan.fame.editerbook.extension.toJson
 import chawan.fame.editerbook.model.editor.EditerViewType
 import chawan.fame.editerbook.model.editor.TextStyle
 import chawan.fame.editerbook.ui.editor.EditerAdapter
 import chawan.fame.editerbook.ui.editor.EditorViewModel
+import chawan.fame.editerbook.ui.reader.ReaderContentActivity
 import chawan.fame.editerbook.util.ImageUtil
 import chawan.fame.editerbook.util.SetStyle
 import com.yalantis.ucrop.UCrop
@@ -216,7 +218,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                 }
             }
             EditerViewType.LINE -> {
-                mViewModel.removeViewAt(position - 1)
+                mViewModel.removeViewAndKeepFocus(position - 1, position)
                 adapter?.let {
                     it.upDateRemoveItemWithoutCurrentChange(position - 1)
                 }
@@ -263,18 +265,28 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                 timerIsRun = false
                 timer.schedule(object : TimerTask() {
                     override fun run() {
-                        Log.d("onDataChange", it.toString())
+                        initButton(it.toJson())
+                        Log.d("onDataChange", it.toJson())
                     }
                 }, 5000)
             } else {
                 timerIsRun = true
                 timer.schedule(object : TimerTask() {
                     override fun run() {
-                        Log.d("onDataChange", it.toString())
+                        initButton(it.toJson())
+                        Log.d("onDataChange", it.toJson())
                     }
                 }, 5000)
             }
         })
+    }
+
+    private fun initButton(value: String) {
+        btnShowViewMode.setOnClickListener {
+            var intent = Intent(this, ReaderContentActivity::class.java)
+            intent.putExtra("value", value)
+            startActivity(intent)
+        }
     }
 
     private fun initView() {

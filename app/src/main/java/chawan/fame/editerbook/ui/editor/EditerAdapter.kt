@@ -31,6 +31,7 @@ import chawan.fame.editerbook.model.editor.TextStyle
 import chawan.fame.editerbook.util.CheckStyle
 import chawan.fame.editerbook.util.ImageUtil
 import chawan.fame.editerbook.view.EditTextSelectable
+import chawan.fame.editerbook.view.MyEditText
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 
@@ -206,71 +207,32 @@ class EditerAdapter(
 
 
     fun upDateItem(position: Int) {
-        model.forEachIndexed { index, editerModel ->
-            editerModel.data?.let {
-                Log.e("data:$index", it.toString())
-            }
-        }
-
-        Log.e("data", model.toString())
         notifyItemInserted(position)
         notifyItemChanged(position - 1, false)
     }
 
     fun upDateLineItem(position: Int) {
-        model.forEachIndexed { index, editerModel ->
-            editerModel.data?.let {
-                Log.e("data:$index", it.toString())
-            }
-        }
-
-        Log.e("data", model.toString())
         notifyItemInserted(position + 1)
     }
 
     fun upDateLineItemWithEditText(position: Int) {
-        model.forEachIndexed { index, editerModel ->
-            editerModel.data?.let {
-                Log.e("data:$index", it.toString())
-            }
-        }
-
-        Log.e("data", model.toString())
         notifyItemInserted(position + 1)
         notifyItemInserted(position + 2)
     }
 
     fun upDateImageItem(position: Int) {
-        model.forEachIndexed { index, editerModel ->
-            editerModel.data?.let {
-                Log.e("data:$index", it.toString())
-            }
-        }
-
-        Log.e("data", model.toString())
         notifyItemInserted(position)
         notifyItemInserted(position + 1)
         notifyItemChanged(position - 1, false)
     }
 
     fun upDateRemoveItem(position: Int) {
-        model.forEachIndexed { index, editerModel ->
-            editerModel.data?.let {
-                Log.e("data:$index", it.toString())
-            }
-        }
         notifyItemRemoved(position)
         notifyItemChanged(position - 1, false)
     }
 
     fun upDateRemoveItemWithoutCurrentChange(position: Int) {
-        model.forEachIndexed { index, editerModel ->
-            editerModel.data?.let {
-                Log.e("data:$index", it.toString())
-            }
-        }
         notifyItemRemoved(position)
-//        notifyItemChanged(position, false)
     }
 
     fun updateCurrentItem(position: Int) {
@@ -303,9 +265,9 @@ class EditerAdapter(
         var layoutImage = v.findViewById<RelativeLayout>(R.id.layoutImage)
         var btnDeleteImage = v.findViewById<RelativeLayout>(R.id.btnDeleteImage)
         var image = v.findViewById<ImageView>(R.id.image)
-        var edt = v.findViewById<EditTextSelectable>(R.id.edt)
-        var edtHeader = v.findViewById<EditText>(R.id.edtHeader)
-        var edtQuote = v.findViewById<EditText>(R.id.edtQuote)
+        var edt = v.findViewById<MyEditText>(R.id.edt)
+        var edtHeader = v.findViewById<MyEditText>(R.id.edtHeader)
+        var edtQuote = v.findViewById<MyEditText>(R.id.edtQuote)
         var myCustomEditTextListener = customEditTextListener
 
         init {
@@ -313,7 +275,7 @@ class EditerAdapter(
             edt.onFocusChangeListener = myCustomEditTextListener
             edt.setOnKeyListener(myCustomEditTextListener)
             edt.setAccessibilityDelegate(myCustomEditTextListener)
-            edt.addOnSelectionChangedListener(myCustomEditTextListener)
+//            edt.addOnSelectionChangedListener(myCustomEditTextListener)
             edt.customSelectionActionModeCallback = StyleCallback(edt, listener)
 
             edtHeader.addTextChangedListener(myCustomEditTextListener)

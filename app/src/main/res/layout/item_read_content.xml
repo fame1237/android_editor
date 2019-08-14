@@ -13,7 +13,7 @@
             android:orientation="vertical"
             android:visibility="gone">
 
-        <chawan.fame.editerbook.view.MyEditText
+        <TextView
                 android:id="@+id/edt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
             android:orientation="vertical"
             android:visibility="gone">
 
-        <chawan.fame.editerbook.view.MyEditText
+        <TextView
                 android:id="@+id/edtHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
 
         </LinearLayout>
 
-        <chawan.fame.editerbook.view.MyEditText
+        <TextView
                 android:id="@+id/edtQuote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,10 +1,8 @@
 package chawan.fame.editerbook.ui.editor
 
-import android.util.Log
 import android.view.Gravity
 import android.widget.EditText
 import android.widget.LinearLayout
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import chawan.fame.editerbook.extension.SingleLiveEvent
 import chawan.fame.editerbook.model.editor.Data
@@ -225,6 +223,12 @@ class EditorViewModel : ViewModel() {
 
     fun removeViewAt(position: Int) {
         editerModel.removeAt(position)
+    }
+
+    fun removeViewAndKeepFocus(removePosition: Int,keepFocusPostion:Int){
+        val model = editerModel[keepFocusPostion]
+        model.isFocus = true
+        editerModel.removeAt(removePosition)
     }
 
     fun getView(position: Int): Any? {

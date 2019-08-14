@@ -15,5 +15,5 @@ class EditerModel {
 }
 
 enum class EditerViewType {
-    QUOTE, IMAGE, LINE, EDIT_TEXT, HEADER
+    QUOTE, IMAGE, LINE, EDIT_TEXT, HEADER , INDENT
 }
