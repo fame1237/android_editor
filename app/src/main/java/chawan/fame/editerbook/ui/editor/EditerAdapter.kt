@@ -1,7 +1,6 @@
 package chawan.fame.editerbook.ui.editor
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.text.Editable
@@ -28,12 +27,14 @@ import chawan.fame.editerbook.glide.GlideApp
 import chawan.fame.editerbook.model.editor.EditerModel
 import chawan.fame.editerbook.model.editor.EditerViewType
 import chawan.fame.editerbook.model.editor.TextStyle
+import chawan.fame.editerbook.ui.rveditor.EditerActivity2
 import chawan.fame.editerbook.util.CheckStyle
 import chawan.fame.editerbook.util.ImageUtil
 import chawan.fame.editerbook.view.EditTextSelectable
 import chawan.fame.editerbook.view.MyEditText
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import java.io.File
 
 
 /**
@@ -51,7 +52,14 @@ class EditerAdapter(
     interface OnChange {
         fun onNextLine(position: Int, text: CharSequence)
         fun onPreviousLine(position: Int, text: CharSequence)
-        fun onCursorChange(position: Int, startPosition: Int, endPosition: Int, edt: AppCompatEditText)
+        fun onCursorChange(
+            position: Int,
+            startPosition: Int,
+            endPosition: Int,
+            edt: AppCompatEditText
+        )
+
+        fun onDeleteRow(position: Int)
         fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean)
         fun updateCursorPosition(position: Int, view: View)
         fun onUpdateBold()
@@ -59,12 +67,12 @@ class EditerAdapter(
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): MyViewHolder {
-        val itemView = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_editor, viewGroup, false)
+        val itemView =
+            LayoutInflater.from(viewGroup.context).inflate(R.layout.item_editor, viewGroup, false)
         return MyViewHolder(itemView, MyCustomEditTextListener())
     }
 
     override fun onBindViewHolder(viewHolder: MyViewHolder, position: Int) {
-
         viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
 
         if (model[position].viewType == EditerViewType.EDIT_TEXT) {
@@ -105,6 +113,7 @@ class EditerAdapter(
                 viewHolder.edt.post {
                     if (viewHolder.edt.requestFocus()) {
                         model[position].isFocus = false
+                        (context as EditerActivity2).showKeyboard()
                     }
                 }
             } else {
@@ -120,8 +129,38 @@ class EditerAdapter(
             viewHolder.layoutHeader.visibility = View.GONE
             viewHolder.layoutImage.visibility = View.VISIBLE
 
+            if (model[position].showBorder) {
+                viewHolder.btnDeleteImage.visibility = View.VISIBLE
+                viewHolder.layoutImage.background =
+                    (context.resources.getDrawable(R.drawable.border))
+            } else {
+                viewHolder.btnDeleteImage.visibility = View.GONE
+                viewHolder.layoutImage.background =
+                    (context.resources.getDrawable(R.drawable.transaparent))
+//                viewHolder.border.visibility = View.GONE
+            }
+
+            viewHolder.layoutImage.setOnClickListener {
+                if (viewHolder.btnDeleteImage.visibility == View.VISIBLE) {
+                    viewHolder.btnDeleteImage.visibility = View.GONE
+                    viewHolder.layoutImage.background =
+                        (context.resources.getDrawable(R.drawable.transaparent))
+                } else {
+                    viewHolder.btnDeleteImage.visibility = View.VISIBLE
+                    viewHolder.layoutImage.background =
+                        (context.resources.getDrawable(R.drawable.border))
+                }
+            }
+
+            viewHolder.btnDeleteImage.setOnClickListener {
+                var index = model.filterGetIndex {
+                    it.id == viewHolder.myCustomEditTextListener.keyId
+                }
+                listener.onDeleteRow(index)
+            }
+
             GlideApp.with(context)
-                .load(ImageUtil.decodeBase64(model[position].data!!.src))
+                .load((model[position].data!!.src))
                 .fitCenter()
                 .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
                 .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
@@ -132,24 +171,19 @@ class EditerAdapter(
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
 
-            viewHolder.layoutImage.setOnClickListener {
-                if (!viewHolder.layoutImage.isFocused)
-                    viewHolder.layoutImage.requestFocus()
-                else
-                    viewHolder.layoutImage.clearFocus()
+            viewHolder.edtImage.gravity = Gravity.CENTER
+
+            if (model[position].data != null) {
+                viewHolder.edtImage.setText(model[position].data!!.text)
             }
 
-            if (model[position].showBorder)
-                viewHolder.layoutImage.requestFocus()
-            else
-                viewHolder.layoutImage.clearFocus()
 
 
-            viewHolder.layoutImage.setOnFocusChangeListener { view, b ->
-                if (b) {
-                    viewHolder.btnDeleteImage.visibility = View.VISIBLE
-                } else {
-                    viewHolder.btnDeleteImage.visibility = View.GONE
+            if (model[position].isFocus) {
+                viewHolder.edtImage.post {
+                    if (viewHolder.edtImage.requestFocus()) {
+                        model[position].isFocus = false
+                    }
                 }
             }
 
@@ -171,6 +205,7 @@ class EditerAdapter(
                 viewHolder.edtQuote.post {
                     if (viewHolder.edtQuote.requestFocus()) {
                         model[position].isFocus = false
+                        (context as EditerActivity2).showKeyboard()
                     }
                 }
             }
@@ -193,6 +228,7 @@ class EditerAdapter(
                 viewHolder.edtHeader.post {
                     if (viewHolder.edtHeader.requestFocus()) {
                         model[position].isFocus = false
+                        (context as EditerActivity2).showKeyboard()
                     }
                 }
             }
@@ -256,7 +292,8 @@ class EditerAdapter(
         super.setHasStableIds(true)
     }
 
-    inner class MyViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) : RecyclerView.ViewHolder(v) {
+    inner class MyViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) :
+        RecyclerView.ViewHolder(v) {
         var layoutTextView = v.findViewById<LinearLayout>(R.id.layoutTextView)
         var layoutHeader = v.findViewById<LinearLayout>(R.id.layoutHeader)
         var layoutRecycle = v.findViewById<LinearLayout>(R.id.layoutRecycle)
@@ -264,9 +301,11 @@ class EditerAdapter(
         var layoutLine = v.findViewById<LinearLayout>(R.id.layoutLine)
         var layoutImage = v.findViewById<RelativeLayout>(R.id.layoutImage)
         var btnDeleteImage = v.findViewById<RelativeLayout>(R.id.btnDeleteImage)
+        //        var border = v.findViewById<View>(R.id.border)
         var image = v.findViewById<ImageView>(R.id.image)
         var edt = v.findViewById<MyEditText>(R.id.edt)
         var edtHeader = v.findViewById<MyEditText>(R.id.edtHeader)
+        var edtImage = v.findViewById<MyEditText>(R.id.edtImage)
         var edtQuote = v.findViewById<MyEditText>(R.id.edtQuote)
         var myCustomEditTextListener = customEditTextListener
 
@@ -288,19 +327,13 @@ class EditerAdapter(
             edtQuote.setOnKeyListener(myCustomEditTextListener)
             edtQuote.setAccessibilityDelegate(myCustomEditTextListener)
 
+            edtImage.addTextChangedListener(myCustomEditTextListener)
+            edtImage.onFocusChangeListener = myCustomEditTextListener
+            edtImage.setOnKeyListener(myCustomEditTextListener)
+            edtImage.setAccessibilityDelegate(myCustomEditTextListener)
+
         }
     }
-
-//    inner class MyCustomViewListener : View.OnFocusChangeListener {
-//        override fun onFocusChange(p0: View?, p1: Boolean) {
-//            if (p1) {
-//
-//            } else {
-//
-//            }
-//        }
-//
-//    }
 
     inner class MyCustomEditTextListener : TextWatcher,
         EditTextSelectable.onSelectionChangedListener,
@@ -308,7 +341,7 @@ class EditerAdapter(
         View.OnKeyListener,
         View.AccessibilityDelegate() {
 
-        private var keyId: Long = -1
+        var keyId: Long = -1
 
         fun updatePosition(keyId: Long) {
             this.keyId = keyId

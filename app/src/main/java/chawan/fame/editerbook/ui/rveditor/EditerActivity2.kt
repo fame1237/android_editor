@@ -1,6 +1,8 @@
 package chawan.fame.editerbook.ui.rveditor
 
 import android.Manifest
+import android.app.Activity
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +13,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.NonNull
@@ -22,6 +25,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.EditorBookApplication
@@ -34,8 +38,8 @@ import chawan.fame.editerbook.model.editor.TextStyle
 import chawan.fame.editerbook.ui.editor.EditerAdapter
 import chawan.fame.editerbook.ui.editor.EditorViewModel
 import chawan.fame.editerbook.ui.reader.ReaderContentActivity
-import chawan.fame.editerbook.util.ImageUtil
 import chawan.fame.editerbook.util.SetStyle
+import chawan.fame.editerbook.view.CustomItemAnimator
 import co.fictionlog.fictionlog.data.local.database.table.EditerTable
 import com.yalantis.ucrop.UCrop
 import io.reactivex.Single
@@ -61,6 +65,13 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     val FICTIONLOG_IMAGE = "fictionlog_image"
     val REQUEST_SELECT_PICTURE = 10000
     val REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101
+
+    override fun onDeleteRow(position: Int) {
+        mViewModel.removeViewAt(position)
+        adapter?.let {
+            it.upDateRemoveItemWithoutCurrentChange(position)
+        }
+    }
 
     override fun setShowBorderFalse(position: Int) {
         mViewModel.showBorder(position, false)
@@ -206,7 +217,12 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         }
     }
 
-    override fun onCursorChange(position: Int, startPosition: Int, endPosition: Int, edt: AppCompatEditText) {
+    override fun onCursorChange(
+        position: Int,
+        startPosition: Int,
+        endPosition: Int,
+        edt: AppCompatEditText
+    ) {
         Log.e("startPosition", startPosition.toString())
         Log.e("endPosition", endPosition.toString())
     }
@@ -221,9 +237,6 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                 adapter?.let {
                     it.updateCurrentItem(position)
                     it.updateCurrentItem(position - 1)
-                    rvEditor.post {
-                        rvEditor.scrollToPosition(position - 1)
-                    }
                 }
             }
             EditerViewType.LINE -> {
@@ -255,7 +268,6 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     override fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean) {
         mViewModel.updateText(position, text, TextStyle.NORMAL, false, updateStyle)
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -289,7 +301,8 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                 timer.schedule(object : TimerTask() {
                     override fun run() {
                         Single.fromCallable {
-                            EditorBookApplication.database!!.editerQuery().insertContent(EditerTable(0, it.toJson()))
+                            EditorBookApplication.database!!.editerQuery()
+                                .insertContent(EditerTable(0, it.toJson()))
                         }
                             .subscribeOn(Schedulers.computation())
                             .subscribe { _ ->
@@ -304,7 +317,8 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                 timer.schedule(object : TimerTask() {
                     override fun run() {
                         Single.fromCallable {
-                            EditorBookApplication.database!!.editerQuery().insertContent(EditerTable(0, it.toJson()))
+                            EditorBookApplication.database!!.editerQuery()
+                                .insertContent(EditerTable(0, it.toJson()))
                         }
                             .subscribeOn(Schedulers.computation())
                             .subscribe { _ ->
@@ -329,6 +343,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         adapter = EditerAdapter(this, this, mViewModel.getModel())
         rvEditor.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rvEditor.adapter = adapter
+        rvEditor.itemAnimator = null
 
         btnAlighment.setOnClickListener {
             if (cardAlighment.visibility == View.VISIBLE) {
@@ -535,7 +550,10 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
             intent.addCategory(Intent.CATEGORY_OPENABLE)
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_SELECT_PICTURE)
+            startActivityForResult(
+                Intent.createChooser(intent, "Select Picture"),
+                REQUEST_SELECT_PICTURE
+            )
         }
     }
 
@@ -573,19 +591,23 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_SELECT_PICTURE) {
                 val selectedUri = data?.data
-                if (selectedUri != null) {
-                    startCropActivity(data.data!!)
-                } else {
-                    Toast.makeText(this, "ไม่สามารถรับรูปนี่ได้", Toast.LENGTH_LONG).show()
+                selectedUri?.let {
+                    addImageToModel(selectedUri.toString())
                 }
-            } else if (requestCode == UCrop.REQUEST_CROP) {
-                data?.let {
-                    handleCropResult(it)
-                }
+//                if (selectedUri != null) {
+//                    startCropActivity(data.data!!)
+//                } else {
+//                    Toast.makeText(this, "ไม่สามารถรับรูปนี่ได้", Toast.LENGTH_LONG).show()
+//                }
             }
+//            else if (requestCode == UCrop.REQUEST_CROP) {
+//                data?.let {
+//                    handleCropResult(it)
+//                }
+//            }
         }
-        if (resultCode == UCrop.RESULT_ERROR) {
-        }
+//        if (resultCode == UCrop.RESULT_ERROR) {
+//        }
     }
 
     private fun startCropActivity(uri: Uri) {
@@ -604,8 +626,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     private fun handleCropResult(result: Intent) {
         val resultUri = UCrop.getOutput(result)
         if (resultUri != null) {
-            val bmImg = BitmapFactory.decodeFile(resultUri.encodedPath)
-            addImageToModel(ImageUtil.bitmapToBase64(bmImg))
+            addImageToModel(resultUri.encodedPath)
         } else {
         }
     }
@@ -613,4 +634,21 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     override fun onDestroy() {
         super.onDestroy()
     }
+
+
+    fun hideKeyboard() {
+        if (this.window != null) {
+            val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(this.window.decorView.windowToken, 0)
+        }
+    }
+
+    fun showKeyboard() {
+        if (this.window != null) {
+            val inputMethodManager =
+                this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+        }
+    }
+
 }

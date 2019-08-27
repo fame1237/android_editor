@@ -12,7 +12,6 @@ import chawan.fame.editerbook.model.editor.TextStyle
 import chawan.fame.editerbook.util.CheckStyle
 import chawan.fame.editerbook.util.GenerateKey
 
-
 class EditorViewModel : ViewModel() {
     var editerModel: MutableList<EditerModel> = mutableListOf()
     var editorModelLiveData = SingleLiveEvent<MutableList<EditerModel>>()
@@ -21,7 +20,12 @@ class EditorViewModel : ViewModel() {
         this.editerModel = model
     }
 
-    fun addView(position: Int, viewType: EditerViewType, text: CharSequence, isFocus: Boolean = false) {
+    fun addView(
+        position: Int,
+        viewType: EditerViewType,
+        text: CharSequence,
+        isFocus: Boolean = false
+    ) {
         val model = EditerModel()
         val data = Data()
         data.text = text.toString()
@@ -118,7 +122,6 @@ class EditorViewModel : ViewModel() {
         editorModelLiveData.postValue(editerModel)
     }
 
-
     fun addImageModel(position: Int, src: String) {
         val model = EditerModel()
         val data = Data()
@@ -128,6 +131,7 @@ class EditorViewModel : ViewModel() {
         model.viewType = EditerViewType.IMAGE
         model.id = GenerateKey.getKey(editerModel)
         model.data = data
+        model.isFocus = true
 
         editerModel.forEach {
             it.isFocus = false
@@ -140,7 +144,6 @@ class EditorViewModel : ViewModel() {
         data2.text = ""
         data2.style = TextStyle.NORMAL
         model2.viewType = EditerViewType.EDIT_TEXT
-        model2.isFocus = true
         model2.id = GenerateKey.getKey(editerModel)
         model2.data = data
 

@@ -1,7 +1,9 @@
 package chawan.fame.editerbook.util
 
+import android.app.Activity
 import android.graphics.Bitmap
-import android.R.attr.bitmap
+import android.net.Uri
+import android.provider.MediaStore
 import android.util.Base64
 import java.io.ByteArrayOutputStream
 
@@ -19,4 +21,15 @@ object ImageUtil {
         return Base64.decode(base64, Base64.DEFAULT)
     }
 
+    fun getPathFromURI(activity: Activity, contentUri: Uri): String {
+        var res: String = ""
+        val proj = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = activity.contentResolver.query(contentUri, proj, null, null, null)
+        if (cursor.moveToFirst()) {
+            val column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            res = cursor.getString(column_index)
+        }
+        cursor.close()
+        return res
+    }
 }
