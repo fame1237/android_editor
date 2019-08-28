@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context=".ui.rveditor.EditerActivity2">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.rveditor.EditerActivity2">
 
     <Button
             android:id="@+id/btnShowViewMode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="view mode"/>
+            android:text="view mode" />
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvEditor"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:layout_weight="1">
 
     </androidx.recyclerview.widget.RecyclerView>
@@ -146,12 +148,12 @@
                     android:paddingTop="12dp"
                     android:paddingRight="16dp"
                     android:paddingBottom="12dp"
-                    android:src="@drawable/ic_align_left"/>
+                    android:src="@drawable/ic_align_left" />
 
             <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#d9d9d9"/>
+                    android:background="#d9d9d9" />
 
             <ImageView
                     android:id="@+id/alignCenter"
@@ -161,12 +163,12 @@
                     android:paddingTop="12dp"
                     android:paddingRight="16dp"
                     android:paddingBottom="12dp"
-                    android:src="@drawable/ic_align_center"/>
+                    android:src="@drawable/ic_align_center" />
 
             <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#d9d9d9"/>
+                    android:background="#d9d9d9" />
 
             <ImageView
                     android:id="@+id/alignRight"
@@ -176,12 +178,12 @@
                     android:paddingTop="12dp"
                     android:paddingRight="16dp"
                     android:paddingBottom="12dp"
-                    android:src="@drawable/ic_align_right"/>
+                    android:src="@drawable/ic_align_right" />
 
             <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#d9d9d9"/>
+                    android:background="#d9d9d9" />
 
             <ImageView
                     android:id="@+id/indent"
@@ -191,7 +193,7 @@
                     android:paddingTop="12dp"
                     android:paddingRight="16dp"
                     android:paddingBottom="12dp"
-                    android:src="@drawable/ic_text_indent"/>
+                    android:src="@drawable/ic_text_indent" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -209,7 +211,7 @@
                 android:layout_height="30dp"
                 android:layout_marginLeft="16dp"
                 android:padding="4dp"
-                android:src="@drawable/ic_text_header"/>
+                android:src="@drawable/ic_text_header" />
 
         <ImageView
                 android:id="@+id/btnQuote"
@@ -217,7 +219,7 @@
                 android:layout_height="30dp"
                 android:layout_marginLeft="16dp"
                 android:padding="4dp"
-                android:src="@drawable/ic_text_quote"/>
+                android:src="@drawable/ic_text_quote" />
 
         <ImageView
                 android:id="@+id/btnLine"
@@ -225,7 +227,7 @@
                 android:layout_height="30dp"
                 android:layout_marginLeft="16dp"
                 android:padding="4dp"
-                android:src="@drawable/ic_text_divider"/>
+                android:src="@drawable/ic_text_divider" />
 
 
         <ImageView
@@ -234,12 +236,12 @@
                 android:layout_height="30dp"
                 android:layout_marginLeft="16dp"
                 android:padding="4dp"
-                android:src="@drawable/ic_align_left"/>
+                android:src="@drawable/ic_align_left" />
 
         <View
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
 
         <ImageView
                 android:id="@+id/btnAddImage"
@@ -247,7 +249,7 @@
                 android:layout_height="30dp"
                 android:layout_marginRight="16dp"
                 android:padding="4dp"
-                android:src="@drawable/ic_image"/>
+                android:src="@drawable/ic_image" />
 
     </LinearLayout>
 

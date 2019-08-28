@@ -71,12 +71,24 @@ class EditorViewModel : ViewModel() {
         editorModelLiveData.postValue(editerModel)
     }
 
+    fun clearFocus() {
+        editerModel.forEach {
+            it.isFocus = false
+        }
+    }
+
     fun updateFocus(position: Int, focus: Boolean) {
         editerModel.forEach {
             it.isFocus = false
         }
         val model = editerModel[position]
         model.isFocus = focus
+    }
+
+    fun goneBorder() {
+        editerModel.forEach {
+            it.showBorder = false
+        }
     }
 
     fun showBorder(position: Int, isShow: Boolean) {
@@ -137,7 +149,6 @@ class EditorViewModel : ViewModel() {
             it.isFocus = false
         }
 
-        editerModel.add(position, model)
 
         val model2 = EditerModel()
         val data2 = Data()
@@ -145,12 +156,13 @@ class EditorViewModel : ViewModel() {
         data2.style = TextStyle.NORMAL
         model2.viewType = EditerViewType.EDIT_TEXT
         model2.id = GenerateKey.getKey(editerModel)
-        model2.data = data
+        model2.data = data2
 
         editerModel.forEach {
             it.isFocus = false
         }
 
+        editerModel.add(position, model)
         editerModel.add(position + 1, model2)
         editorModelLiveData.postValue(editerModel)
     }

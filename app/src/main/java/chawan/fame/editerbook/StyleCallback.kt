@@ -3,7 +3,8 @@ package chawan.fame.editerbook
 import android.graphics.Typeface
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.Spanned.*
+import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+import android.text.Spanned.SPAN_EXCLUSIVE_INCLUSIVE
 import android.text.style.CharacterStyle
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
@@ -14,7 +15,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
 import chawan.fame.editerbook.ui.editor.EditerAdapter
-import chawan.fame.editerbook.util.SetStyle
 
 
 class StyleCallback : ActionMode.Callback {

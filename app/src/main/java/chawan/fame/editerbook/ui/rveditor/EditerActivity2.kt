@@ -1,12 +1,10 @@
 package chawan.fame.editerbook.ui.rveditor
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
@@ -15,7 +13,6 @@ import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
@@ -25,7 +22,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.EditorBookApplication
@@ -38,8 +34,8 @@ import chawan.fame.editerbook.model.editor.TextStyle
 import chawan.fame.editerbook.ui.editor.EditerAdapter
 import chawan.fame.editerbook.ui.editor.EditorViewModel
 import chawan.fame.editerbook.ui.reader.ReaderContentActivity
+import chawan.fame.editerbook.util.KeyboardHelper
 import chawan.fame.editerbook.util.SetStyle
-import chawan.fame.editerbook.view.CustomItemAnimator
 import co.fictionlog.fictionlog.data.local.database.table.EditerTable
 import com.yalantis.ucrop.UCrop
 import io.reactivex.Single
@@ -73,15 +69,22 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         }
     }
 
+    override fun clearFocus(position: Int) {
+        mViewModel.clearFocus()
+        rvEditor.post {
+            rvEditor.scrollToPosition(position)
+        }
+    }
+
     override fun setShowBorderFalse(position: Int) {
         mViewModel.showBorder(position, false)
     }
 
-    override fun updateCursorPosition(position: Int, view: View) {
+    override fun updateCursorPosition(position: Int, view: View, imageIndex: MutableList<Int>) {
         edtView = null
         cursorPosition = position
         edtView = view
-
+        mViewModel.goneBorder()
         mViewModel.getModel()[position].data?.let {
             when (it.alight) {
                 Gravity.START -> {
@@ -127,6 +130,10 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                     , PorterDuff.Mode.SRC_IN
                 )
             }
+        }
+
+        imageIndex.forEach {
+            adapter?.updateCurrentItem(it)
         }
     }
 
@@ -238,6 +245,10 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                     it.updateCurrentItem(position)
                     it.updateCurrentItem(position - 1)
                 }
+                rvEditor.post {
+                    rvEditor.scrollToPosition(position - 1)
+                }
+                KeyboardHelper.hideSoftKeyboard(this)
             }
             EditerViewType.LINE -> {
                 mViewModel.removeViewAndKeepFocus(position - 1, position)
@@ -380,6 +391,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         }
 
         btnAddImage.setOnClickListener {
+            KeyboardHelper.hideSoftKeyboard(this)
             pickFromGallery()
         }
 
@@ -450,6 +462,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
             }
         }
     }
+
 
     override fun onUpdateBold() {
         mViewModel.updateStyle(cursorPosition, edtView as EditText)
@@ -631,7 +644,13 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         }
     }
 
+    override fun onStop() {
+        KeyboardHelper.hideSoftKeyboard(this)
+        super.onStop()
+    }
+
     override fun onDestroy() {
+        KeyboardHelper.hideSoftKeyboard(this)
         super.onDestroy()
     }
 
@@ -643,12 +662,5 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         }
     }
 
-    fun showKeyboard() {
-        if (this.window != null) {
-            val inputMethodManager =
-                this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
-        }
-    }
 
 }

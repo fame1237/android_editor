@@ -22,6 +22,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.R
 import chawan.fame.editerbook.StyleCallback
+import chawan.fame.editerbook.extension.filterGetArrayIndex
 import chawan.fame.editerbook.extension.filterGetIndex
 import chawan.fame.editerbook.glide.GlideApp
 import chawan.fame.editerbook.model.editor.EditerModel
@@ -30,6 +31,7 @@ import chawan.fame.editerbook.model.editor.TextStyle
 import chawan.fame.editerbook.ui.rveditor.EditerActivity2
 import chawan.fame.editerbook.util.CheckStyle
 import chawan.fame.editerbook.util.ImageUtil
+import chawan.fame.editerbook.util.KeyboardHelper
 import chawan.fame.editerbook.view.EditTextSelectable
 import chawan.fame.editerbook.view.MyEditText
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -61,9 +63,10 @@ class EditerAdapter(
 
         fun onDeleteRow(position: Int)
         fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean)
-        fun updateCursorPosition(position: Int, view: View)
+        fun updateCursorPosition(position: Int, view: View, imageIndex: MutableList<Int>)
         fun onUpdateBold()
         fun setShowBorderFalse(position: Int)
+        fun clearFocus(position: Int)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): MyViewHolder {
@@ -113,7 +116,6 @@ class EditerAdapter(
                 viewHolder.edt.post {
                     if (viewHolder.edt.requestFocus()) {
                         model[position].isFocus = false
-                        (context as EditerActivity2).showKeyboard()
                     }
                 }
             } else {
@@ -122,20 +124,27 @@ class EditerAdapter(
             viewHolder.edt.gravity = model[position].data!!.alight
             viewHolder.edt.setSelection(model[position].data!!.selection)
 
+//            viewHolder.edt.setOnLongClickListener {
+//                viewHolder.edt.showContextMenu()
+//                viewHolder.edt.selectAll()
+//                true
+//            }
+
         } else if (model[position].viewType == EditerViewType.IMAGE) {
             viewHolder.layoutTextView.visibility = View.GONE
             viewHolder.layoutQuote.visibility = View.GONE
             viewHolder.layoutLine.visibility = View.GONE
             viewHolder.layoutHeader.visibility = View.GONE
             viewHolder.layoutImage.visibility = View.VISIBLE
+            viewHolder.myCustomEditTextListener.updateViewHolder(viewHolder)
 
             if (model[position].showBorder) {
                 viewHolder.btnDeleteImage.visibility = View.VISIBLE
-                viewHolder.layoutImage.background =
+                viewHolder.imageBackgroud.background =
                     (context.resources.getDrawable(R.drawable.border))
             } else {
                 viewHolder.btnDeleteImage.visibility = View.GONE
-                viewHolder.layoutImage.background =
+                viewHolder.imageBackgroud.background =
                     (context.resources.getDrawable(R.drawable.transaparent))
 //                viewHolder.border.visibility = View.GONE
             }
@@ -143,12 +152,14 @@ class EditerAdapter(
             viewHolder.layoutImage.setOnClickListener {
                 if (viewHolder.btnDeleteImage.visibility == View.VISIBLE) {
                     viewHolder.btnDeleteImage.visibility = View.GONE
-                    viewHolder.layoutImage.background =
+                    viewHolder.imageBackgroud.background =
                         (context.resources.getDrawable(R.drawable.transaparent))
                 } else {
                     viewHolder.btnDeleteImage.visibility = View.VISIBLE
-                    viewHolder.layoutImage.background =
+                    viewHolder.imageBackgroud.background =
                         (context.resources.getDrawable(R.drawable.border))
+                    listener.clearFocus(position)
+                    (context as EditerActivity2).hideKeyboard()
                 }
             }
 
@@ -160,8 +171,7 @@ class EditerAdapter(
             }
 
             GlideApp.with(context)
-                .load((model[position].data!!.src))
-                .fitCenter()
+                .load(("https://s3.ap-southeast-1.amazonaws.com/media.fictionlog/statics/5d5bc72ewyIGManx.jpeg"))
                 .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
                 .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
                 .into(viewHolder.image)
@@ -205,7 +215,6 @@ class EditerAdapter(
                 viewHolder.edtQuote.post {
                     if (viewHolder.edtQuote.requestFocus()) {
                         model[position].isFocus = false
-                        (context as EditerActivity2).showKeyboard()
                     }
                 }
             }
@@ -228,7 +237,6 @@ class EditerAdapter(
                 viewHolder.edtHeader.post {
                     if (viewHolder.edtHeader.requestFocus()) {
                         model[position].isFocus = false
-                        (context as EditerActivity2).showKeyboard()
                     }
                 }
             }
@@ -300,6 +308,7 @@ class EditerAdapter(
         var layoutQuote = v.findViewById<LinearLayout>(R.id.layoutQuote)
         var layoutLine = v.findViewById<LinearLayout>(R.id.layoutLine)
         var layoutImage = v.findViewById<RelativeLayout>(R.id.layoutImage)
+        var imageBackgroud = v.findViewById<View>(R.id.imageBackgroud)
         var btnDeleteImage = v.findViewById<RelativeLayout>(R.id.btnDeleteImage)
         //        var border = v.findViewById<View>(R.id.border)
         var image = v.findViewById<ImageView>(R.id.image)
@@ -342,9 +351,16 @@ class EditerAdapter(
         View.AccessibilityDelegate() {
 
         var keyId: Long = -1
+        var viewHolder: MyViewHolder? = null
 
         fun updatePosition(keyId: Long) {
             this.keyId = keyId
+            this.viewHolder = viewHolder
+        }
+
+        fun updateViewHolder(viewHolder: MyViewHolder) {
+            this.keyId = keyId
+            this.viewHolder = viewHolder
         }
 
         override fun sendAccessibilityEvent(host: View?, eventType: Int) {
@@ -451,7 +467,16 @@ class EditerAdapter(
                 var index = model.filterGetIndex {
                     it.id == keyId
                 }
-                listener.updateCursorPosition(index, p0!!)
+
+                var imageIndex = model.filterGetArrayIndex {
+                    it.viewType == EditerViewType.IMAGE
+                }
+
+                listener.updateCursorPosition(index, p0!!, imageIndex)
+            } else {
+                if (p0 is EditText) {
+                    KeyboardHelper.showSoftKeyboardForcefully(context, p0)
+                }
             }
         }
 
