@@ -18,7 +18,7 @@
         </activity>
         <activity
                 android:name=".ui.rveditor.EditerActivity2"
-                android:windowSoftInputMode="adjustResize">
+                android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

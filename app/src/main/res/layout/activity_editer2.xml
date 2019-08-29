@@ -13,13 +13,16 @@
             android:layout_height="wrap_content"
             android:text="view mode" />
 
+
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvEditor"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
+            android:descendantFocusability="beforeDescendants"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:scrollbars="vertical">
 
     </androidx.recyclerview.widget.RecyclerView>
 

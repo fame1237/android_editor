@@ -48,6 +48,7 @@ class EditorViewModel : ViewModel() {
     fun updateText(
         position: Int, text: CharSequence, style: TextStyle,
         isFocus: Boolean = false,
+        selection: Int?,
         updateStyle: Boolean
     ) {
         val model = editerModel[position]
@@ -59,7 +60,9 @@ class EditorViewModel : ViewModel() {
         }
         data.style = style
         model.data = data
-        data.selection = 0
+        selection?.let {
+            data.selection = selection
+        }
 
         if (isFocus) {
             editerModel.forEach {

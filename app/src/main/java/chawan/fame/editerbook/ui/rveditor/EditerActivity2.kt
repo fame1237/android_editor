@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.EditorBookApplication
 import chawan.fame.editerbook.R
+import chawan.fame.editerbook.extension.filterGetIndex
 import chawan.fame.editerbook.extension.toClass
 import chawan.fame.editerbook.extension.toJson
 import chawan.fame.editerbook.model.editor.EditerModel
@@ -71,6 +72,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
     override fun clearFocus(position: Int) {
         mViewModel.clearFocus()
+        adapter?.notifyItemChanged(cursorPosition)
         rvEditor.post {
             rvEditor.scrollToPosition(position)
         }
@@ -209,19 +211,25 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
 
     override fun onNextLine(position: Int, text: CharSequence) {
-        mViewModel.addView(
-            position,
-            EditerViewType.EDIT_TEXT,
-            text,
-            true
-        )
-
-        adapter?.let {
-            it.upDateItem(position)
-            rvEditor.post {
-                rvEditor.scrollToPosition(position)
+        Single.fromCallable {
+            mViewModel.addView(
+                position,
+                EditerViewType.EDIT_TEXT,
+                text,
+                true
+            )
+        }.observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.computation())
+            .subscribe { _ ->
+                adapter?.let {
+                    it.upDateItem(position)
+                    rvEditor.post {
+                        rvEditor.scrollToPosition(position)
+                    }
+                }
             }
-        }
+
+
     }
 
     override fun onCursorChange(
@@ -234,7 +242,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         Log.e("endPosition", endPosition.toString())
     }
 
-    override fun onPreviousLine(position: Int, text: CharSequence) {
+    override fun onPreviousLine(position: Int, text: CharSequence, selection: Int) {
         var viewType = mViewModel.getModel()[position - 1].viewType
 
         when (viewType) {
@@ -262,6 +270,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                     text,
                     TextStyle.NORMAL,
                     true,
+                    selection,
                     true
                 )
 
@@ -277,7 +286,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
     }
 
     override fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean) {
-        mViewModel.updateText(position, text, TextStyle.NORMAL, false, updateStyle)
+        mViewModel.updateText(position, text, TextStyle.NORMAL, false, null, updateStyle)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
