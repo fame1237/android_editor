@@ -144,6 +144,7 @@ class EditerAdapter(
                 viewHolder.edt.setText(ss1)
             }
 
+
             if (model[position].isFocus) {
                 viewHolder.edt.post {
                     if (viewHolder.edt.requestFocus()) {
@@ -204,7 +205,9 @@ class EditerAdapter(
             viewHolder.edtImage.gravity = Gravity.CENTER
 
             if (model[position].data != null) {
-                viewHolder.edtImage.setText(model[position].data!!.text)
+                viewHolder.edtImage.post {
+                    viewHolder.edtImage.setText(model[position].data!!.text)
+                }
             }
 
 
@@ -220,7 +223,9 @@ class EditerAdapter(
         } else if (viewHolder is MyQuoteViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
             if (model[position].data != null) {
-                viewHolder.edtQuote.setText(model[position].data!!.text)
+                viewHolder.edtQuote.post {
+                    viewHolder.edtQuote.setText(model[position].data!!.text)
+                }
             }
 
             viewHolder.edtQuote.gravity = Gravity.CENTER
@@ -236,7 +241,9 @@ class EditerAdapter(
         } else if (viewHolder is MyHeaderViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
             if (model[position].data != null) {
-                viewHolder.edtHeader.setText(model[position].data!!.text)
+                viewHolder.edtHeader.post {
+                    viewHolder.edtHeader.setText(model[position].data!!.text)
+                }
             }
 
             viewHolder.edtHeader.gravity = model[position].data!!.alight
@@ -253,6 +260,29 @@ class EditerAdapter(
         }
     }
 
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        when (holder) {
+            is MyEditTextViewHolder -> {
+                holder.edt.isEnabled = false
+                holder.edt.isEnabled = true
+            }
+            is MyImageViewHolder -> {
+                holder.edtImage.isEnabled = false
+                holder.edtImage.isEnabled = true
+            }
+            is MyQuoteViewHolder -> {
+                holder.edtQuote.isEnabled = false
+                holder.edtQuote.isEnabled = true
+            }
+            is MyHeaderViewHolder -> {
+                holder.edtHeader.isEnabled = false
+                holder.edtHeader.isEnabled = true
+            }
+            else -> {
+            }
+        }
+    }
 
     fun upDateItem(position: Int) {
         notifyItemInserted(position)
@@ -573,7 +603,7 @@ class EditerAdapter(
                     }
             } else {
                 if (p0 is EditText) {
-//                    KeyboardHelper.hideSoftKeyboard(context, p0)
+                    KeyboardHelper.hideSoftKeyboard2(context as EditerActivity2)
                 }
             }
         }

@@ -134,6 +134,9 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
             }
         }
 
+//        mViewModel.getModel()[position].data?.selection = (view as EditText).selectionEnd
+//        mViewModel.updateFocus(position, true)
+
         imageIndex.forEach {
             adapter?.updateCurrentItem(it)
         }
@@ -238,8 +241,8 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         endPosition: Int,
         edt: AppCompatEditText
     ) {
-        Log.e("startPosition", startPosition.toString())
-        Log.e("endPosition", endPosition.toString())
+//        Log.e("startPosition", startPosition.toString())
+//        Log.e("endPosition", endPosition.toString())
     }
 
     override fun onPreviousLine(position: Int, text: CharSequence, selection: Int) {
