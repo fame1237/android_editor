@@ -512,13 +512,16 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
     private fun addLine() {
         adapter?.let {
-            if (cursorPosition + 1 >= mViewModel.getSize()) {
-                mViewModel.addLineWithEditText(cursorPosition + 1)
-                it.upDateLineItemWithEditText(cursorPosition)
-            } else {
-                mViewModel.addLine(cursorPosition + 1)
-                it.upDateLineItem(cursorPosition)
+            //            if (cursorPosition + 1 >= mViewModel.getSize()) {
+            mViewModel.addLineWithEditText(cursorPosition + 1)
+            it.upDateLineItemWithEditText(cursorPosition)
+            rvEditor.post {
+                rvEditor.scrollToPosition(cursorPosition + 2)
             }
+//            } else {
+//                mViewModel.addLine(cursorPosition + 1)
+//                it.upDateLineItem(cursorPosition)
+//            }
         }
     }
 

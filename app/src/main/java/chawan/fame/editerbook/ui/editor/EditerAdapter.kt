@@ -27,8 +27,8 @@ import chawan.fame.editerbook.extension.filterGetIndex
 import chawan.fame.editerbook.glide.GlideApp
 import chawan.fame.editerbook.model.editor.EditerModel
 import chawan.fame.editerbook.model.editor.EditerViewType
+import chawan.fame.editerbook.model.editor.IndexData
 import chawan.fame.editerbook.model.editor.TextStyle
-import chawan.fame.editerbook.model.editor.constant.IndexData
 import chawan.fame.editerbook.ui.rveditor.EditerActivity2
 import chawan.fame.editerbook.util.CheckStyle
 import chawan.fame.editerbook.util.KeyboardHelper
