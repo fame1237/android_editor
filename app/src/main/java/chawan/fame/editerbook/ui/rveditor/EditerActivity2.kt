@@ -9,7 +9,6 @@ import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -26,9 +25,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.EditorBookApplication
 import chawan.fame.editerbook.R
-import chawan.fame.editerbook.extension.filterGetIndex
 import chawan.fame.editerbook.extension.toClass
 import chawan.fame.editerbook.extension.toJson
+import chawan.fame.editerbook.model.editor.Alignment
 import chawan.fame.editerbook.model.editor.EditerModel
 import chawan.fame.editerbook.model.editor.EditerViewType
 import chawan.fame.editerbook.model.editor.TextStyle
@@ -165,6 +164,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmen
                 position,
                 EditerViewType.EDIT_TEXT,
                 text,
+                mViewModel.getModel()[position-1].data!!.alight,
                 true
             )
         }.observeOn(AndroidSchedulers.mainThread())
@@ -254,7 +254,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmen
                     }
                     mViewModel.setModel(editerModel)
                 } else {
-                    mViewModel.addView(0, EditerViewType.EDIT_TEXT, "", true)
+                    mViewModel.addView(0, EditerViewType.EDIT_TEXT, "", Alignment.START, true)
                 }
                 initView()
                 initViewModel()
@@ -319,14 +319,13 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmen
                 var fragmentImageViewerDialog = SetAlignmentDialog.Builder()
                     .build(
                         it,
-                        mViewModel.getModel()[cursorPosition].data?.alight,
-                        (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.INDENT)
-                    )
+                        mViewModel.getModel()[cursorPosition].data!!.alight)
+
                 fragmentImageViewerDialog.retainInstance = true
                 fragmentImageViewerDialog.show(supportFragmentManager, "alignment")
             } catch (ex: Exception) {
                 var fragmentImageViewerDialog = SetAlignmentDialog.Builder()
-                    .build(it, null, false)
+                    .build(it, null)
                 fragmentImageViewerDialog.retainInstance = true
                 fragmentImageViewerDialog.show(supportFragmentManager, "alignment")
             }
@@ -361,8 +360,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmen
                         ContextCompat.getColor(this, R.color.grey_image)
                         , PorterDuff.Mode.SRC_IN
                     )
-                }
-                else{
+                } else {
                     adapter?.let {
                         mViewModel.changeToQuote(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
@@ -396,8 +394,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmen
                         ContextCompat.getColor(this, R.color.grey_image)
                         , PorterDuff.Mode.SRC_IN
                     )
-                }
-                else{
+                } else {
                     adapter?.let {
                         mViewModel.changeToHeader(cursorPosition)
                         it.updateCurrentItem(cursorPosition)

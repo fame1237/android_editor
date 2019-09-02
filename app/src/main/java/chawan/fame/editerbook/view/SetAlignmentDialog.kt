@@ -11,7 +11,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import chawan.fame.editerbook.R
 import chawan.fame.editerbook.ScreenUtil
+import chawan.fame.editerbook.model.editor.Alignment
 import kotlinx.android.synthetic.main.popup_alignment.*
+import java.lang.NullPointerException
 
 
 /**
@@ -26,13 +28,11 @@ class SetAlignmentDialog : DialogFragment() {
 
     companion object {
         var source: View? = null
-        var align: Int? = null
-        var isIndent = false
-        fun newInstance(source: View, align: Int?,isIndent:Boolean): SetAlignmentDialog {
+        var align: Alignment? = null
+        fun newInstance(source: View, align: Alignment?): SetAlignmentDialog {
             val fragment = SetAlignmentDialog()
             this.source = source
             this.align = align
-            this.isIndent = isIndent
             return fragment
         }
     }
@@ -97,9 +97,9 @@ class SetAlignmentDialog : DialogFragment() {
                 dismiss()
             }
 
-            if (!isIndent) {
+            try {
                 when (align) {
-                    Gravity.START -> {
+                    Alignment.START -> {
                         context?.let {
                             alignLeft.setColorFilter(
                                 ContextCompat.getColor(it, R.color.colorOrange)
@@ -120,7 +120,7 @@ class SetAlignmentDialog : DialogFragment() {
                             )
                         }
                     }
-                    Gravity.CENTER -> {
+                    Alignment.CENTER -> {
                         context?.let {
                             alignLeft.setColorFilter(
                                 ContextCompat.getColor(it, R.color.grey)
@@ -141,7 +141,7 @@ class SetAlignmentDialog : DialogFragment() {
                             )
                         }
                     }
-                    Gravity.END -> {
+                    Alignment.END -> {
                         context?.let {
                             alignLeft.setColorFilter(
                                 ContextCompat.getColor(it, R.color.grey)
@@ -158,6 +158,27 @@ class SetAlignmentDialog : DialogFragment() {
                             )
                             indent.setColorFilter(
                                 ContextCompat.getColor(it, R.color.grey)
+                                , PorterDuff.Mode.SRC_IN
+                            )
+                        }
+                    }
+                    Alignment.INDENT -> {
+                        context?.let {
+                            alignLeft.setColorFilter(
+                                ContextCompat.getColor(it, R.color.grey)
+                                , PorterDuff.Mode.SRC_IN
+                            )
+                            alignCenter.setColorFilter(
+                                ContextCompat.getColor(it, R.color.grey)
+                                , PorterDuff.Mode.SRC_IN
+                            )
+
+                            alignRight.setColorFilter(
+                                ContextCompat.getColor(it, R.color.grey)
+                                , PorterDuff.Mode.SRC_IN
+                            )
+                            indent.setColorFilter(
+                                ContextCompat.getColor(it, R.color.colorOrange)
                                 , PorterDuff.Mode.SRC_IN
                             )
                         }
@@ -185,7 +206,7 @@ class SetAlignmentDialog : DialogFragment() {
                     }
                 }
             }
-            else{
+            catch (ex:NullPointerException){
                 context?.let {
                     alignLeft.setColorFilter(
                         ContextCompat.getColor(it, R.color.grey)
@@ -201,7 +222,7 @@ class SetAlignmentDialog : DialogFragment() {
                         , PorterDuff.Mode.SRC_IN
                     )
                     indent.setColorFilter(
-                        ContextCompat.getColor(it, R.color.colorOrange)
+                        ContextCompat.getColor(it, R.color.grey)
                         , PorterDuff.Mode.SRC_IN
                     )
                 }
@@ -238,8 +259,8 @@ class SetAlignmentDialog : DialogFragment() {
 
     class Builder {
 
-        fun build(source: View, align: Int?, isIndent: Boolean): SetAlignmentDialog {
-            val fragment = SetAlignmentDialog.newInstance(source, align, isIndent)
+        fun build(source: View, align: Alignment?): SetAlignmentDialog {
+            val fragment = SetAlignmentDialog.newInstance(source, align)
             return fragment
         }
     }

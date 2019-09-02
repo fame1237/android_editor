@@ -5,10 +5,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.lifecycle.ViewModel
 import chawan.fame.editerbook.extension.SingleLiveEvent
-import chawan.fame.editerbook.model.editor.Data
-import chawan.fame.editerbook.model.editor.EditerModel
-import chawan.fame.editerbook.model.editor.EditerViewType
-import chawan.fame.editerbook.model.editor.TextStyle
+import chawan.fame.editerbook.model.editor.*
 import chawan.fame.editerbook.util.CheckStyle
 import chawan.fame.editerbook.util.GenerateKey
 
@@ -24,6 +21,7 @@ class EditorViewModel : ViewModel() {
         position: Int,
         viewType: EditerViewType,
         text: CharSequence,
+        align: Alignment,
         isFocus: Boolean = false
     ) {
         val model = EditerModel()
@@ -36,6 +34,7 @@ class EditorViewModel : ViewModel() {
         model.isFocus = isFocus
         model.data = data
         data.selection = 0
+        data.alight = align
 
         editerModel.forEach {
             it.isFocus = false
@@ -107,7 +106,7 @@ class EditorViewModel : ViewModel() {
         val data = model.data!!
         data.selection = selection
         model.data = data
-        model.viewType = EditerViewType.INDENT
+        data.alight = Alignment.INDENT
         editerModel.forEach {
             it.isFocus = false
         }
@@ -119,10 +118,8 @@ class EditorViewModel : ViewModel() {
         val model = editerModel[position]
         val data = model.data!!
         data.selection = selection
-        data.alight = Gravity.START
+        data.alight = Alignment.START
         model.data = data
-        if (model.viewType == EditerViewType.INDENT)
-            model.viewType = EditerViewType.EDIT_TEXT
         editerModel.forEach {
             it.isFocus = false
         }
@@ -136,10 +133,8 @@ class EditorViewModel : ViewModel() {
         val model = editerModel[position]
         val data = model.data!!
         data.selection = selection
-        data.alight = Gravity.CENTER
+        data.alight = Alignment.CENTER
         model.data = data
-        if (model.viewType == EditerViewType.INDENT)
-        model.viewType = EditerViewType.EDIT_TEXT
         editerModel.forEach {
             it.isFocus = false
         }
@@ -151,10 +146,8 @@ class EditorViewModel : ViewModel() {
         val model = editerModel[position]
         val data = model.data!!
         data.selection = selection
-        data.alight = Gravity.END
+        data.alight = Alignment.END
         model.data = data
-        if (model.viewType == EditerViewType.INDENT)
-        model.viewType = EditerViewType.EDIT_TEXT
         editerModel.forEach {
             it.isFocus = false
         }

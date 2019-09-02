@@ -20,8 +20,9 @@
                 android:id="@+id/edt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textIsSelectable="true"
-                android:background="@android:color/transparent" />
+                android:background="@android:color/transparent"
+                android:textAppearance="@style/TextAppearance2"
+                android:textIsSelectable="true" />
 
     </LinearLayout>
 

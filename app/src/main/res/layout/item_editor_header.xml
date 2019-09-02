@@ -14,13 +14,15 @@
             android:orientation="vertical"
             android:visibility="visible">
 
-        <chawan.fame.editerbook.view.MyEditText
+        <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/edtHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:textAppearance="@style/TextAppearance2"
-                android:textSize="20sp" />
+                android:textAppearance="@style/TextAppearance"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="บทที่ 990" />
 
     </LinearLayout>
 

@@ -13,12 +13,12 @@
             android:layout_margin="8dp"
             android:orientation="vertical">
 
-        <chawan.fame.editerbook.view.MyEditText
+        <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/edt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:textAppearance="@style/TextAppearance2" />
+                android:textAppearance="@style/TextAppearance2"
+                android:background="@android:color/transparent"/>
 
     </LinearLayout>
 

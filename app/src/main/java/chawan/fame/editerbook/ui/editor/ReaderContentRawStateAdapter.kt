@@ -83,7 +83,7 @@ class ReaderContentRawStateAdapter(
             } else {
                 viewHolder.edt.clearFocus()
             }
-            viewHolder.edt.gravity = model[position].data!!.alight
+//            viewHolder.edt.gravity = model[position].data!!.alight
 
         } else if (model[position].viewType == EditerViewType.IMAGE) {
             viewHolder.layoutTextView.visibility = View.GONE
@@ -157,7 +157,7 @@ class ReaderContentRawStateAdapter(
                 viewHolder.edtHeader.setText(model[position].data!!.text)
             }
 
-            viewHolder.edtHeader.gravity = model[position].data!!.alight
+//            viewHolder.edtHeader.gravity = model[position].data!!.alight
 
             viewHolder.edtHeader.setTypeface(null, Typeface.BOLD)
 

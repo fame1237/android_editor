@@ -1,7 +1,5 @@
 package chawan.fame.editerbook.model.editor
 
-import android.view.Gravity
-
 
 class Data {
     var text = ""
@@ -9,7 +7,7 @@ class Data {
     var selection: Int = 0
     var style: TextStyle? = null
     var inlineStyleRange: MutableList<InlineStyleRanges> = mutableListOf()
-    var alight = Gravity.START
+    var alight: Alignment = Alignment.START
 
     override fun toString(): String {
         return "Data(text='$text', src='$src', selection=$selection, style=$style, inlineStyleRange=$inlineStyleRange, alight=$alight)"
@@ -19,6 +17,10 @@ class Data {
 }
 
 enum class TextStyle {
-    BOLD, ITALIC, NORMAL, UNDERLINE ,STRIKE_THROUGH
+    BOLD, ITALIC, NORMAL, UNDERLINE, STRIKE_THROUGH
+}
+
+enum class Alignment {
+    START, CENTER, END, INDENT
 }
 

@@ -27,15 +27,14 @@ import chawan.fame.editerbook.StyleCallback
 import chawan.fame.editerbook.extension.filterGetArrayIndex
 import chawan.fame.editerbook.extension.filterGetIndex
 import chawan.fame.editerbook.glide.GlideApp
-import chawan.fame.editerbook.model.editor.EditerModel
-import chawan.fame.editerbook.model.editor.EditerViewType
-import chawan.fame.editerbook.model.editor.IndexData
-import chawan.fame.editerbook.model.editor.TextStyle
+import chawan.fame.editerbook.model.editor.*
 import chawan.fame.editerbook.ui.rveditor.EditerActivity2
 import chawan.fame.editerbook.util.CheckStyle
 import chawan.fame.editerbook.util.KeyboardHelper
 import chawan.fame.editerbook.view.EditTextSelectable
 import chawan.fame.editerbook.view.MyEditText
+import chawan.fame.editerbook.view.ediitext.FictionLogDbHeavenEditText
+import chawan.fame.editerbook.view.ediitext.FictionLogThongTermEditText
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import io.reactivex.Single
@@ -106,12 +105,6 @@ class EditerAdapter(
                         .inflate(R.layout.item_editor_header, viewGroup, false)
                 return MyHeaderViewHolder(itemView, MyCustomEditTextListener())
             }
-            6 -> {
-                val itemView =
-                    LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_edittext, viewGroup, false)
-                return MyEditTextIndentViewHolder(itemView, MyCustomEditTextListener())
-            }
             else -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
@@ -166,56 +159,48 @@ class EditerAdapter(
             }
 
 
-
-            viewHolder.edt.gravity = model[position].data!!.alight
-            try {
-                viewHolder.edt.setSelection(model[position].data!!.selection)
-            } catch (ex: Exception) {
-                model[position].data!!.selection = 0
-            }
-            model[position].data!!.selection = 0
-        } else if (viewHolder is MyEditTextIndentViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
-
-            if (model[position].data != null) {
-                val ss1 = SpannableString(model[position].data!!.text)
-                model[position].data!!.inlineStyleRange.forEach {
-                    var offset = it.offset
-                    var lenght = it.lenght
-                    when {
-                        it.style == TextStyle.BOLD -> ss1.setSpan(
-                            StyleSpan(Typeface.BOLD), offset,
-                            offset + lenght, 0
+            when (model[position].data!!.alight) {
+                Alignment.START -> {
+                    viewHolder.edt.gravity = Gravity.START
+                    viewHolder.edt.setText(
+                        createIndentedText(
+                            viewHolder.edt.text.toString(),
+                            0,
+                            0
                         )
-                        it.style == TextStyle.ITALIC -> ss1.setSpan(
-                            StyleSpan(Typeface.ITALIC), offset,
-                            offset + lenght, 0
-                        )
-                        it.style == TextStyle.UNDERLINE -> ss1.setSpan(
-                            UnderlineSpan(), offset,
-                            offset + lenght, 0
-                        )
-                        it.style == TextStyle.STRIKE_THROUGH -> ss1.setSpan(
-                            StrikethroughSpan(), offset,
-                            offset + lenght, 0
-                        )
-                    }
+                    )
                 }
-                viewHolder.edt.setText(createIndentedText("$ss1", dpToPx(30f), 0))
-            }
-
-
-            if (model[position].isFocus) {
-                viewHolder.edt.post {
-                    if (viewHolder.edt.requestFocus()) {
-                        model[position].isFocus = false
-                    }
+                Alignment.CENTER -> {
+                    viewHolder.edt.gravity = Gravity.CENTER
+                    viewHolder.edt.setText(
+                        createIndentedText(
+                            viewHolder.edt.text.toString(),
+                            0,
+                            0
+                        )
+                    )
                 }
-            } else {
-                viewHolder.edt.clearFocus()
+                Alignment.END -> {
+                    viewHolder.edt.gravity = Gravity.END
+                    viewHolder.edt.setText(
+                        createIndentedText(
+                            viewHolder.edt.text.toString(),
+                            0,
+                            0
+                        )
+                    )
+                }
+                Alignment.INDENT -> {
+                    viewHolder.edt.gravity = Gravity.START
+                    viewHolder.edt.setText(
+                        createIndentedText(
+                            viewHolder.edt.text.toString(),
+                            dpToPx(30f),
+                            0
+                        )
+                    )
+                }
             }
-
-            viewHolder.edt.gravity = Gravity.START
 
             try {
                 viewHolder.edt.setSelection(model[position].data!!.selection)
@@ -223,7 +208,6 @@ class EditerAdapter(
                 model[position].data!!.selection = 0
             }
             model[position].data!!.selection = 0
-
         } else if (viewHolder is MyImageViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[position].id, viewHolder)
             if (model[position].showBorder) {
@@ -311,14 +295,51 @@ class EditerAdapter(
         } else if (viewHolder is MyHeaderViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
             if (model[position].data != null) {
-                viewHolder.edtHeader.post {
-                    viewHolder.edtHeader.setText(model[position].data!!.text)
-                }
+                viewHolder.edtHeader.setText(model[position].data!!.text)
             }
 
-            viewHolder.edtHeader.gravity = model[position].data!!.alight
-
-            viewHolder.edtHeader.setTypeface(null, Typeface.BOLD)
+            when (model[position].data!!.alight) {
+                Alignment.START -> {
+                    viewHolder.edtHeader.gravity = Gravity.START
+                    viewHolder.edtHeader.setText(
+                        createIndentedText(
+                            viewHolder.edtHeader.text.toString(),
+                            0,
+                            0
+                        )
+                    )
+                }
+                Alignment.CENTER -> {
+                    viewHolder.edtHeader.gravity = Gravity.CENTER
+                    viewHolder.edtHeader.setText(
+                        createIndentedText(
+                            viewHolder.edtHeader.text.toString(),
+                            0,
+                            0
+                        )
+                    )
+                }
+                Alignment.END -> {
+                    viewHolder.edtHeader.gravity = Gravity.END
+                    viewHolder.edtHeader.setText(
+                        createIndentedText(
+                            viewHolder.edtHeader.text.toString(),
+                            0,
+                            0
+                        )
+                    )
+                }
+                Alignment.INDENT -> {
+                    viewHolder.edtHeader.gravity = Gravity.START
+                    viewHolder.edtHeader.setText(
+                        createIndentedText(
+                            viewHolder.edtHeader.text.toString(),
+                            dpToPx(30f),
+                            0
+                        )
+                    )
+                }
+            }
 
             if (model[position].isFocus) {
                 viewHolder.edtHeader.post {
@@ -415,9 +436,6 @@ class EditerAdapter(
             EditerViewType.HEADER -> {
                 return 5
             }
-            EditerViewType.INDENT -> {
-                return 6
-            }
             else -> {
                 return -1
             }
@@ -426,7 +444,7 @@ class EditerAdapter(
 
     inner class MyEditTextViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) :
         RecyclerView.ViewHolder(v) {
-        var edt = v.findViewById<MyEditText>(R.id.edt)
+        var edt = v.findViewById<AppCompatEditText>(R.id.edt)
         var myCustomEditTextListener = customEditTextListener
 
         init {
@@ -457,7 +475,7 @@ class EditerAdapter(
 
     inner class MyHeaderViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) :
         RecyclerView.ViewHolder(v) {
-        var edtHeader = v.findViewById<MyEditText>(R.id.edtHeader)
+        var edtHeader = v.findViewById<AppCompatEditText>(R.id.edtHeader)
         var myCustomEditTextListener = customEditTextListener
 
         init {
