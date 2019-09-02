@@ -164,7 +164,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmen
                 position,
                 EditerViewType.EDIT_TEXT,
                 text,
-                mViewModel.getModel()[position-1].data!!.alight,
+                mViewModel.getModel()[position - 1].data!!.alight,
                 true
             )
         }.observeOn(AndroidSchedulers.mainThread())
@@ -319,7 +319,8 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmen
                 var fragmentImageViewerDialog = SetAlignmentDialog.Builder()
                     .build(
                         it,
-                        mViewModel.getModel()[cursorPosition].data!!.alight)
+                        mViewModel.getModel()[cursorPosition].data!!.alight
+                    )
 
                 fragmentImageViewerDialog.retainInstance = true
                 fragmentImageViewerDialog.show(supportFragmentManager, "alignment")
@@ -482,6 +483,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmen
         adapter?.let {
             mViewModel.addImageModel(cursorPosition + 1, image)
             it.upDateImageItem(cursorPosition)
+            rvEditor.scrollToPosition(cursorPosition + 2)
         }
     }
 

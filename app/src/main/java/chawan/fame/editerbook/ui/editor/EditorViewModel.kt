@@ -172,11 +172,7 @@ class EditorViewModel : ViewModel() {
         model.viewType = EditerViewType.IMAGE
         model.id = GenerateKey.getKey(editerModel)
         model.data = data
-        model.isFocus = true
 
-        editerModel.forEach {
-            it.isFocus = false
-        }
 
 
         val model2 = EditerModel()
@@ -186,6 +182,7 @@ class EditorViewModel : ViewModel() {
         model2.viewType = EditerViewType.EDIT_TEXT
         model2.id = GenerateKey.getKey(editerModel)
         model2.data = data2
+        model2.isFocus = true
 
         editerModel.forEach {
             it.isFocus = false
