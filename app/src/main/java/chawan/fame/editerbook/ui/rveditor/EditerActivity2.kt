@@ -37,6 +37,7 @@ import chawan.fame.editerbook.ui.editor.EditorViewModel
 import chawan.fame.editerbook.ui.reader.ReaderContentActivity
 import chawan.fame.editerbook.util.KeyboardHelper
 import chawan.fame.editerbook.util.SetStyle
+import chawan.fame.editerbook.view.SetAlignmentDialog
 import co.fictionlog.fictionlog.data.local.database.table.EditerTable
 import com.yalantis.ucrop.UCrop
 import io.reactivex.Single
@@ -46,9 +47,10 @@ import kotlinx.android.synthetic.main.activity_editer2.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.lang.Exception
 import java.util.*
 
-class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
+class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmentDialog.OnClick {
 
 
     lateinit var mViewModel: EditorViewModel
@@ -93,19 +95,6 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         cursorPosition = position
         edtView = view
         mViewModel.goneBorder()
-        mViewModel.getModel()[position].data?.let {
-            when (it.alight) {
-                Gravity.START -> {
-                    setAlightLeftOrange()
-                }
-                Gravity.CENTER -> {
-                    setAlightCenterOrange()
-                }
-                Gravity.END -> {
-                    setAlightRightOrange()
-                }
-            }
-        }
 
         when {
             mViewModel.getModel()[position].viewType == EditerViewType.QUOTE -> {
@@ -153,76 +142,22 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         }
     }
 
-    fun setAlightLeftOrange() {
-        alignLeft.setColorFilter(
-            ContextCompat.getColor(this, R.color.colorOrange)
-            , PorterDuff.Mode.SRC_IN
-        )
 
-        alignCenter.setColorFilter(
-            ContextCompat.getColor(this, R.color.grey_image)
-            , PorterDuff.Mode.SRC_IN
-        )
-
-        alignRight.setColorFilter(
-            ContextCompat.getColor(this, R.color.grey_image)
-            , PorterDuff.Mode.SRC_IN
-        )
-
-        indent.setColorFilter(
-            ContextCompat.getColor(this, R.color.grey_image)
-            , PorterDuff.Mode.SRC_IN
-        )
+    override fun onClickAlignLeft() {
+        editTextSetTextAlignLeft()
     }
 
-    fun setAlightCenterOrange() {
-        alignLeft.setColorFilter(
-            ContextCompat.getColor(this, R.color.grey_image)
-            , PorterDuff.Mode.SRC_IN
-        )
-
-        alignCenter.setColorFilter(
-            ContextCompat.getColor(this, R.color.colorOrange)
-            , PorterDuff.Mode.SRC_IN
-        )
-
-        alignRight.setColorFilter(
-            ContextCompat.getColor(this, R.color.grey_image)
-            , PorterDuff.Mode.SRC_IN
-        )
-
-        indent.setColorFilter(
-            ContextCompat.getColor(this, R.color.grey_image)
-            , PorterDuff.Mode.SRC_IN
-        )
+    override fun onClickAlignCenter() {
+        editTextSetTextAlignCenter()
     }
 
-    fun setAlightRightOrange() {
-        alignLeft.setColorFilter(
-            ContextCompat.getColor(this, R.color.grey_image)
-            , PorterDuff.Mode.SRC_IN
-        )
-
-        alignCenter.setColorFilter(
-            ContextCompat.getColor(this, R.color.grey_image)
-            , PorterDuff.Mode.SRC_IN
-        )
-
-        alignRight.setColorFilter(
-            ContextCompat.getColor(this, R.color.colorOrange)
-            , PorterDuff.Mode.SRC_IN
-        )
-
-        indent.setColorFilter(
-            ContextCompat.getColor(this, R.color.grey_image)
-            , PorterDuff.Mode.SRC_IN
-        )
+    override fun onClickAlignRight() {
+        editTextSetTextAlignRight()
     }
 
-    fun setIndentOrange() {
-
+    override fun onClickIndent() {
+        editTextSetTextIndent()
     }
-
 
     override fun onNextLine(position: Int, text: CharSequence) {
         Single.fromCallable {
@@ -324,7 +259,6 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                 initView()
                 initViewModel()
             }
-        cursorPosition = mViewModel.getSize() - 1
     }
 
     private fun initViewModel() {
@@ -381,38 +315,24 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         rvEditor.itemAnimator = null
 
         btnAlighment.setOnClickListener {
-            if (cardAlighment.visibility == View.VISIBLE) {
-                cardAlighment.visibility = View.GONE
-                btnAlighment.setColorFilter(
-                    ContextCompat.getColor(this, R.color.grey_image)
-                    , PorterDuff.Mode.SRC_IN
-                )
-            } else {
-                cardAlighment.visibility = View.VISIBLE
-                btnAlighment.setColorFilter(
-                    ContextCompat.getColor(this, R.color.colorOrange)
-                    , PorterDuff.Mode.SRC_IN
-                )
+            try {
+                var fragmentImageViewerDialog = SetAlignmentDialog.Builder()
+                    .build(
+                        it,
+                        mViewModel.getModel()[cursorPosition].data?.alight,
+                        (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.INDENT)
+                    )
+                fragmentImageViewerDialog.retainInstance = true
+                fragmentImageViewerDialog.show(supportFragmentManager, "alignment")
+            } catch (ex: Exception) {
+                var fragmentImageViewerDialog = SetAlignmentDialog.Builder()
+                    .build(it, null, false)
+                fragmentImageViewerDialog.retainInstance = true
+                fragmentImageViewerDialog.show(supportFragmentManager, "alignment")
             }
         }
 
-        alignLeft.setOnClickListener {
-            editTextSetTextAlignLeft()
-            setAlightLeftOrange()
-        }
 
-        alignCenter.setOnClickListener {
-            editTextSetTextAlignCenter()
-            setAlightCenterOrange()
-        }
-
-        alignRight.setOnClickListener {
-            editTextSetTextAlignRight()
-            setAlightRightOrange()
-        }
-
-        indent.setOnClickListener {
-        }
 
         btnAddImage.setOnClickListener {
             KeyboardHelper.hideSoftKeyboard(this)
@@ -544,6 +464,15 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
         adapter?.let {
             mViewModel.addImageModel(cursorPosition + 1, image)
             it.upDateImageItem(cursorPosition)
+        }
+    }
+
+    private fun editTextSetTextIndent() {
+        adapter?.let {
+            if (edtView is EditText) {
+                mViewModel.updateIndent(cursorPosition, (edtView as EditText).selectionEnd)
+                it.updateCurrentItem(cursorPosition)
+            }
         }
     }
 

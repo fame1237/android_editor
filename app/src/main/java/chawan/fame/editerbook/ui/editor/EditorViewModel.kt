@@ -102,12 +102,32 @@ class EditorViewModel : ViewModel() {
         model.showBorder = isShow
     }
 
+    fun updateIndent(position: Int, selection: Int) {
+        val model = editerModel[position]
+        val data = model.data!!
+        data.selection = selection
+        model.data = data
+        model.viewType = EditerViewType.INDENT
+        editerModel.forEach {
+            it.isFocus = false
+        }
+        model.isFocus = true
+        editorModelLiveData.postValue(editerModel)
+    }
+
     fun updateAlignLeft(position: Int, selection: Int) {
         val model = editerModel[position]
         val data = model.data!!
         data.selection = selection
         data.alight = Gravity.START
         model.data = data
+        model.viewType = EditerViewType.EDIT_TEXT
+        editerModel.forEach {
+            it.isFocus = false
+        }
+        model.isFocus = true
+
+
         editorModelLiveData.postValue(editerModel)
     }
 
@@ -117,6 +137,11 @@ class EditorViewModel : ViewModel() {
         data.selection = selection
         data.alight = Gravity.CENTER
         model.data = data
+        model.viewType = EditerViewType.EDIT_TEXT
+        editerModel.forEach {
+            it.isFocus = false
+        }
+        model.isFocus = true
         editorModelLiveData.postValue(editerModel)
     }
 
@@ -126,6 +151,11 @@ class EditorViewModel : ViewModel() {
         data.selection = selection
         data.alight = Gravity.END
         model.data = data
+        model.viewType = EditerViewType.EDIT_TEXT
+        editerModel.forEach {
+            it.isFocus = false
+        }
+        model.isFocus = true
         editorModelLiveData.postValue(editerModel)
     }
 

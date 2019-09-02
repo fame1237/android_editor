@@ -21,6 +21,8 @@ import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.R
+import chawan.fame.editerbook.ScreenUtil.createIndentedText
+import chawan.fame.editerbook.ScreenUtil.dpToPx
 import chawan.fame.editerbook.StyleCallback
 import chawan.fame.editerbook.extension.filterGetArrayIndex
 import chawan.fame.editerbook.extension.filterGetIndex
@@ -104,6 +106,12 @@ class EditerAdapter(
                         .inflate(R.layout.item_editor_header, viewGroup, false)
                 return MyHeaderViewHolder(itemView, MyCustomEditTextListener())
             }
+            6 -> {
+                val itemView =
+                    LayoutInflater.from(viewGroup.context)
+                        .inflate(R.layout.item_editor_edittext, viewGroup, false)
+                return MyEditTextIndentViewHolder(itemView, MyCustomEditTextListener())
+            }
             else -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
@@ -158,11 +166,60 @@ class EditerAdapter(
             viewHolder.edt.gravity = model[position].data!!.alight
             try {
                 viewHolder.edt.setSelection(model[position].data!!.selection)
-            }
-            catch (ex:Exception){
+            } catch (ex: Exception) {
                 model[position].data!!.selection = 0
             }
             model[position].data!!.selection = 0
+        } else if (viewHolder is MyEditTextIndentViewHolder) {
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
+
+            if (model[position].data != null) {
+                val ss1 = SpannableString(model[position].data!!.text)
+                model[position].data!!.inlineStyleRange.forEach {
+                    var offset = it.offset
+                    var lenght = it.lenght
+                    when {
+                        it.style == TextStyle.BOLD -> ss1.setSpan(
+                            StyleSpan(Typeface.BOLD), offset,
+                            offset + lenght, 0
+                        )
+                        it.style == TextStyle.ITALIC -> ss1.setSpan(
+                            StyleSpan(Typeface.ITALIC), offset,
+                            offset + lenght, 0
+                        )
+                        it.style == TextStyle.UNDERLINE -> ss1.setSpan(
+                            UnderlineSpan(), offset,
+                            offset + lenght, 0
+                        )
+                        it.style == TextStyle.STRIKE_THROUGH -> ss1.setSpan(
+                            StrikethroughSpan(), offset,
+                            offset + lenght, 0
+                        )
+                    }
+                }
+                viewHolder.edt.setText(createIndentedText("$ss1", dpToPx(30f), 0))
+            }
+
+
+            if (model[position].isFocus) {
+                viewHolder.edt.post {
+                    if (viewHolder.edt.requestFocus()) {
+                        model[position].isFocus = false
+                    }
+                }
+            } else {
+                viewHolder.edt.clearFocus()
+            }
+
+            viewHolder.edt.gravity = Gravity.START
+
+            try {
+                viewHolder.edt.setSelection(model[position].data!!.selection)
+            } catch (ex: Exception) {
+                model[position].data!!.selection = 0
+            }
+            model[position].data!!.selection = 0
+
         } else if (viewHolder is MyImageViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[position].id, viewHolder)
             if (model[position].showBorder) {
@@ -303,7 +360,7 @@ class EditerAdapter(
     }
 
     fun upDateLineItemWithEditText(position: Int) {
-        notifyItemRangeChanged(position+ 1, 2)
+        notifyItemRangeChanged(position + 1, 2)
     }
 
     fun upDateImageItem(position: Int) {
@@ -354,6 +411,9 @@ class EditerAdapter(
             EditerViewType.HEADER -> {
                 return 5
             }
+            EditerViewType.INDENT -> {
+                return 6
+            }
             else -> {
                 return -1
             }
@@ -361,6 +421,23 @@ class EditerAdapter(
     }
 
     inner class MyEditTextViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) :
+        RecyclerView.ViewHolder(v) {
+        var edt = v.findViewById<MyEditText>(R.id.edt)
+        var myCustomEditTextListener = customEditTextListener
+
+        init {
+            edt.addTextChangedListener(myCustomEditTextListener)
+            edt.onFocusChangeListener = myCustomEditTextListener
+            edt.setOnKeyListener(myCustomEditTextListener)
+            edt.setAccessibilityDelegate(myCustomEditTextListener)
+            edt.customSelectionActionModeCallback = StyleCallback(edt, listener)
+        }
+    }
+
+    inner class MyEditTextIndentViewHolder(
+        v: View,
+        customEditTextListener: MyCustomEditTextListener
+    ) :
         RecyclerView.ViewHolder(v) {
         var edt = v.findViewById<MyEditText>(R.id.edt)
         var myCustomEditTextListener = customEditTextListener
