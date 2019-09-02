@@ -121,7 +121,8 @@ class EditorViewModel : ViewModel() {
         data.selection = selection
         data.alight = Gravity.START
         model.data = data
-        model.viewType = EditerViewType.EDIT_TEXT
+        if (model.viewType == EditerViewType.INDENT)
+            model.viewType = EditerViewType.EDIT_TEXT
         editerModel.forEach {
             it.isFocus = false
         }
@@ -137,6 +138,7 @@ class EditorViewModel : ViewModel() {
         data.selection = selection
         data.alight = Gravity.CENTER
         model.data = data
+        if (model.viewType == EditerViewType.INDENT)
         model.viewType = EditerViewType.EDIT_TEXT
         editerModel.forEach {
             it.isFocus = false
@@ -151,6 +153,7 @@ class EditorViewModel : ViewModel() {
         data.selection = selection
         data.alight = Gravity.END
         model.data = data
+        if (model.viewType == EditerViewType.INDENT)
         model.viewType = EditerViewType.EDIT_TEXT
         editerModel.forEach {
             it.isFocus = false

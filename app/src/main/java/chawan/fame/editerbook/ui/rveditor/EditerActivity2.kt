@@ -362,6 +362,17 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmen
                         , PorterDuff.Mode.SRC_IN
                     )
                 }
+                else{
+                    adapter?.let {
+                        mViewModel.changeToQuote(cursorPosition)
+                        it.updateCurrentItem(cursorPosition)
+                    }
+
+                    btnQuote.setColorFilter(
+                        ContextCompat.getColor(this, R.color.colorOrange)
+                        , PorterDuff.Mode.SRC_IN
+                    )
+                }
             }
         }
 
@@ -385,6 +396,16 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmen
                         ContextCompat.getColor(this, R.color.grey_image)
                         , PorterDuff.Mode.SRC_IN
                     )
+                }
+                else{
+                    adapter?.let {
+                        mViewModel.changeToHeader(cursorPosition)
+                        it.updateCurrentItem(cursorPosition)
+                        btnHeader.setColorFilter(
+                            ContextCompat.getColor(this, R.color.colorOrange)
+                            , PorterDuff.Mode.SRC_IN
+                        )
+                    }
                 }
             }
         }
