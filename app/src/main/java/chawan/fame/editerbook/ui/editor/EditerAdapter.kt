@@ -126,6 +126,18 @@ class EditerAdapter(
         if (viewHolder is MyEditTextViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
 
+            if (model[position].isFocus) {
+                viewHolder.edt.post {
+                    if (viewHolder.edt.requestFocus()) {
+                        model[position].isFocus = false
+                    }
+                }
+            } else {
+                viewHolder.edt.post {
+                    viewHolder.edt.clearFocus()
+                }
+            }
+
             if (model[position].data != null) {
                 val ss1 = SpannableString(model[position].data!!.text)
                 model[position].data!!.inlineStyleRange.forEach {
@@ -154,15 +166,7 @@ class EditerAdapter(
             }
 
 
-            if (model[position].isFocus) {
-                viewHolder.edt.post {
-                    if (viewHolder.edt.requestFocus()) {
-                        model[position].isFocus = false
-                    }
-                }
-            } else {
-                viewHolder.edt.clearFocus()
-            }
+
             viewHolder.edt.gravity = model[position].data!!.alight
             try {
                 viewHolder.edt.setSelection(model[position].data!!.selection)
@@ -351,8 +355,8 @@ class EditerAdapter(
     }
 
     fun upDateItem(position: Int) {
-        notifyItemInserted(position)
         notifyItemChanged(position - 1, false)
+        notifyItemInserted(position)
     }
 
     fun upDateLineItem(position: Int) {
@@ -369,8 +373,8 @@ class EditerAdapter(
     }
 
     fun upDateRemoveItem(position: Int) {
-        notifyItemRemoved(position)
         notifyItemChanged(position - 1, false)
+        notifyItemRemoved(position)
     }
 
     fun upDateRemoveItemWithoutCurrentChange(position: Int) {
