@@ -8,4 +8,28 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+
+    <style name="TextAppearance">
+        <item name="fontFamily">@font/db_heavent_font_family</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextAppearance2">
+        <item name="fontFamily">@font/thongterm_font_family</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextAppearance3">
+        <item name="fontFamily">@font/db_heavent_font_family</item>
+    </style>
+
+    <style name="TextAppearance4">
+        <item name="fontFamily">@font/thongterm_font_family</item>
+    </style>
+
+
+    <style name="TextAppearance5">
+        <item name="fontFamily">@font/mn_paethai_font_family</item>
+    </style>
+
 </resources>

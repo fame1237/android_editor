@@ -39,6 +39,7 @@ import com.bumptech.glide.request.RequestOptions
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.lang.Exception
 
 
 /**
@@ -83,7 +84,7 @@ class EditerAdapter(
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
                         .inflate(R.layout.item_editor_image, viewGroup, false)
-                return MyImageViewHolder(itemView, MyCustomEditTextListener())
+                return MyImageViewHolder(itemView, MyCustomImageLayoutEditTextListener())
             }
             3 -> {
                 val itemView =
@@ -155,10 +156,15 @@ class EditerAdapter(
                 viewHolder.edt.clearFocus()
             }
             viewHolder.edt.gravity = model[position].data!!.alight
-            viewHolder.edt.setSelection(model[position].data!!.selection)
+            try {
+                viewHolder.edt.setSelection(model[position].data!!.selection)
+            }
+            catch (ex:Exception){
+                model[position].data!!.selection = 0
+            }
             model[position].data!!.selection = 0
         } else if (viewHolder is MyImageViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].id, viewHolder)
             if (model[position].showBorder) {
                 viewHolder.btnDeleteImage.visibility = View.VISIBLE
                 viewHolder.imageBackgroud.background =
@@ -179,7 +185,11 @@ class EditerAdapter(
                     viewHolder.btnDeleteImage.visibility = View.VISIBLE
                     viewHolder.imageBackgroud.background =
                         (context.resources.getDrawable(R.drawable.border))
-                    listener.clearFocus(position)
+                    if (!viewHolder.edtImage.isFocused) {
+                        listener.clearFocus(position)
+                    } else {
+                        viewHolder.edtImage.clearFocus()
+                    }
                     (context as EditerActivity2).hideKeyboard()
                 }
             }
@@ -210,8 +220,6 @@ class EditerAdapter(
                 }
             }
 
-
-
             if (model[position].isFocus) {
                 viewHolder.edtImage.post {
                     if (viewHolder.edtImage.requestFocus()) {
@@ -219,6 +227,7 @@ class EditerAdapter(
                     }
                 }
             }
+
 
         } else if (viewHolder is MyQuoteViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
@@ -294,13 +303,11 @@ class EditerAdapter(
     }
 
     fun upDateLineItemWithEditText(position: Int) {
-        notifyItemInserted(position + 1)
-        notifyItemInserted(position + 2)
+        notifyItemRangeChanged(position+ 1, 2)
     }
 
     fun upDateImageItem(position: Int) {
-        notifyItemInserted(position)
-        notifyItemInserted(position + 1)
+        notifyItemRangeChanged(position, 2)
         notifyItemChanged(position - 1, false)
     }
 
@@ -393,7 +400,10 @@ class EditerAdapter(
         }
     }
 
-    inner class MyImageViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) :
+    inner class MyImageViewHolder(
+        v: View,
+        customEditTextListener: MyCustomImageLayoutEditTextListener
+    ) :
         RecyclerView.ViewHolder(v) {
         var layoutImage = v.findViewById<RelativeLayout>(R.id.layoutImage)
         var imageBackgroud = v.findViewById<View>(R.id.imageBackgroud)
@@ -404,10 +414,10 @@ class EditerAdapter(
         var myCustomEditTextListener = customEditTextListener
 
         init {
-            edtImage.addTextChangedListener(myCustomEditTextListener)
-            edtImage.onFocusChangeListener = myCustomEditTextListener
-            edtImage.setOnKeyListener(myCustomEditTextListener)
-            edtImage.setAccessibilityDelegate(myCustomEditTextListener)
+            edtImage.addTextChangedListener(customEditTextListener)
+            edtImage.onFocusChangeListener = customEditTextListener
+            edtImage.setOnKeyListener(customEditTextListener)
+            edtImage.setAccessibilityDelegate(customEditTextListener)
 
         }
     }
@@ -420,46 +430,151 @@ class EditerAdapter(
 
     inner class MyViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) :
         RecyclerView.ViewHolder(v) {
-        var layoutTextView = v.findViewById<LinearLayout>(R.id.layoutTextView)
-        var layoutHeader = v.findViewById<LinearLayout>(R.id.layoutHeader)
-        var layoutRecycle = v.findViewById<LinearLayout>(R.id.layoutRecycle)
-        var layoutQuote = v.findViewById<LinearLayout>(R.id.layoutQuote)
-        var layoutLine = v.findViewById<LinearLayout>(R.id.layoutLine)
-        var layoutImage = v.findViewById<RelativeLayout>(R.id.layoutImage)
-        var imageBackgroud = v.findViewById<View>(R.id.imageBackgroud)
-        var btnDeleteImage = v.findViewById<RelativeLayout>(R.id.btnDeleteImage)
-        //        var border = v.findViewById<View>(R.id.border)
-        var image = v.findViewById<ImageView>(R.id.image)
-        var edt = v.findViewById<MyEditText>(R.id.edt)
-        var edtHeader = v.findViewById<MyEditText>(R.id.edtHeader)
-        var edtImage = v.findViewById<MyEditText>(R.id.edtImage)
-        var edtQuote = v.findViewById<MyEditText>(R.id.edtQuote)
-        var myCustomEditTextListener = customEditTextListener
+    }
 
-        init {
-            edt.addTextChangedListener(myCustomEditTextListener)
-            edt.onFocusChangeListener = myCustomEditTextListener
-            edt.setOnKeyListener(myCustomEditTextListener)
-            edt.setAccessibilityDelegate(myCustomEditTextListener)
-//            edt.addOnSelectionChangedListener(myCustomEditTextListener)
-            edt.customSelectionActionModeCallback = StyleCallback(edt, listener)
+    inner class MyCustomImageLayoutEditTextListener : TextWatcher,
+        EditTextSelectable.onSelectionChangedListener,
+        View.OnFocusChangeListener,
+        View.OnKeyListener,
+        View.AccessibilityDelegate() {
 
-            edtHeader.addTextChangedListener(myCustomEditTextListener)
-            edtHeader.onFocusChangeListener = myCustomEditTextListener
-            edtHeader.setOnKeyListener(myCustomEditTextListener)
-            edtHeader.setAccessibilityDelegate(myCustomEditTextListener)
+        var keyId: Long = -1
+        var viewHolder: MyImageViewHolder? = null
 
-            edtQuote.addTextChangedListener(myCustomEditTextListener)
-            edtQuote.onFocusChangeListener = myCustomEditTextListener
-            edtQuote.setOnKeyListener(myCustomEditTextListener)
-            edtQuote.setAccessibilityDelegate(myCustomEditTextListener)
-
-            edtImage.addTextChangedListener(myCustomEditTextListener)
-            edtImage.onFocusChangeListener = myCustomEditTextListener
-            edtImage.setOnKeyListener(myCustomEditTextListener)
-            edtImage.setAccessibilityDelegate(myCustomEditTextListener)
-
+        fun updatePosition(keyId: Long, viewHolder: MyImageViewHolder) {
+            this.keyId = keyId
+            this.viewHolder = viewHolder
         }
+
+
+        override fun sendAccessibilityEvent(host: View?, eventType: Int) {
+            super.sendAccessibilityEvent(host, eventType)
+            if (eventType == AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED) {
+                Log.e("selectionStart", (host as EditText).selectionStart.toString())
+                Log.e("selectionEnd", host.selectionEnd.toString())
+            }
+        }
+
+        override fun onKey(view: View, keyCode: Int, keyEvent: KeyEvent): Boolean {
+            if (keyCode == EditorInfo.IME_ACTION_SEARCH ||
+                keyCode == EditorInfo.IME_ACTION_DONE ||
+                keyEvent.action == KeyEvent.ACTION_DOWN &&
+                keyEvent.keyCode == KeyEvent.KEYCODE_ENTER
+            ) {
+
+                var index = model.filterGetIndex {
+                    it.id == keyId
+                }
+
+                val ss1 = SpannableString(
+                    (view as EditText).text.subSequence(0, view.selectionEnd)
+                )
+
+                CheckStyle.checkSpan(null, ss1).forEach {
+                    var offset = it.offset
+                    var lenght = it.lenght
+                    when {
+                        it.style == TextStyle.BOLD -> ss1.setSpan(
+                            StyleSpan(Typeface.BOLD), offset,
+                            offset + lenght, 0
+                        )
+                        it.style == TextStyle.ITALIC -> ss1.setSpan(
+                            StyleSpan(Typeface.ITALIC), offset,
+                            offset + lenght, 0
+                        )
+                        it.style == TextStyle.UNDERLINE -> ss1.setSpan(
+                            UnderlineSpan(), offset,
+                            offset + lenght, 0
+                        )
+                    }
+                }
+
+                val ss2 = SpannableString(
+                    view.text.subSequence(
+                        view.selectionEnd,
+                        view.text.toString().length
+                    )
+                )
+
+                listener.onNextLine(index + 1, ss2)
+
+                view.setText(ss1)
+
+                return true
+            } else if (keyEvent.action == KeyEvent.ACTION_DOWN &&
+                keyEvent.keyCode == KeyEvent.KEYCODE_DEL
+            ) {
+                return false
+            } else {
+                return false
+            }
+        }
+
+        override fun onFocusChange(p0: View?, p1: Boolean) {
+            if (p1) {
+                if (p0 is EditText) {
+                    KeyboardHelper.showSoftKeyboardForcefully(context, p0)
+                    if (viewHolder?.btnDeleteImage?.visibility == View.VISIBLE) {
+                        viewHolder?.btnDeleteImage?.visibility = View.GONE
+                        viewHolder?.imageBackgroud?.background =
+                            (context.resources.getDrawable(R.drawable.transaparent))
+                    }
+                }
+                Single.fromCallable {
+                    var index = model.filterGetIndex {
+                        it.id == keyId
+                    }
+                    var imageIndex = model.filterGetArrayIndex {
+                        it.viewType == EditerViewType.IMAGE
+                    }
+                    var indexDataModel = IndexData()
+                    indexDataModel.index = index
+                    indexDataModel.imageIndex = imageIndex
+
+                    indexDataModel
+                }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.computation())
+                    .subscribe { indexDataModel ->
+                        listener.updateCursorPosition(
+                            indexDataModel.index,
+                            p0!!,
+                            indexDataModel.imageIndex
+                        )
+                    }
+            } else {
+                if (p0 is EditText) {
+                    KeyboardHelper.hideSoftKeyboard2(context as EditerActivity2)
+                }
+            }
+        }
+
+        override fun beforeTextChanged(charSequence: CharSequence, i: Int, i2: Int, i3: Int) {
+            // no op
+        }
+
+        override fun onTextChanged(charSequence: CharSequence, i: Int, i2: Int, i3: Int) {
+            var index = model.filterGetIndex {
+                it.id == keyId
+            }
+            if (model[index].viewType == EditerViewType.QUOTE) {
+                listener.onUpdateText(index, charSequence, false)
+            } else {
+                listener.onUpdateText(index, charSequence, true)
+            }
+        }
+
+        override fun afterTextChanged(editable: Editable) {
+            // no op
+        }
+
+        override fun onSelectionChanged(selStart: Int, selEnd: Int, editText: AppCompatEditText?) {
+//            var index = model.filterGetIndex {
+//                it.id == keyId
+//            }
+//            listener.onCursorChange(index, selStart, selEnd, editText!!)
+        }
+
     }
 
     inner class MyCustomEditTextListener : TextWatcher,

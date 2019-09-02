@@ -8,6 +8,7 @@
     <color name="background_default">#F2F2F2</color>
     <color name="white">#FFFFFF</color>
     <color name="grey">#8c8c8c</color>
+    <color name="grey_150">#d9d9d9</color>
     <color name="grey_image">#8C8C8C</color>
 
 </resources>

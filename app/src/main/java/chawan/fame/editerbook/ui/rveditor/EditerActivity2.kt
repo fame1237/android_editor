@@ -72,9 +72,15 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
     override fun clearFocus(position: Int) {
         mViewModel.clearFocus()
-        adapter?.notifyItemChanged(cursorPosition)
-        rvEditor.post {
-            rvEditor.scrollToPosition(position)
+        if (cursorPosition > 0) {
+            if (mViewModel.getSize() < cursorPosition ||
+                mViewModel.getModel()[cursorPosition].viewType != EditerViewType.IMAGE
+            ) {
+                adapter?.notifyItemChanged(cursorPosition)
+                rvEditor.post {
+                    rvEditor.scrollToPosition(position)
+                }
+            }
         }
     }
 
@@ -136,9 +142,14 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
 
 //        mViewModel.getModel()[position].data?.selection = (view as EditText).selectionEnd
 //        mViewModel.updateFocus(position, true)
-
-        imageIndex.forEach {
-            adapter?.updateCurrentItem(it)
+        if (cursorPosition > 0) {
+            if (mViewModel.getSize() < cursorPosition ||
+                mViewModel.getModel()[cursorPosition].viewType != EditerViewType.IMAGE
+            ) {
+                imageIndex.forEach {
+                    adapter?.updateCurrentItem(it)
+                }
+            }
         }
     }
 
@@ -313,6 +324,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange {
                 initView()
                 initViewModel()
             }
+        cursorPosition = mViewModel.getSize() - 1
     }
 
     private fun initViewModel() {
