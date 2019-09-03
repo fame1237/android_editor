@@ -50,8 +50,7 @@ import java.lang.Exception
 import java.util.*
 
 class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmentDialog.OnClick {
-
-
+    
     lateinit var mViewModel: EditorViewModel
     var adapter: EditerAdapter? = null
     var cursorPosition = 0
@@ -177,8 +176,6 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmen
                     }
                 }
             }
-
-
     }
 
     override fun onCursorChange(

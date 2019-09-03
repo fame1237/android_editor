@@ -55,10 +55,11 @@
                 android:layout_below="@id/image"
                 android:background="@android:color/transparent"
                 android:gravity="center"
-                android:hint="พิมพ์คำอธิบายที่นี่"
+                android:hint="(พิมพ์คำอธิบายที่นี่)"
                 android:padding="8dp"
                 android:textAppearance="@style/TextAppearance"
                 android:textColor="@color/grey"
+                android:textColorHint="@color/grey_300"
                 tools:text="อิอิ" />
 
     </RelativeLayout>

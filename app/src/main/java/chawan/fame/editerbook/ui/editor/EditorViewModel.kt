@@ -10,6 +10,7 @@ import chawan.fame.editerbook.util.CheckStyle
 import chawan.fame.editerbook.util.GenerateKey
 
 class EditorViewModel : ViewModel() {
+
     var editerModel: MutableList<EditerModel> = mutableListOf()
     var editorModelLiveData = SingleLiveEvent<MutableList<EditerModel>>()
 
@@ -172,7 +173,6 @@ class EditorViewModel : ViewModel() {
         model.viewType = EditerViewType.IMAGE
         model.id = GenerateKey.getKey(editerModel)
         model.data = data
-
 
 
         val model2 = EditerModel()
