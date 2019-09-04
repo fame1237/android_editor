@@ -18,7 +18,7 @@ object ScreenUtil {
     }
 
     fun createIndentedText(
-        text: String,
+        text: CharSequence,
         marginFirstLine: Int,
         marginNextLines: Int
     ): SpannableString {

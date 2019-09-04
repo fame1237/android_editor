@@ -1,6 +1,5 @@
 package chawan.fame.editerbook.ui.editor
 
-import android.view.Gravity
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.lifecycle.ViewModel

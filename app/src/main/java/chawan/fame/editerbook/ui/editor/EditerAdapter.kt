@@ -164,7 +164,7 @@ class EditerAdapter(
                     viewHolder.edt.gravity = Gravity.START
                     viewHolder.edt.setText(
                         createIndentedText(
-                            viewHolder.edt.text.toString(),
+                            viewHolder.edt.text as CharSequence,
                             0,
                             0
                         )
@@ -174,7 +174,7 @@ class EditerAdapter(
                     viewHolder.edt.gravity = Gravity.CENTER
                     viewHolder.edt.setText(
                         createIndentedText(
-                            viewHolder.edt.text.toString(),
+                            viewHolder.edt.text as CharSequence,
                             0,
                             0
                         )
@@ -184,7 +184,7 @@ class EditerAdapter(
                     viewHolder.edt.gravity = Gravity.END
                     viewHolder.edt.setText(
                         createIndentedText(
-                            viewHolder.edt.text.toString(),
+                            viewHolder.edt.text as CharSequence,
                             0,
                             0
                         )
@@ -194,7 +194,7 @@ class EditerAdapter(
                     viewHolder.edt.gravity = Gravity.START
                     viewHolder.edt.setText(
                         createIndentedText(
-                            viewHolder.edt.text.toString(),
+                            viewHolder.edt.text as CharSequence,
                             dpToPx(30f),
                             0
                         )
@@ -313,7 +313,7 @@ class EditerAdapter(
                     viewHolder.edtHeader.gravity = Gravity.CENTER
                     viewHolder.edtHeader.setText(
                         createIndentedText(
-                            viewHolder.edtHeader.text.toString(),
+                            viewHolder.edtHeader.text as CharSequence,
                             0,
                             0
                         )
@@ -323,7 +323,7 @@ class EditerAdapter(
                     viewHolder.edtHeader.gravity = Gravity.END
                     viewHolder.edtHeader.setText(
                         createIndentedText(
-                            viewHolder.edtHeader.text.toString(),
+                            viewHolder.edtHeader.text as CharSequence,
                             0,
                             0
                         )
@@ -333,7 +333,7 @@ class EditerAdapter(
                     viewHolder.edtHeader.gravity = Gravity.START
                     viewHolder.edtHeader.setText(
                         createIndentedText(
-                            viewHolder.edtHeader.text.toString(),
+                            viewHolder.edtHeader.text as CharSequence,
                             dpToPx(30f),
                             0
                         )
@@ -755,7 +755,7 @@ class EditerAdapter(
                     model[index - 1].data!!.inlineStyleRange.forEach {
                         var offset = it.offset
                         var lenght = it.lenght
-                        if (offset + lenght < ssPrevios.length) {
+                        if (offset + lenght <= ssPrevios.length) {
                             when {
                                 it.style == TextStyle.BOLD -> ssPrevios.setSpan(
                                     StyleSpan(Typeface.BOLD), offset,
