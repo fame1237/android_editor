@@ -28,13 +28,11 @@ import chawan.fame.editerbook.extension.filterGetArrayIndex
 import chawan.fame.editerbook.extension.filterGetIndex
 import chawan.fame.editerbook.glide.GlideApp
 import chawan.fame.editerbook.model.editor.*
-import chawan.fame.editerbook.ui.rveditor.EditerActivity2
+import chawan.fame.editerbook.ui.rveditor.EditerActivity
 import chawan.fame.editerbook.util.CheckStyle
 import chawan.fame.editerbook.util.KeyboardHelper
 import chawan.fame.editerbook.view.EditTextSelectable
 import chawan.fame.editerbook.view.MyEditText
-import chawan.fame.editerbook.view.ediitext.FictionLogDbHeavenEditText
-import chawan.fame.editerbook.view.ediitext.FictionLogThongTermEditText
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import io.reactivex.Single
@@ -235,7 +233,7 @@ class EditerAdapter(
                     } else {
                         viewHolder.edtImage.clearFocus()
                     }
-                    (context as EditerActivity2).hideKeyboard()
+                    (context as EditerActivity).hideKeyboard()
                 }
             }
 
@@ -643,7 +641,7 @@ class EditerAdapter(
                     }
             } else {
                 if (p0 is EditText) {
-                    KeyboardHelper.hideSoftKeyboard2(context as EditerActivity2)
+                    KeyboardHelper.hideSoftKeyboard2(context as EditerActivity)
                 }
             }
         }
@@ -817,7 +815,7 @@ class EditerAdapter(
                     }
             } else {
                 if (p0 is EditText) {
-                    KeyboardHelper.hideSoftKeyboard2(context as EditerActivity2)
+                    KeyboardHelper.hideSoftKeyboard2(context as EditerActivity)
                 }
             }
         }

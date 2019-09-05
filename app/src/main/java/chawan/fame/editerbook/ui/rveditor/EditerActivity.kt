@@ -42,14 +42,14 @@ import com.yalantis.ucrop.UCrop
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_editer2.*
+import kotlinx.android.synthetic.main.activity_editer.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.lang.Exception
 import java.util.*
 
-class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmentDialog.OnClick {
+class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmentDialog.OnClick {
 
     lateinit var mViewModel: EditorViewModel
     var adapter: EditerAdapter? = null
@@ -237,7 +237,7 @@ class EditerActivity2 : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_editer2)
+        setContentView(R.layout.activity_editer)
         mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
         EditorBookApplication.database!!.editerQuery().getContent(0)
             .subscribeOn(Schedulers.io())
