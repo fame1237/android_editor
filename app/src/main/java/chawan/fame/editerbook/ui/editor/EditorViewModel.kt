@@ -220,7 +220,7 @@ class EditorViewModel : ViewModel() {
         data2.style = TextStyle.NORMAL
         model2.viewType = EditerViewType.EDIT_TEXT
         model2.id = GenerateKey.getKey(editerModel)
-        model2.data = data
+        model2.data = data2
         model2.isFocus = true
 
         editerModel.add(position + 1, model2)
@@ -267,6 +267,7 @@ class EditorViewModel : ViewModel() {
 
     fun removeViewAt(position: Int) {
         editerModel.removeAt(position)
+        editorModelLiveData.postValue(editerModel)
     }
 
     fun removeViewAndKeepFocus(removePosition: Int, keepFocusPostion: Int) {
@@ -275,42 +276,12 @@ class EditorViewModel : ViewModel() {
         editerModel.removeAt(removePosition)
     }
 
-    fun getView(position: Int): Any? {
-        return editerModel[position].mViewObject
-    }
+
 
     fun getSize(): Int {
         return editerModel.size
     }
 
-    fun getViewType(position: Int): EditerViewType {
-        return editerModel[position].viewType!!
-    }
-
-    fun getText(position: Int): String {
-        if (editerModel[position].mViewObject is EditText) {
-            return (editerModel[position].mViewObject as EditText).text.toString()
-        } else if (editerModel[position].viewType == EditerViewType.QUOTE && editerModel[position].mViewObject is LinearLayout) {
-            return ((editerModel[position].mViewObject as LinearLayout).getChildAt(1) as EditText).text.toString()
-        }
-        return ""
-    }
-
-    fun getTextFromModel(position: Int): String {
-        editerModel[position].data?.let {
-            return it.text
-        }
-        return ""
-    }
-
-    fun getIndexOf(view: Any): Int {
-        editerModel.forEachIndexed { index, editerModel ->
-            if (editerModel.mViewObject == view) {
-                return index
-            }
-        }
-        return 0
-    }
 
     override fun toString(): String {
         return "EditorViewModel(editerModel=$editerModel)"
