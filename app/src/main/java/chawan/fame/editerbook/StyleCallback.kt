@@ -46,11 +46,20 @@ class StyleCallback : ActionMode.Callback {
         val ssb = SpannableStringBuilder(bodyView!!.text)
 
         when (item.itemId) {
-
+            android.R.id.copy -> {
+                Log.e("copy", "copy")
+            }
+            android.R.id.paste -> {
+                Log.e("paste", "paste")
+            }
+            android.R.id.pasteAsPlainText -> {
+                Log.e("paste", "paste")
+            }
             R.id.bold -> {
                 cs = StyleSpan(Typeface.BOLD)
 
-                var typeface = ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
+                var typeface =
+                    ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
                 if (typeface.isNotEmpty()) {
 
                     var isHaveItalic = typeface.filter {
@@ -90,7 +99,8 @@ class StyleCallback : ActionMode.Callback {
             R.id.italic -> {
                 cs = StyleSpan(Typeface.ITALIC)
 
-                var typeface = ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
+                var typeface =
+                    ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
                 if (typeface.isNotEmpty()) {
                     var isHaveItalic = typeface.filter {
                         it is StyleSpan && it.style == Typeface.ITALIC
@@ -127,7 +137,8 @@ class StyleCallback : ActionMode.Callback {
             R.id.underline -> {
                 cs = UnderlineSpan()
 
-                var typeface = ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
+                var typeface =
+                    ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
                 if (typeface.isNotEmpty()) {
                     var isHaveItalic = typeface.filter {
                         it is UnderlineSpan
@@ -162,7 +173,8 @@ class StyleCallback : ActionMode.Callback {
 
             R.id.strikeOut -> {
                 val cs = StrikethroughSpan()
-                var typeface = ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
+                var typeface =
+                    ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
                 if (typeface.isNotEmpty()) {
                     var isHaveItalic = typeface.filter {
                         it is UnderlineSpan

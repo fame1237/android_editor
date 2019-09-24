@@ -1,9 +1,7 @@
 package chawan.fame.editerbook.ui.rveditor
 
 import android.Manifest
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.net.Uri
@@ -12,6 +10,7 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
@@ -62,6 +61,10 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, SetAlignment
     val FICTIONLOG_IMAGE = "fictionlog_image"
     val REQUEST_SELECT_PICTURE = 10000
     val REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101
+
+    private var myClipboard: ClipboardManager? = null
+    private var myClip: ClipData? = null
+
 
     override fun onDeleteRow(position: Int) {
         mViewModel.removeViewAt(position)
@@ -256,6 +259,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, SetAlignment
                 initView()
                 initViewModel()
             }
+        myClipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
     }
 
     private fun initViewModel() {
@@ -423,6 +427,22 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, SetAlignment
         }
     }
 
+
+    // on click copy button
+    fun copyText(view: View) {
+        myClipboard?.primaryClip = myClip
+
+        Toast.makeText(this, "Text Copied", Toast.LENGTH_SHORT).show()
+    }
+
+    // on click paste button
+    fun pasteText(view: View) {
+        val abc = myClipboard?.primaryClip
+        val item = abc?.getItemAt(0)
+
+
+        Toast.makeText(applicationContext, "Text Pasted", Toast.LENGTH_SHORT).show()
+    }
 
     override fun onUpdateBold() {
         mViewModel.updateStyle(cursorPosition, edtView as EditText)
