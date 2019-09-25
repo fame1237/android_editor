@@ -2,13 +2,12 @@ package chawan.fame.editerbook.ui.rveditor
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import chawan.fame.editerbook.R
-import com.example.editer_library.ui.editor.EditerFragment
-import com.example.editer_library.ui.editor.EditorViewModel
+import com.example.storylog_editor.ui.editor.EditerFragment
+import com.example.storylog_editor.ui.editor.EditorViewModel
 
 class SampleActivity : AppCompatActivity() {
 

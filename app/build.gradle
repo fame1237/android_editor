@@ -74,6 +74,6 @@ dependencies {
 
 
     testImplementation "com.google.truth:truth:0.46"
-    implementation project(path: ':editer-library')
+    implementation project(path: ':storylog-editor')
 
 }

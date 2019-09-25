@@ -2,10 +2,10 @@ package chawan.fame.editerbook.view
 
 
 import android.os.Build
-import com.example.editer_library.extension.SingleLiveEvent
-import com.example.editer_library.model.*
-import com.example.editer_library.ui.editor.EditorViewModel
-import com.example.editer_library.util.CheckStyle
+import com.example.storylog_editor.extension.SingleLiveEvent
+import com.example.storylog_editor.model.*
+import com.example.storylog_editor.ui.editor.EditorViewModel
+import com.example.storylog_editor.util.CheckStyle
 import com.google.common.truth.Truth
 import org.junit.After
 import org.junit.Before

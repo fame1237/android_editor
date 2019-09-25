@@ -18,22 +18,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.EditorBookApplication
 import chawan.fame.editerbook.R
-import com.example.editer_library.extension.toClass
-import com.example.editer_library.model.Alignment
-import com.example.editer_library.model.EditerModel
-import com.example.editer_library.model.EditerViewType
-import com.example.editer_library.model.TextStyle
-import com.example.editer_library.ui.editor.EditerAdapter
-import com.example.editer_library.ui.editor.EditorViewModel
-import com.example.editer_library.util.KeyboardHelper
-import com.example.editer_library.util.SetStyle
-import co.fictionlog.fictionlog.data.local.database.table.EditerTable
+import com.example.storylog_editor.extension.toClass
+import com.example.storylog_editor.model.Alignment
+import com.example.storylog_editor.model.EditerModel
+import com.example.storylog_editor.model.EditerViewType
+import com.example.storylog_editor.model.TextStyle
+import com.example.storylog_editor.ui.editor.EditerAdapter
+import com.example.storylog_editor.ui.editor.EditorViewModel
+import com.example.storylog_editor.util.KeyboardHelper
+import com.example.storylog_editor.util.SetStyle
 import com.yalantis.ucrop.UCrop
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,7 +43,7 @@ import java.io.File
 import java.lang.Exception
 import java.util.*
 
-class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.editer_library.view.SetAlignmentDialog.OnClick {
+class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.storylog_editor.view.SetAlignmentDialog.OnClick {
 
     lateinit var mViewModel: EditorViewModel
     var adapter: EditerAdapter? = null
@@ -314,7 +312,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 
         btnAlighment.setOnClickListener {
             try {
-                var fragmentImageViewerDialog = com.example.editer_library.view.SetAlignmentDialog.Builder()
+                var fragmentImageViewerDialog = com.example.storylog_editor.view.SetAlignmentDialog.Builder()
                     .build(
                         it,
                         mViewModel.getModel()[cursorPosition].data!!.alight
@@ -323,7 +321,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                 fragmentImageViewerDialog.retainInstance = true
                 fragmentImageViewerDialog.show(supportFragmentManager, "alignment")
             } catch (ex: Exception) {
-                var fragmentImageViewerDialog = com.example.editer_library.view.SetAlignmentDialog.Builder()
+                var fragmentImageViewerDialog = com.example.storylog_editor.view.SetAlignmentDialog.Builder()
                     .build(it, null)
                 fragmentImageViewerDialog.retainInstance = true
                 fragmentImageViewerDialog.show(supportFragmentManager, "alignment")

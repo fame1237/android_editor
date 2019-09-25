@@ -1,1 +1,1 @@
-include ':app', ':editer-library'
+include ':app', ':storylog-editor'
