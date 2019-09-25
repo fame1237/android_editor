@@ -2,12 +2,10 @@ package chawan.fame.editerbook.view
 
 
 import android.os.Build
-import chawan.fame.editerbook.extension.SingleLiveEvent
-import chawan.fame.editerbook.model.editor.*
-import chawan.fame.editerbook.testObserver
-import chawan.fame.editerbook.ui.editor.EditorViewModel
-import chawan.fame.editerbook.util.CheckStyle
-import chawan.fame.editerbook.util.GenerateKey
+import com.example.editer_library.extension.SingleLiveEvent
+import com.example.editer_library.model.*
+import com.example.editer_library.ui.editor.EditorViewModel
+import com.example.editer_library.util.CheckStyle
 import com.google.common.truth.Truth
 import org.junit.After
 import org.junit.Before

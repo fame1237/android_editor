@@ -25,7 +25,7 @@ android {
         }
     }
 }
-ext{
+ext {
     mockito_version = '2.28.2'
     koin_version = '2.0.1'
     koin_version_test = '2.0.1'
@@ -74,5 +74,6 @@ dependencies {
 
 
     testImplementation "com.google.truth:truth:0.46"
+    implementation project(path: ':editer-library')
 
 }

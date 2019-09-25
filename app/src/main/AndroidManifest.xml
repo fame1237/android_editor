@@ -14,9 +14,10 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".ui.reader.ReaderContentActivity"></activity>
+<!--        <activity android:name=".ui.rveditor.SampleActivity"></activity>-->
+
         <activity
-                android:name=".ui.rveditor.EditerActivity"
+                android:name=".ui.rveditor.SampleActivity"
                 android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

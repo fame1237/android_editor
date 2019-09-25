@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/italic"
+          android:icon="@drawable/ic_text_italic"
+          android:title="ตัวเอียง"
+          app:showAsAction="always"/>
+
+    <item android:id="@+id/bold"
+          app:showAsAction="always"
+          android:icon="@drawable/ic_text_bold"
+          android:title="ตัวหนา"/>
+
+    <item android:id="@+id/underline"
+          app:showAsAction="always"
+          android:icon="@drawable/ic_text_underline"
+          android:title="เส้นใต้"/>
+
+    <item android:id="@+id/strikeOut"
+          app:showAsAction="always"
+          android:icon="@drawable/ic_text_underline"
+          android:title="ขีดฆ่า"/>
+
+</menu>

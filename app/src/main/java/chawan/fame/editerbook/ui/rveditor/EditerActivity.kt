@@ -24,18 +24,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.EditorBookApplication
 import chawan.fame.editerbook.R
-import chawan.fame.editerbook.extension.toClass
-import chawan.fame.editerbook.extension.toJson
-import chawan.fame.editerbook.model.editor.Alignment
-import chawan.fame.editerbook.model.editor.EditerModel
-import chawan.fame.editerbook.model.editor.EditerViewType
-import chawan.fame.editerbook.model.editor.TextStyle
-import chawan.fame.editerbook.ui.editor.EditerAdapter
-import chawan.fame.editerbook.ui.editor.EditorViewModel
-import chawan.fame.editerbook.ui.reader.ReaderContentActivity
-import chawan.fame.editerbook.util.KeyboardHelper
-import chawan.fame.editerbook.util.SetStyle
-import chawan.fame.editerbook.view.SetAlignmentDialog
+import com.example.editer_library.extension.toClass
+import com.example.editer_library.model.Alignment
+import com.example.editer_library.model.EditerModel
+import com.example.editer_library.model.EditerViewType
+import com.example.editer_library.model.TextStyle
+import com.example.editer_library.ui.editor.EditerAdapter
+import com.example.editer_library.ui.editor.EditorViewModel
+import com.example.editer_library.util.KeyboardHelper
+import com.example.editer_library.util.SetStyle
 import co.fictionlog.fictionlog.data.local.database.table.EditerTable
 import com.yalantis.ucrop.UCrop
 import io.reactivex.Single
@@ -48,7 +45,7 @@ import java.io.File
 import java.lang.Exception
 import java.util.*
 
-class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, SetAlignmentDialog.OnClick {
+class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.editer_library.view.SetAlignmentDialog.OnClick {
 
     lateinit var mViewModel: EditorViewModel
     var adapter: EditerAdapter? = null
@@ -240,7 +237,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, SetAlignment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_editer)
+        setContentView(R.layout.fragment_editer)
         mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
         EditorBookApplication.database!!.editerQuery().getContent(0)
             .subscribeOn(Schedulers.io())
@@ -263,50 +260,50 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, SetAlignment
     }
 
     private fun initViewModel() {
-        mViewModel.editorModelLiveData.observe(this, Observer {
-            if (timerIsRun) {
-                timer.cancel()
-                timer = Timer()
-                timerIsRun = false
-                timer.schedule(object : TimerTask() {
-                    override fun run() {
-                        Single.fromCallable {
-                            EditorBookApplication.database!!.editerQuery()
-                                .insertContent(EditerTable(0, it.toJson()))
-                        }
-                            .subscribeOn(Schedulers.computation())
-                            .subscribe { _ ->
-                                Log.d("onDataChange", it.toJson())
-                            }
-
-                        initButton(it.toJson())
-                    }
-                }, 5000)
-            } else {
-                timerIsRun = true
-                timer.schedule(object : TimerTask() {
-                    override fun run() {
-                        Single.fromCallable {
-                            EditorBookApplication.database!!.editerQuery()
-                                .insertContent(EditerTable(0, it.toJson()))
-                        }
-                            .subscribeOn(Schedulers.computation())
-                            .subscribe { _ ->
-                                Log.d("onDataChange", it.toJson())
-                            }
-                        initButton(it.toJson())
-                    }
-                }, 5000)
-            }
-        })
+//        mViewModel.editorModelLiveData.observe(this, Observer {
+//            if (timerIsRun) {
+//                timer.cancel()
+//                timer = Timer()
+//                timerIsRun = false
+//                timer.schedule(object : TimerTask() {
+//                    override fun run() {
+//                        Single.fromCallable {
+//                            EditorBookApplication.database!!.editerQuery()
+//                                .insertContent(EditerTable(0, it.toJson()))
+//                        }
+//                            .subscribeOn(Schedulers.computation())
+//                            .subscribe { _ ->
+//                                Log.d("onDataChange", it.toJson())
+//                            }
+//
+//                        initButton(it.toJson())
+//                    }
+//                }, 5000)
+//            } else {
+//                timerIsRun = true
+//                timer.schedule(object : TimerTask() {
+//                    override fun run() {
+//                        Single.fromCallable {
+//                            EditorBookApplication.database!!.editerQuery()
+//                                .insertContent(EditerTable(0, it.toJson()))
+//                        }
+//                            .subscribeOn(Schedulers.computation())
+//                            .subscribe { _ ->
+//                                Log.d("onDataChange", it.toJson())
+//                            }
+//                        initButton(it.toJson())
+//                    }
+//                }, 5000)
+//            }
+//        })
     }
 
     private fun initButton(value: String) {
-        btnShowViewMode.setOnClickListener {
-            var intent = Intent(this, ReaderContentActivity::class.java)
-            intent.putExtra("value", value)
-            startActivity(intent)
-        }
+//        btnShowViewMode.setOnClickListener {
+//            var intent = Intent(this, ReaderContentActivity::class.java)
+//            intent.putExtra("value", value)
+//            startActivity(intent)
+//        }
     }
 
     private fun initView() {
@@ -317,7 +314,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, SetAlignment
 
         btnAlighment.setOnClickListener {
             try {
-                var fragmentImageViewerDialog = SetAlignmentDialog.Builder()
+                var fragmentImageViewerDialog = com.example.editer_library.view.SetAlignmentDialog.Builder()
                     .build(
                         it,
                         mViewModel.getModel()[cursorPosition].data!!.alight
@@ -326,7 +323,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, SetAlignment
                 fragmentImageViewerDialog.retainInstance = true
                 fragmentImageViewerDialog.show(supportFragmentManager, "alignment")
             } catch (ex: Exception) {
-                var fragmentImageViewerDialog = SetAlignmentDialog.Builder()
+                var fragmentImageViewerDialog = com.example.editer_library.view.SetAlignmentDialog.Builder()
                     .build(it, null)
                 fragmentImageViewerDialog.retainInstance = true
                 fragmentImageViewerDialog.show(supportFragmentManager, "alignment")
@@ -430,7 +427,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, SetAlignment
 
     // on click copy button
     fun copyText(view: View) {
-        myClipboard?.primaryClip = myClip
+//        myClipboard?.primaryClip = myClip
 
         Toast.makeText(this, "Text Copied", Toast.LENGTH_SHORT).show()
     }
@@ -593,28 +590,28 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, SetAlignment
         mAlertDialog = builder.show()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_SELECT_PICTURE) {
-                val selectedUri = data?.data
-                selectedUri?.let {
-                    addImageToModel(selectedUri.toString())
-                }
-//                if (selectedUri != null) {
-//                    startCropActivity(data.data!!)
-//                } else {
-//                    Toast.makeText(this, "ไม่สามารถรับรูปนี่ได้", Toast.LENGTH_LONG).show()
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        if (resultCode == RESULT_OK) {
+//            if (requestCode == REQUEST_SELECT_PICTURE) {
+//                val selectedUri = data?.data
+//                selectedUri?.let {
+//                    addImageToModel(selectedUri.toString())
 //                }
-            }
-//            else if (requestCode == UCrop.REQUEST_CROP) {
-//                data?.let {
-//                    handleCropResult(it)
-//                }
+////                if (selectedUri != null) {
+////                    startCropActivity(data.data!!)
+////                } else {
+////                    Toast.makeText(this, "ไม่สามารถรับรูปนี่ได้", Toast.LENGTH_LONG).show()
+////                }
 //            }
-        }
-//        if (resultCode == UCrop.RESULT_ERROR) {
+////            else if (requestCode == UCrop.REQUEST_CROP) {
+////                data?.let {
+////                    handleCropResult(it)
+////                }
+////            }
 //        }
-    }
+////        if (resultCode == UCrop.RESULT_ERROR) {
+////        }
+//    }
 
     private fun startCropActivity(uri: Uri) {
         val destinationFileName = FICTIONLOG_IMAGE
@@ -632,7 +629,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, SetAlignment
     private fun handleCropResult(result: Intent) {
         val resultUri = UCrop.getOutput(result)
         if (resultUri != null) {
-            addImageToModel(resultUri.encodedPath)
+//            addImageToModel(resultUri.encodedPath)
         } else {
         }
     }
