@@ -29,10 +29,12 @@ class SetAlignmentDialog : DialogFragment() {
     companion object {
         var source: View? = null
         var align: Alignment? = null
-        fun newInstance(source: View, align: Alignment?): SetAlignmentDialog {
+        var listener: OnClick? = null
+        fun newInstance(source: View, align: Alignment?, listener: OnClick): SetAlignmentDialog {
             val fragment = SetAlignmentDialog()
             Companion.source = source
             Companion.align = align
+            Companion.listener = listener
             return fragment
         }
     }
@@ -74,26 +76,30 @@ class SetAlignmentDialog : DialogFragment() {
             val dpHeight = displayMetrics!!.heightPixels / displayMetrics.density
             val dpWidth = displayMetrics.widthPixels / displayMetrics.density
 
-            ScreenUtil.dpToPx(dpWidth - 270F,context!!)
+            ScreenUtil.dpToPx(dpWidth - 270F, context!!)
 
 
             alignLeft.setOnClickListener {
-                (activity as OnClick).onClickAlignLeft()
+                if (listener != null)
+                    listener!!.onClickAlignLeft()
                 dismiss()
             }
 
             alignCenter.setOnClickListener {
-                (activity as OnClick).onClickAlignCenter()
+                if (listener != null)
+                    listener!!.onClickAlignCenter()
                 dismiss()
             }
 
             alignRight.setOnClickListener {
-                (activity as OnClick).onClickAlignRight()
+                if (listener != null)
+                    listener!!.onClickAlignRight()
                 dismiss()
             }
 
             indent.setOnClickListener {
-                (activity as OnClick).onClickIndent()
+                if (listener != null)
+                    listener!!.onClickIndent()
                 dismiss()
             }
 
@@ -205,8 +211,7 @@ class SetAlignmentDialog : DialogFragment() {
                         }
                     }
                 }
-            }
-            catch (ex:NullPointerException){
+            } catch (ex: NullPointerException) {
                 context?.let {
                     alignLeft.setColorFilter(
                         ContextCompat.getColor(it, R.color.grey)
@@ -245,7 +250,7 @@ class SetAlignmentDialog : DialogFragment() {
         window!!.setGravity(Gravity.TOP or Gravity.LEFT)
         val params = window.attributes
         params.x = sourceX  // about half of confirm button size left of source view
-        params.y = sourceY - ScreenUtil.dpToPx(100f,context!!) // above source view
+        params.y = sourceY - ScreenUtil.dpToPx(100f, context!!) // above source view
         window.attributes = params
     }
 
@@ -259,10 +264,11 @@ class SetAlignmentDialog : DialogFragment() {
 
     class Builder {
 
-        fun build(source: View, align: Alignment?): SetAlignmentDialog {
+        fun build(source: View, align: Alignment?, listener: OnClick): SetAlignmentDialog {
             val fragment = newInstance(
                 source,
-                align
+                align,
+                listener
             )
             return fragment
         }

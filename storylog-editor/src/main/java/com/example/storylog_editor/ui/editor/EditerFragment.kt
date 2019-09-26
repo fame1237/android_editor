@@ -308,7 +308,8 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        myClipboard = activity!!.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?
+        myClipboard =
+            activity!!.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?
         if (arguments != null && arguments!!.getString("data") != null) {
             var editerModel: MutableList<EditerModel> = mutableListOf()
             val json = JSONArray(arguments!!.getString("data"))
@@ -334,14 +335,15 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                     var fragmentImageViewerDialog = SetAlignmentDialog.Builder()
                         .build(
                             it,
-                            mViewModel.getModel()[cursorPosition].data!!.alight
+                            mViewModel.getModel()[cursorPosition].data!!.alight,
+                            this
                         )
 
                     fragmentImageViewerDialog.retainInstance = true
                     fragmentImageViewerDialog.show(fragmentManager, "alignment")
                 } catch (ex: Exception) {
                     var fragmentImageViewerDialog = SetAlignmentDialog.Builder()
-                        .build(it, null)
+                        .build(it, null, this)
                     fragmentImageViewerDialog.retainInstance = true
                     fragmentImageViewerDialog.show(fragmentManager, "alignment")
                 }
@@ -445,8 +447,6 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 //            }
         }
     }
-
-
 
 
     private fun pickFromGallery() {
