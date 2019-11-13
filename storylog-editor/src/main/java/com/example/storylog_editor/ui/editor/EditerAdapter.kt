@@ -385,6 +385,10 @@ class EditerAdapter(
         notifyItemRangeChanged(position, range)
     }
 
+    fun upDateItemInsertRange(position: Int,range:Int) {
+        notifyItemRangeInserted(position, range)
+    }
+
     fun upDateLineItem(position: Int) {
         notifyItemInserted(position + 1)
     }
@@ -714,6 +718,7 @@ class EditerAdapter(
             if (itemCount > 0) {
                 var item2 = clipData?.getItemAt(0)
                 var text = item2?.text?.split("\n")
+
                 var index = model.filterGetIndex {
                     it.id == keyId
                 }

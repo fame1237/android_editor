@@ -76,38 +76,29 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                     EditerViewType.EDIT_TEXT,
                     text,
                     mViewModel.getModel()[position].data!!.alight,
-                    true
+                    false
                 )
             }
         }
 
         adapter?.let {
-            it.upDateItemRange(position, count + 1)
-            rvEditor?.post {
-                rvEditor?.scrollToPosition(position + count + 1)
-            }
+            it.upDateItemInsertRange(position, count + 1)
         }
     }
 
     override fun onNextLine(position: Int, text: CharSequence) {
-        Single.fromCallable {
-            mViewModel.addView(
-                position,
-                EditerViewType.EDIT_TEXT,
-                text,
-                mViewModel.getModel()[position - 1].data!!.alight,
-                true
-            )
-        }.observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.computation())
-            .subscribe { _ ->
-                adapter?.let {
-                    it.upDateItem(position)
-                    rvEditor?.post {
-                        rvEditor?.scrollToPosition(position)
-                    }
-                }
+        mViewModel.addView(
+            position, EditerViewType.EDIT_TEXT, text,
+            mViewModel.getModel()[position - 1].data!!.alight,
+            true
+        )
+
+        adapter?.let {
+            it.upDateItem(position)
+            rvEditor?.post {
+                rvEditor?.scrollToPosition(position)
             }
+        }
     }
 
     override fun onPreviousLine(position: Int, text: CharSequence, selection: Int) {
@@ -459,7 +450,8 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
             addLine()
         }
 
-        var clipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        var clipboard =
+            activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         var clipData = clipboard.primaryClip
         var itemCount = clipData?.itemCount ?: 0
         if (itemCount > 0) {
