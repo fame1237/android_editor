@@ -46,7 +46,7 @@
 
         </LinearLayout>
 
-        <com.example.storylog_editor.view.MyEditText
+        <com.example.storylog_editor.view.ediitext.CutCopyPasteEditText
                 android:id="@+id/edtQuote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -16,7 +16,7 @@
             android:orientation="vertical"
             android:visibility="gone">
 
-        <com.example.storylog_editor.view.MyEditText
+        <com.example.storylog_editor.view.ediitext.CutCopyPasteEditText
                 android:id="@+id/edt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
             android:orientation="vertical"
             android:visibility="gone">
 
-        <com.example.storylog_editor.view.MyEditText
+        <com.example.storylog_editor.view.ediitext.CutCopyPasteEditText
                 android:id="@+id/edtHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
 
         </RelativeLayout>
 
-        <com.example.storylog_editor.view.MyEditText
+        <com.example.storylog_editor.view.ediitext.CutCopyPasteEditText
                 android:id="@+id/edtImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -132,7 +132,7 @@
 
         </LinearLayout>
 
-        <com.example.storylog_editor.view.MyEditText
+        <com.example.storylog_editor.view.ediitext.CutCopyPasteEditText
                 android:id="@+id/edtQuote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

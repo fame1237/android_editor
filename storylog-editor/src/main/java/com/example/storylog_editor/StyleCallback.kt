@@ -1,5 +1,9 @@
 package com.example.storylog_editor
 
+import android.app.Activity
+import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
+import android.content.ClipboardManager
+import android.content.Context
 import android.graphics.Typeface
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -21,10 +25,12 @@ class StyleCallback : ActionMode.Callback {
 
     var bodyView: EditText? = null
     var listener: EditerAdapter.OnChange? = null
+    var activity: Activity? = null
 
-    constructor(bodyView: EditText, listener: EditerAdapter.OnChange) {
+    constructor(bodyView: EditText, listener: EditerAdapter.OnChange, activity: Activity) {
         this.bodyView = bodyView
         this.listener = listener
+        this.activity = activity
     }
 
 
@@ -45,15 +51,34 @@ class StyleCallback : ActionMode.Callback {
         val selectionEnd = bodyView!!.selectionEnd
         val ssb = SpannableStringBuilder(bodyView!!.text)
 
+
         when (item.itemId) {
             android.R.id.copy -> {
                 Log.e("copy", "copy")
             }
             android.R.id.paste -> {
-                Log.e("paste", "paste")
+//                Log.e("paste", "paste")
+//                var clipboard =
+//                    activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+//                var clipData = clipboard.primaryClip
+//                var itemCount = clipData?.itemCount ?: 0
+//                if (itemCount > 0) {
+//                    var item2 = clipData?.getItemAt(0)
+//                    var text = item2?.text.toString()
+//                    Log.e("paste_style_callback", text)
+//                }
             }
             android.R.id.pasteAsPlainText -> {
-                Log.e("paste", "paste")
+//                Log.e("paste", "paste")
+//                var clipboard =
+//                    activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+//                var clipData = clipboard.primaryClip
+//                var itemCount = clipData?.itemCount ?: 0
+//                if (itemCount > 0) {
+//                    var item2 = clipData?.getItemAt(0)
+//                    var text = item2?.text.toString()
+//                    Log.e("paste_as_plain_text", text)
+//                }
             }
             R.id.bold -> {
                 cs = StyleSpan(Typeface.BOLD)

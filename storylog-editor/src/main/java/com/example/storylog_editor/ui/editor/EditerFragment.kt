@@ -5,7 +5,9 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -18,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,6 +42,7 @@ import java.util.*
 
 class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.OnClick {
 
+
     lateinit var mViewModel: EditorViewModel
     var adapter: EditerAdapter? = null
     var cursorPosition = 0
@@ -59,6 +63,31 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 
     private var myClipboard: ClipboardManager? = null
     private var myClip: ClipData? = null
+
+    override fun onPasteText(position: Int, textList: MutableList<String>) {
+        var count = 0
+        mViewModel.updateText(position, textList[0], TextStyle.NORMAL, false, null, false)
+
+        textList.forEachIndexed { index, text ->
+            if (index > 0) {
+                count++
+                mViewModel.addView(
+                    position + index,
+                    EditerViewType.EDIT_TEXT,
+                    text,
+                    mViewModel.getModel()[position].data!!.alight,
+                    true
+                )
+            }
+        }
+
+        adapter?.let {
+            it.upDateItemRange(position, count + 1)
+            rvEditor?.post {
+                rvEditor?.scrollToPosition(position + count + 1)
+            }
+        }
+    }
 
     override fun onNextLine(position: Int, text: CharSequence) {
         Single.fromCallable {
@@ -183,8 +212,6 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                 }
             }
         }
-//        mViewModel.getModel()[position].data?.selection = (view as EditText).selectionEnd
-//        mViewModel.updateFocus(position, true)
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
                 mViewModel.getModel()[cursorPosition].viewType != EditerViewType.IMAGE
@@ -324,7 +351,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
     }
 
     private fun initView() {
-        adapter = EditerAdapter(context!!, this, mViewModel.getModel())
+        adapter = EditerAdapter(context!!, activity!!, this, mViewModel.getModel())
         rvEditor?.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         rvEditor?.adapter = adapter
         rvEditor?.itemAnimator = null
@@ -427,8 +454,17 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                 }
             }
         }
+
         btnLine?.setOnClickListener {
             addLine()
+        }
+
+        var clipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        var clipData = clipboard.primaryClip
+        var itemCount = clipData?.itemCount ?: 0
+        if (itemCount > 0) {
+            var item = clipData?.getItemAt(0)
+            var text = item?.text.toString()
         }
     }
 

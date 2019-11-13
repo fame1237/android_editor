@@ -1,5 +1,7 @@
 package com.example.storylog_editor.ui.editor
 
+import android.app.Activity
+import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
@@ -32,6 +34,7 @@ import com.example.storylog_editor.StyleCallback
 import com.example.storylog_editor.extension.filterGetArrayIndex
 import com.example.storylog_editor.extension.filterGetIndex
 import com.example.storylog_editor.model.*
+import com.example.storylog_editor.view.ediitext.CutCopyPasteEditText
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -45,6 +48,7 @@ import java.lang.Exception
 
 class EditerAdapter(
     val context: Context,
+    val activity: Activity,
     var listener: OnChange,
     var model: MutableList<EditerModel>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -66,6 +70,7 @@ class EditerAdapter(
         fun onUpdateBold()
         fun setShowBorderFalse(position: Int)
         fun clearFocus(position: Int)
+        fun onPasteText(position: Int, textList: MutableList<String>)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -330,7 +335,7 @@ class EditerAdapter(
                     viewHolder.edtHeader.setText(
                         createIndentedText(
                             viewHolder.edtHeader.text as CharSequence,
-                            dpToPx(30f,context),
+                            dpToPx(30f, context),
                             0
                         )
                     )
@@ -374,6 +379,10 @@ class EditerAdapter(
     fun upDateItem(position: Int) {
         notifyItemChanged(position - 1, false)
         notifyItemInserted(position)
+    }
+
+    fun upDateItemRange(position: Int,range:Int) {
+        notifyItemRangeChanged(position, range)
     }
 
     fun upDateLineItem(position: Int) {
@@ -440,15 +449,17 @@ class EditerAdapter(
 
     inner class MyEditTextViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) :
         RecyclerView.ViewHolder(v) {
-        var edt = v.findViewById<AppCompatEditText>(R.id.edt)
+        var edt = v.findViewById<CutCopyPasteEditText>(R.id.edt)
         var myCustomEditTextListener = customEditTextListener
 
         init {
             edt.addTextChangedListener(myCustomEditTextListener)
             edt.onFocusChangeListener = myCustomEditTextListener
             edt.setOnKeyListener(myCustomEditTextListener)
-            edt.setAccessibilityDelegate(myCustomEditTextListener)
-            edt.customSelectionActionModeCallback = StyleCallback(edt, listener)
+            edt.accessibilityDelegate = myCustomEditTextListener
+            edt.customSelectionActionModeCallback = StyleCallback(edt, listener, activity)
+
+            edt.setOnCutCopyPasteListener(myCustomEditTextListener)
         }
     }
 
@@ -457,15 +468,16 @@ class EditerAdapter(
         customEditTextListener: MyCustomEditTextListener
     ) :
         RecyclerView.ViewHolder(v) {
-        var edt = v.findViewById<com.example.storylog_editor.view.MyEditText>(R.id.edt)
+        var edt =
+            v.findViewById<com.example.storylog_editor.view.ediitext.CutCopyPasteEditText>(R.id.edt)
         var myCustomEditTextListener = customEditTextListener
 
         init {
             edt.addTextChangedListener(myCustomEditTextListener)
             edt.onFocusChangeListener = myCustomEditTextListener
             edt.setOnKeyListener(myCustomEditTextListener)
-            edt.setAccessibilityDelegate(myCustomEditTextListener)
-            edt.customSelectionActionModeCallback = StyleCallback(edt, listener)
+            edt.accessibilityDelegate = myCustomEditTextListener
+            edt.customSelectionActionModeCallback = StyleCallback(edt, listener, activity)
         }
     }
 
@@ -478,20 +490,21 @@ class EditerAdapter(
             edtHeader.addTextChangedListener(myCustomEditTextListener)
             edtHeader.onFocusChangeListener = myCustomEditTextListener
             edtHeader.setOnKeyListener(myCustomEditTextListener)
-            edtHeader.setAccessibilityDelegate(myCustomEditTextListener)
+            edtHeader.accessibilityDelegate = myCustomEditTextListener
         }
     }
 
     inner class MyQuoteViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) :
         RecyclerView.ViewHolder(v) {
-        var edtQuote = v.findViewById<com.example.storylog_editor.view.MyEditText>(R.id.edtQuote)
+        var edtQuote =
+            v.findViewById<com.example.storylog_editor.view.ediitext.CutCopyPasteEditText>(R.id.edtQuote)
         var myCustomEditTextListener = customEditTextListener
 
         init {
             edtQuote.addTextChangedListener(myCustomEditTextListener)
             edtQuote.onFocusChangeListener = myCustomEditTextListener
             edtQuote.setOnKeyListener(myCustomEditTextListener)
-            edtQuote.setAccessibilityDelegate(myCustomEditTextListener)
+            edtQuote.accessibilityDelegate = myCustomEditTextListener
         }
     }
 
@@ -505,14 +518,15 @@ class EditerAdapter(
         var btnDeleteImage = v.findViewById<RelativeLayout>(R.id.btnDeleteImage)
         var layoutRecycle = v.findViewById<LinearLayout>(R.id.layoutRecycle)
         var image = v.findViewById<ImageView>(R.id.image)
-        var edtImage = v.findViewById<com.example.storylog_editor.view.MyEditText>(R.id.edtImage)
+        var edtImage =
+            v.findViewById<com.example.storylog_editor.view.ediitext.CutCopyPasteEditText>(R.id.edtImage)
         var myCustomEditTextListener = customEditTextListener
 
         init {
             edtImage.addTextChangedListener(customEditTextListener)
             edtImage.onFocusChangeListener = customEditTextListener
             edtImage.setOnKeyListener(customEditTextListener)
-            edtImage.setAccessibilityDelegate(customEditTextListener)
+            edtImage.accessibilityDelegate = customEditTextListener
 
         }
     }
@@ -524,8 +538,7 @@ class EditerAdapter(
     }
 
     inner class MyViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) :
-        RecyclerView.ViewHolder(v) {
-    }
+        RecyclerView.ViewHolder(v)
 
     inner class MyCustomImageLayoutEditTextListener : TextWatcher,
         com.example.storylog_editor.view.EditTextSelectable.onSelectionChangedListener,
@@ -676,7 +689,9 @@ class EditerAdapter(
         com.example.storylog_editor.view.EditTextSelectable.onSelectionChangedListener,
         View.OnFocusChangeListener,
         View.OnKeyListener,
-        View.AccessibilityDelegate() {
+        View.AccessibilityDelegate(),
+        CutCopyPasteEditText.OnCutCopyPasteListener {
+
 
         var keyId: Long = -1
 
@@ -684,6 +699,29 @@ class EditerAdapter(
             this.keyId = keyId
         }
 
+        override fun onCut() {
+
+        }
+
+        override fun onCopy() {
+        }
+
+        override fun onPaste() {
+            var clipboard =
+                activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            var clipData = clipboard.primaryClip
+            var itemCount = clipData?.itemCount ?: 0
+            if (itemCount > 0) {
+                var item2 = clipData?.getItemAt(0)
+                var text = item2?.text?.split("\n")
+                var index = model.filterGetIndex {
+                    it.id == keyId
+                }
+                text?.let {
+                    listener.onPasteText(index, text.toMutableList())
+                }
+            }
+        }
 
         override fun sendAccessibilityEvent(host: View?, eventType: Int) {
             super.sendAccessibilityEvent(host, eventType)

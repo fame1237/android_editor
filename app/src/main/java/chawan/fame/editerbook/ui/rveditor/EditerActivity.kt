@@ -44,6 +44,9 @@ import java.lang.Exception
 import java.util.*
 
 class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.storylog_editor.view.SetAlignmentDialog.OnClick {
+    override fun onPasteText(position: Int, textList: MutableList<String>) {
+
+    }
 
     lateinit var mViewModel: EditorViewModel
     var adapter: EditerAdapter? = null
@@ -305,7 +308,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
     }
 
     private fun initView() {
-        adapter = EditerAdapter(this, this, mViewModel.getModel())
+        adapter = EditerAdapter(this, this,this, mViewModel.getModel())
         rvEditor.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rvEditor.adapter = adapter
         rvEditor.itemAnimator = null

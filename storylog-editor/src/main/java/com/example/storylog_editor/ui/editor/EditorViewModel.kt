@@ -276,7 +276,6 @@ class EditorViewModel : ViewModel() {
     }
 
 
-
     fun getSize(): Int {
         return editerModel.size
     }
