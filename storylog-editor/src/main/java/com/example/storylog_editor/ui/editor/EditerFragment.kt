@@ -5,9 +5,7 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -20,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,9 +30,6 @@ import com.example.storylog_editor.model.EditerViewType
 import com.example.storylog_editor.model.TextStyle
 import com.example.storylog_editor.util.KeyboardHelper
 import com.example.storylog_editor.view.SetAlignmentDialog
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
@@ -102,7 +96,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
     }
 
     override fun onPreviousLine(position: Int, text: CharSequence, selection: Int) {
-        var viewType = mViewModel.getModel()[position - 1].viewType
+        var viewType = mViewModel.getModel()[position - 1].type
 
         when (viewType) {
             EditerViewType.IMAGE -> {
@@ -171,7 +165,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 
         context?.let {
             when {
-                mViewModel.getModel()[position].viewType == EditerViewType.QUOTE -> {
+                mViewModel.getModel()[position].type == EditerViewType.QUOTE -> {
                     btnQuote?.setColorFilter(
                         ContextCompat.getColor(it, R.color.colorOrange)
                         , PorterDuff.Mode.SRC_IN
@@ -181,7 +175,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                         , PorterDuff.Mode.SRC_IN
                     )
                 }
-                mViewModel.getModel()[position].viewType == EditerViewType.HEADER -> {
+                mViewModel.getModel()[position].type == EditerViewType.HEADER -> {
                     btnQuote?.setColorFilter(
                         ContextCompat.getColor(it, R.color.grey_image)
                         , PorterDuff.Mode.SRC_IN
@@ -205,7 +199,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         }
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].viewType != EditerViewType.IMAGE
+                mViewModel.getModel()[cursorPosition].type != EditerViewType.IMAGE
             ) {
                 imageIndex.forEach {
                     adapter?.updateCurrentItem(it)
@@ -226,7 +220,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         mViewModel.clearFocus()
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].viewType != EditerViewType.IMAGE
+                mViewModel.getModel()[cursorPosition].type != EditerViewType.IMAGE
             ) {
                 adapter?.notifyItemChanged(cursorPosition)
                 rvEditor?.post {
@@ -378,7 +372,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         context?.let { context ->
             btnQuote?.setOnClickListener {
                 if (cursorPosition <= mViewModel.getSize()) {
-                    if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.EDIT_TEXT) {
+                    if (mViewModel.getModel()[cursorPosition].type == EditerViewType.EDIT_TEXT) {
                         adapter?.let {
                             mViewModel.changeToQuote(cursorPosition)
                             it.updateCurrentItem(cursorPosition)
@@ -388,7 +382,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                             ContextCompat.getColor(context, R.color.colorOrange)
                             , PorterDuff.Mode.SRC_IN
                         )
-                    } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.QUOTE) {
+                    } else if (mViewModel.getModel()[cursorPosition].type == EditerViewType.QUOTE) {
                         adapter?.let {
                             mViewModel.changeToEditText(cursorPosition)
                             it.updateCurrentItem(cursorPosition)
@@ -414,7 +408,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 
             btnHeader?.setOnClickListener {
                 if (cursorPosition <= mViewModel.getSize()) {
-                    if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.EDIT_TEXT) {
+                    if (mViewModel.getModel()[cursorPosition].type == EditerViewType.EDIT_TEXT) {
                         adapter?.let {
                             mViewModel.changeToHeader(cursorPosition)
                             it.updateCurrentItem(cursorPosition)
@@ -423,7 +417,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                                 , PorterDuff.Mode.SRC_IN
                             )
                         }
-                    } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.HEADER) {
+                    } else if (mViewModel.getModel()[cursorPosition].type == EditerViewType.HEADER) {
                         adapter?.let {
                             mViewModel.changeToEditText(cursorPosition)
                             it.updateCurrentItem(cursorPosition)

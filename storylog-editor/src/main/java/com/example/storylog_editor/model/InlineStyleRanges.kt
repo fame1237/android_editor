@@ -6,8 +6,6 @@ class InlineStyleRanges {
     var lenght = 0
     var style: TextStyle? = null
 
-
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is InlineStyleRanges) return false

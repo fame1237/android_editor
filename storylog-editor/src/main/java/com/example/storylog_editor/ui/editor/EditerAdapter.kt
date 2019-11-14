@@ -132,7 +132,7 @@ class EditerAdapter(
             }
 
             if (model[position].data != null) {
-                val ss1 = SpannableString(model[position].data!!.text)
+                val ss1 = SpannableString(model[position].text)
                 model[position].data!!.inlineStyleRange.forEach {
                     var offset = it.offset
                     var lenght = it.lenght
@@ -262,7 +262,7 @@ class EditerAdapter(
 
             if (model[position].data != null) {
                 viewHolder.edtImage.post {
-                    viewHolder.edtImage.setText(model[position].data!!.text)
+                    viewHolder.edtImage.setText(model[position].text)
                 }
             }
 
@@ -279,7 +279,7 @@ class EditerAdapter(
             viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
             if (model[position].data != null) {
                 viewHolder.edtQuote.post {
-                    viewHolder.edtQuote.setText(model[position].data!!.text)
+                    viewHolder.edtQuote.setText(model[position].text)
                 }
             }
 
@@ -296,7 +296,7 @@ class EditerAdapter(
         } else if (viewHolder is MyHeaderViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
             if (model[position].data != null) {
-                viewHolder.edtHeader.setText(model[position].data!!.text)
+                viewHolder.edtHeader.setText(model[position].text)
             }
 
             when (model[position].data!!.alight) {
@@ -429,7 +429,7 @@ class EditerAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        when (model[position].viewType) {
+        when (model[position].type) {
             EditerViewType.EDIT_TEXT -> {
                 return 1
             }
@@ -637,7 +637,7 @@ class EditerAdapter(
                         it.id == keyId
                     }
                     var imageIndex = model.filterGetArrayIndex {
-                        it.viewType == EditerViewType.IMAGE
+                        it.type == EditerViewType.IMAGE
                     }
                     var indexDataModel = IndexData()
                     indexDataModel.index = index
@@ -669,7 +669,7 @@ class EditerAdapter(
             var index = model.filterGetIndex {
                 it.id == keyId
             }
-            if (model[index].viewType == EditerViewType.QUOTE) {
+            if (model[index].type == EditerViewType.QUOTE) {
                 listener.onUpdateText(index, charSequence, false)
             } else {
                 listener.onUpdateText(index, charSequence, true)
@@ -790,7 +790,7 @@ class EditerAdapter(
                     it.id == keyId
                 }
                 if (index > 0 && (view as EditText).selectionEnd == 0) {
-                    val ssPrevios = SpannableStringBuilder(model[index - 1].data!!.text)
+                    val ssPrevios = SpannableStringBuilder(model[index - 1].text)
                     model[index - 1].data!!.inlineStyleRange.forEach {
                         var offset = it.offset
                         var lenght = it.lenght
@@ -837,7 +837,7 @@ class EditerAdapter(
                         it.id == keyId
                     }
                     var imageIndex = model.filterGetArrayIndex {
-                        it.viewType == EditerViewType.IMAGE
+                        it.type == EditerViewType.IMAGE
                     }
                     var indexDataModel = IndexData()
                     indexDataModel.index = index
@@ -869,7 +869,7 @@ class EditerAdapter(
             var index = model.filterGetIndex {
                 it.id == keyId
             }
-            if (model[index].viewType == EditerViewType.QUOTE) {
+            if (model[index].type == EditerViewType.QUOTE) {
                 listener.onUpdateText(index, charSequence, false)
             } else {
                 listener.onUpdateText(index, charSequence, true)

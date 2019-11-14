@@ -18,14 +18,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import chawan.fame.editerbook.EditorBookApplication
 import chawan.fame.editerbook.R
-import com.example.storylog_editor.extension.toClass
-import com.example.storylog_editor.model.Alignment
-import com.example.storylog_editor.model.EditerModel
 import com.example.storylog_editor.model.EditerViewType
 import com.example.storylog_editor.model.TextStyle
 import com.example.storylog_editor.ui.editor.EditerAdapter
@@ -37,10 +32,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_editer.*
-import org.json.JSONArray
-import org.json.JSONObject
 import java.io.File
-import java.lang.Exception
 import java.util.*
 
 class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.storylog_editor.view.SetAlignmentDialog.OnClick {
@@ -75,7 +67,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
         mViewModel.clearFocus()
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].viewType != EditerViewType.IMAGE
+                mViewModel.getModel()[cursorPosition].type != EditerViewType.IMAGE
             ) {
                 adapter?.notifyItemChanged(cursorPosition)
                 rvEditor.post {
@@ -96,7 +88,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
         mViewModel.goneBorder()
 
         when {
-            mViewModel.getModel()[position].viewType == EditerViewType.QUOTE -> {
+            mViewModel.getModel()[position].type == EditerViewType.QUOTE -> {
                 btnQuote.setColorFilter(
                     ContextCompat.getColor(this, R.color.colorOrange)
                     , PorterDuff.Mode.SRC_IN
@@ -106,7 +98,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                     , PorterDuff.Mode.SRC_IN
                 )
             }
-            mViewModel.getModel()[position].viewType == EditerViewType.HEADER -> {
+            mViewModel.getModel()[position].type == EditerViewType.HEADER -> {
                 btnQuote.setColorFilter(
                     ContextCompat.getColor(this, R.color.grey_image)
                     , PorterDuff.Mode.SRC_IN
@@ -132,7 +124,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 //        mViewModel.updateFocus(position, true)
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].viewType != EditerViewType.IMAGE
+                mViewModel.getModel()[cursorPosition].type != EditerViewType.IMAGE
             ) {
                 imageIndex.forEach {
                     adapter?.updateCurrentItem(it)
@@ -190,7 +182,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
     }
 
     override fun onPreviousLine(position: Int, text: CharSequence, selection: Int) {
-        var viewType = mViewModel.getModel()[position - 1].viewType
+        var viewType = mViewModel.getModel()[position - 1].type
 
         when (viewType) {
             EditerViewType.IMAGE -> {
@@ -340,7 +332,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 
         btnQuote.setOnClickListener {
             if (cursorPosition <= mViewModel.getSize()) {
-                if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.EDIT_TEXT) {
+                if (mViewModel.getModel()[cursorPosition].type == EditerViewType.EDIT_TEXT) {
                     adapter?.let {
                         mViewModel.changeToQuote(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
@@ -350,7 +342,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                         ContextCompat.getColor(this, R.color.colorOrange)
                         , PorterDuff.Mode.SRC_IN
                     )
-                } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.QUOTE) {
+                } else if (mViewModel.getModel()[cursorPosition].type == EditerViewType.QUOTE) {
                     adapter?.let {
                         mViewModel.changeToEditText(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
@@ -376,7 +368,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 
         btnHeader.setOnClickListener {
             if (cursorPosition <= mViewModel.getSize()) {
-                if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.EDIT_TEXT) {
+                if (mViewModel.getModel()[cursorPosition].type == EditerViewType.EDIT_TEXT) {
                     adapter?.let {
                         mViewModel.changeToHeader(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
@@ -385,7 +377,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                             , PorterDuff.Mode.SRC_IN
                         )
                     }
-                } else if (mViewModel.getModel()[cursorPosition].viewType == EditerViewType.HEADER) {
+                } else if (mViewModel.getModel()[cursorPosition].type == EditerViewType.HEADER) {
                     adapter?.let {
                         mViewModel.changeToEditText(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
