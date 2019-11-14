@@ -208,6 +208,7 @@ class EditerAdapter(
                 model[position].data!!.selection = 0
             }
             model[position].data!!.selection = 0
+
         } else if (viewHolder is MyImageViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[position].id, viewHolder)
             if (model[position].showBorder) {

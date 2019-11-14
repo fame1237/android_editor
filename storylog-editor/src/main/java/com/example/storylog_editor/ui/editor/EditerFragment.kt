@@ -60,23 +60,27 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 
     override fun onPasteText(position: Int, textList: MutableList<String>) {
         var count = 0
-        mViewModel.updateText(position, textList[0], TextStyle.NORMAL, false, null, false)
-
-        textList.forEachIndexed { index, text ->
-            if (index > 0) {
-                count++
-                mViewModel.addView(
-                    position + index,
-                    EditerViewType.EDIT_TEXT,
-                    text,
-                    mViewModel.getModel()[position].data!!.alight,
-                    true
-                )
+        if (textList.size == 1) {
+            mViewModel.updatePasteText(position, textList[0], TextStyle.NORMAL, true, null, false)
+        } else {
+            mViewModel.updatePasteText(position, textList[0], TextStyle.NORMAL, false, null, false)
+            textList.forEachIndexed { index, text ->
+                if (index > 0) {
+                    count++
+                    mViewModel.addView(
+                        position + index,
+                        EditerViewType.EDIT_TEXT,
+                        text,
+                        mViewModel.getModel()[position].data!!.alight,
+                        true
+                    )
+                }
             }
         }
-
         adapter?.let {
-            it.upDateItemInsertRange(position, count + 1)
+            //            it.upDateItemInsertRange(position, count + 1)
+            it.notifyDataSetChanged()
+            rvEditor?.layoutManager?.scrollToPosition(position + count + 1)
         }
     }
 
@@ -90,7 +94,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         adapter?.let {
             it.upDateItem(position)
 //            rvEditor?.post {
-                rvEditor?.layoutManager?.scrollToPosition(position)
+            rvEditor?.layoutManager?.scrollToPosition(position)
 //            }
         }
     }

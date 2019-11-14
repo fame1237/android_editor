@@ -42,10 +42,8 @@ class EditorViewModel : ViewModel() {
         model.type = viewType
         model.isFocus = isFocus
         model.data = data
-        data.selection = 0
+        data.selection = text.length
         data.alight = align
-
-
 
         editerModel.add(position, model)
         editorModelLiveData.postValue(editerModel)
@@ -69,6 +67,33 @@ class EditorViewModel : ViewModel() {
         selection?.let {
             data.selection = selection
         }
+
+        if (isFocus) {
+            editerModel.forEach {
+                it.isFocus = false
+            }
+            model.isFocus = isFocus
+        }
+
+        editorModelLiveData.postValue(editerModel)
+    }
+
+    fun updatePasteText(
+        position: Int, text: CharSequence, style: TextStyle,
+        isFocus: Boolean = false,
+        selection: Int?,
+        updateStyle: Boolean
+    ) {
+        val model = editerModel[position]
+        val data = model.data!!
+        model.text = text.toString()
+        if (updateStyle) {
+            data.inlineStyleRange.clear()
+            data.inlineStyleRange = CheckStyle.checkSpan(null, text)
+        }
+        data.style = style
+        model.data = data
+        data.selection = text.length
 
         if (isFocus) {
             editerModel.forEach {
