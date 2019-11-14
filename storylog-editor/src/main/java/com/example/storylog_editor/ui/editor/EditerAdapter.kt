@@ -126,9 +126,9 @@ class EditerAdapter(
                     }
                 }
             } else {
-                viewHolder.edt.post {
-                    viewHolder.edt.clearFocus()
-                }
+//                viewHolder.edt.post {
+                viewHolder.edt.clearFocus()
+//                }
             }
 
             if (model[position].data != null) {
@@ -293,6 +293,9 @@ class EditerAdapter(
                     }
                 }
             }
+            else {
+                viewHolder.edtQuote.clearFocus()
+            }
         } else if (viewHolder is MyHeaderViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
             if (model[position].data != null) {
@@ -349,6 +352,9 @@ class EditerAdapter(
                     }
                 }
             }
+            else {
+                viewHolder.edtHeader.clearFocus()
+            }
         }
     }
 
@@ -381,11 +387,11 @@ class EditerAdapter(
         notifyItemInserted(position)
     }
 
-    fun upDateItemRange(position: Int,range:Int) {
+    fun upDateItemRange(position: Int, range: Int) {
         notifyItemRangeChanged(position, range)
     }
 
-    fun upDateItemInsertRange(position: Int,range:Int) {
+    fun upDateItemInsertRange(position: Int, range: Int) {
         notifyItemRangeInserted(position, range)
     }
 

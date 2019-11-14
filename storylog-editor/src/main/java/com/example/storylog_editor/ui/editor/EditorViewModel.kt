@@ -7,10 +7,16 @@ import com.example.storylog_editor.model.*
 import com.example.storylog_editor.util.CheckStyle
 import com.example.storylog_editor.util.GenerateKey
 
+data class UpdateImageData(var position: Int, var src: String)
+
 class EditorViewModel : ViewModel() {
 
     var editerModel: MutableList<EditerModel> = mutableListOf()
     var editorModelLiveData = SingleLiveEvent<MutableList<EditerModel>>()
+
+    var uploadImageToServer = SingleLiveEvent<String>()
+
+    var updateImage = SingleLiveEvent<UpdateImageData>()
 
     fun setModel(model: MutableList<EditerModel>) {
         this.editerModel = model
@@ -23,6 +29,10 @@ class EditorViewModel : ViewModel() {
         align: Alignment,
         isFocus: Boolean = false
     ) {
+        editerModel.forEach {
+            it.isFocus = false
+        }
+
         val model = EditerModel()
         val data = Data()
         model.text = text.toString()
@@ -35,9 +45,7 @@ class EditorViewModel : ViewModel() {
         data.selection = 0
         data.alight = align
 
-        editerModel.forEach {
-            it.isFocus = false
-        }
+
 
         editerModel.add(position, model)
         editorModelLiveData.postValue(editerModel)

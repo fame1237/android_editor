@@ -89,9 +89,9 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 
         adapter?.let {
             it.upDateItem(position)
-            rvEditor?.post {
-                rvEditor?.scrollToPosition(position)
-            }
+//            rvEditor?.post {
+                rvEditor?.layoutManager?.scrollToPosition(position)
+//            }
         }
     }
 
@@ -536,20 +536,8 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                 selectedUri?.let {
                     addImageToModel(selectedUri.toString())
                 }
-//                if (selectedUri != null) {
-//                    startCropActivity(data.data!!)
-//                } else {
-//                    Toast.makeText(this, "ไม่สามารถรับรูปนี่ได้", Toast.LENGTH_LONG).show()
-//                }
             }
-//            else if (requestCode == UCrop.REQUEST_CROP) {
-//                data?.let {
-//                    handleCropResult(it)
-//                }
-//            }
         }
-//        if (resultCode == UCrop.RESULT_ERROR) {
-//        }
     }
 
     private fun addImageToModel(image: String) {
