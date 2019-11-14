@@ -76,7 +76,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                     EditerViewType.EDIT_TEXT,
                     text,
                     mViewModel.getModel()[position].data!!.alight,
-                    false
+                    true
                 )
             }
         }
