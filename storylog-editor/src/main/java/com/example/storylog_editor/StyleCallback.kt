@@ -56,30 +56,6 @@ class StyleCallback : ActionMode.Callback {
             android.R.id.copy -> {
                 Log.e("copy", "copy")
             }
-            android.R.id.paste -> {
-//                Log.e("paste", "paste")
-//                var clipboard =
-//                    activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-//                var clipData = clipboard.primaryClip
-//                var itemCount = clipData?.itemCount ?: 0
-//                if (itemCount > 0) {
-//                    var item2 = clipData?.getItemAt(0)
-//                    var text = item2?.text.toString()
-//                    Log.e("paste_style_callback", text)
-//                }
-            }
-            android.R.id.pasteAsPlainText -> {
-//                Log.e("paste", "paste")
-//                var clipboard =
-//                    activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-//                var clipData = clipboard.primaryClip
-//                var itemCount = clipData?.itemCount ?: 0
-//                if (itemCount > 0) {
-//                    var item2 = clipData?.getItemAt(0)
-//                    var text = item2?.text.toString()
-//                    Log.e("paste_as_plain_text", text)
-//                }
-            }
             R.id.bold -> {
                 cs = StyleSpan(Typeface.BOLD)
 
@@ -210,7 +186,7 @@ class StyleCallback : ActionMode.Callback {
                             cs,
                             selectionStart,
                             selectionEnd,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     } else {
                         typeface.forEach {
@@ -224,7 +200,7 @@ class StyleCallback : ActionMode.Callback {
                         cs,
                         selectionStart,
                         selectionEnd,
-                        Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                        SPAN_EXCLUSIVE_INCLUSIVE
                     )
                 }
                 bodyView!!.text = ssb
@@ -434,7 +410,7 @@ class StyleCallback : ActionMode.Callback {
                             typeface,
                             textBoldStartPosition,
                             selectionStart - 1,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                     selectionStart == textBoldStartPosition && selectionEnd == textBoldEndPosition -> {
@@ -450,14 +426,14 @@ class StyleCallback : ActionMode.Callback {
                             spanLeft,
                             textBoldStartPosition,
                             selectionStart,
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            SPAN_EXCLUSIVE_EXCLUSIVE
                         )
 
                         ssb.setSpan(
                             spanRight,
                             selectionEnd,
                             textBoldEndPosition,
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            SPAN_EXCLUSIVE_EXCLUSIVE
                         )
 
                     }
@@ -469,7 +445,7 @@ class StyleCallback : ActionMode.Callback {
                             newSpan,
                             selectionEnd,
                             textBoldEndPosition,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                     selectionStart == textBoldStartPosition && selectionEnd > textBoldEndPosition -> {
@@ -478,7 +454,7 @@ class StyleCallback : ActionMode.Callback {
                             typeface,
                             selectionStart,
                             selectionEnd,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                     selectionStart < textBoldStartPosition && selectionEnd == textBoldEndPosition -> {
@@ -487,7 +463,7 @@ class StyleCallback : ActionMode.Callback {
                             typeface,
                             selectionStart,
                             selectionEnd,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                     selectionStart > textBoldStartPosition && selectionEnd == textBoldEndPosition -> {
@@ -498,7 +474,7 @@ class StyleCallback : ActionMode.Callback {
                             newSpan,
                             textBoldStartPosition,
                             selectionStart,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                     selectionStart < textBoldStartPosition && selectionEnd > textBoldEndPosition -> {
@@ -507,7 +483,7 @@ class StyleCallback : ActionMode.Callback {
                             typeface,
                             selectionStart,
                             selectionEnd,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                 }

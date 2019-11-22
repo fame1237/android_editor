@@ -8,8 +8,6 @@ class Data {
     var alight: Alignment = Alignment.START
 }
 
-
-
 enum class Alignment {
     START, CENTER, END, INDENT
 }

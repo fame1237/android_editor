@@ -44,7 +44,7 @@ class EditerViewModelMockTest {
         val model = EditerModel()
         val data = Data()
         data.text = "my text"
-        data.style = TextStyle.NORMAL
+        data.style = "normal"
         data.inlineStyleRange = CheckStyle.checkSpan(null, "")
         model.type = EditerViewType.EDIT_TEXT
         model.isFocus = true
@@ -70,7 +70,7 @@ class EditerViewModelMockTest {
         val data = Data()
         data.text = ""
         data.src = "fictionlog"
-        data.style = TextStyle.NORMAL
+        data.style = "normal"
         model.type = EditerViewType.IMAGE
         model.data = data
         model.isFocus = false
@@ -79,7 +79,7 @@ class EditerViewModelMockTest {
         val data2 = Data()
         data2.text = ""
         data2.src = ""
-        data2.style = TextStyle.NORMAL
+        data2.style = "normal"
         model2.type = EditerViewType.EDIT_TEXT
         model2.data = data2
         model2.isFocus = true
@@ -114,7 +114,7 @@ class EditerViewModelMockTest {
         val data2 = Data()
         data2.text = ""
         data2.src = ""
-        data2.style = TextStyle.NORMAL
+        data2.style = "normal"
         model2.type = EditerViewType.EDIT_TEXT
         model2.data = data2
         model2.isFocus = true
@@ -140,7 +140,7 @@ class EditerViewModelMockTest {
         val model = EditerModel()
         val data = Data()
         data.text = "my text"
-        data.style = TextStyle.NORMAL
+        data.style = "normal"
         data.inlineStyleRange = CheckStyle.checkSpan(null, "")
         model.type = EditerViewType.QUOTE
         model.isFocus = true
@@ -166,7 +166,7 @@ class EditerViewModelMockTest {
         val model = EditerModel()
         val data = Data()
         data.text = "my text"
-        data.style = TextStyle.NORMAL
+        data.style = "normal"
         data.inlineStyleRange = CheckStyle.checkSpan(null, "")
         model.type = EditerViewType.HEADER
         model.isFocus = true
@@ -192,7 +192,7 @@ class EditerViewModelMockTest {
         val model = EditerModel()
         val data = Data()
         data.text = "my text1"
-        data.style = TextStyle.NORMAL
+        data.style = "normal"
         data.inlineStyleRange = CheckStyle.checkSpan(null, "")
         model.type = EditerViewType.EDIT_TEXT
         model.isFocus = false
@@ -203,7 +203,7 @@ class EditerViewModelMockTest {
         val model2 = EditerModel()
         val data2 = Data()
         data2.text = "my text2"
-        data2.style = TextStyle.NORMAL
+        data2.style = "normal"
         data2.inlineStyleRange = CheckStyle.checkSpan(null, "")
         model2.type = EditerViewType.EDIT_TEXT
         model2.isFocus = false
@@ -214,7 +214,7 @@ class EditerViewModelMockTest {
         val model3 = EditerModel()
         val data3 = Data()
         data3.text = "my text3"
-        data3.style = TextStyle.NORMAL
+        data3.style = "normal"
         data3.inlineStyleRange = CheckStyle.checkSpan(null, "")
         model3.type = EditerViewType.EDIT_TEXT
         model3.isFocus = true
@@ -254,7 +254,7 @@ class EditerViewModelMockTest {
         val model = EditerModel()
         val data = Data()
         data.text = "my text1"
-        data.style = TextStyle.NORMAL
+        data.style = "normal"
         data.inlineStyleRange = CheckStyle.checkSpan(null, "")
         model.type = EditerViewType.EDIT_TEXT
         model.isFocus = false
@@ -265,7 +265,7 @@ class EditerViewModelMockTest {
         val model2 = EditerModel()
         val data2 = Data()
         data2.text = "my text2"
-        data2.style = TextStyle.NORMAL
+        data2.style = "normal"
         data2.inlineStyleRange = CheckStyle.checkSpan(null, "")
         model2.type = EditerViewType.EDIT_TEXT
         model2.isFocus = false
@@ -276,7 +276,7 @@ class EditerViewModelMockTest {
         val model3 = EditerModel()
         val data3 = Data()
         data3.text = "my text3"
-        data3.style = TextStyle.NORMAL
+        data3.style = "normal"
         data3.inlineStyleRange = CheckStyle.checkSpan(null, "")
         model3.type = EditerViewType.EDIT_TEXT
         model3.isFocus = false

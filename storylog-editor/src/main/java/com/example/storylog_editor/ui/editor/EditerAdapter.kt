@@ -131,7 +131,7 @@ class EditerAdapter(
 //                }
             }
 
-            if (model[position].data != null) {
+            if (model[position].inlineStyleRange.isNotEmpty()) {
                 val ss1 = SpannableString(model[position].text)
                 model[position].inlineStyleRange.forEach {
                     var offset = it.offset
@@ -480,7 +480,7 @@ class EditerAdapter(
     ) :
         RecyclerView.ViewHolder(v) {
         var edt =
-            v.findViewById<com.example.storylog_editor.view.ediitext.CutCopyPasteEditText>(R.id.edt)
+            v.findViewById<CutCopyPasteEditText>(R.id.edt)
         var myCustomEditTextListener = customEditTextListener
 
         init {
@@ -508,7 +508,7 @@ class EditerAdapter(
     inner class MyQuoteViewHolder(v: View, customEditTextListener: MyCustomEditTextListener) :
         RecyclerView.ViewHolder(v) {
         var edtQuote =
-            v.findViewById<com.example.storylog_editor.view.ediitext.CutCopyPasteEditText>(R.id.edtQuote)
+            v.findViewById<CutCopyPasteEditText>(R.id.edtQuote)
         var myCustomEditTextListener = customEditTextListener
 
         init {
@@ -530,7 +530,7 @@ class EditerAdapter(
         var layoutRecycle = v.findViewById<LinearLayout>(R.id.layoutRecycle)
         var image = v.findViewById<ImageView>(R.id.image)
         var edtImage =
-            v.findViewById<com.example.storylog_editor.view.ediitext.CutCopyPasteEditText>(R.id.edtImage)
+            v.findViewById<CutCopyPasteEditText>(R.id.edtImage)
         var myCustomEditTextListener = customEditTextListener
 
         init {

@@ -60,9 +60,9 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
     override fun onPasteText(position: Int, textList: MutableList<String>) {
         var count = 0
         if (textList.size == 1) {
-            mViewModel.updatePasteText(position, textList[0], TextStyle.NORMAL, true, null, false)
+            mViewModel.updatePasteText(position, textList[0], "normal", true, null, false)
         } else {
-            mViewModel.updatePasteText(position, textList[0], TextStyle.NORMAL, false, null, false)
+            mViewModel.updatePasteText(position, textList[0], "normal", false, null, false)
             textList.forEachIndexed { index, text ->
                 if (index > 0) {
                     count++
@@ -124,7 +124,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                 mViewModel.updateText(
                     position - 1,
                     text,
-                    TextStyle.NORMAL,
+                    "normal",
                     true,
                     selection,
                     true
@@ -157,7 +157,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
     }
 
     override fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean) {
-        mViewModel.updateText(position, text, TextStyle.NORMAL, false, null, updateStyle)
+        mViewModel.updateText(position, text, "normal", false, null, updateStyle)
     }
 
     override fun updateCursorPosition(position: Int, view: View, imageIndex: MutableList<Int>) {

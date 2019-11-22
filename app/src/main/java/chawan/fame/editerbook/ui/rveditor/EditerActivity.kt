@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.R
 import com.example.storylog_editor.model.EditerViewType
-import com.example.storylog_editor.model.TextStyle
 import com.example.storylog_editor.ui.editor.EditerAdapter
 import com.example.storylog_editor.ui.editor.EditorViewModel
 import com.example.storylog_editor.util.KeyboardHelper
@@ -207,7 +206,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                 mViewModel.updateText(
                     position - 1,
                     text,
-                    TextStyle.NORMAL,
+                    "normal",
                     true,
                     selection,
                     true
@@ -225,7 +224,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
     }
 
     override fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean) {
-        mViewModel.updateText(position, text, TextStyle.NORMAL, false, null, updateStyle)
+        mViewModel.updateText(position, text, "normal", false, null, updateStyle)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

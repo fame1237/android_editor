@@ -1,5 +1,6 @@
 package com.example.storylog_editor.ui.editor
 
+import android.util.Log
 import android.widget.EditText
 import androidx.lifecycle.ViewModel
 import com.example.storylog_editor.extension.SingleLiveEvent
@@ -36,8 +37,9 @@ class EditorViewModel : ViewModel() {
         val model = EditerModel()
         val data = Data()
         model.text = text.toString()
-        data.style = TextStyle.NORMAL
-        data.inlineStyleRange = CheckStyle.checkSpan(null, text)
+        data.style = "normal"
+
+        model.inlineStyleRange = CheckStyle.checkSpan(null, text)
         model.id = GenerateKey.getKey(editerModel)
         model.type = viewType
         model.isFocus = isFocus
@@ -50,7 +52,7 @@ class EditorViewModel : ViewModel() {
     }
 
     fun updateText(
-        position: Int, text: CharSequence, style: TextStyle,
+        position: Int, text: CharSequence, style: String,
         isFocus: Boolean = false,
         selection: Int?,
         updateStyle: Boolean
@@ -59,9 +61,11 @@ class EditorViewModel : ViewModel() {
         val data = model.data!!
         model.text = text.toString()
         if (updateStyle) {
-            data.inlineStyleRange.clear()
-            data.inlineStyleRange = CheckStyle.checkSpan(null, text)
+            model.inlineStyleRange.clear()
+            model.inlineStyleRange = CheckStyle.checkSpan(null, text)
+            Log.e("test","test")
         }
+
         data.style = style
         model.data = data
         selection?.let {
@@ -79,7 +83,7 @@ class EditorViewModel : ViewModel() {
     }
 
     fun updatePasteText(
-        position: Int, text: CharSequence, style: TextStyle,
+        position: Int, text: CharSequence, style: String,
         isFocus: Boolean = false,
         selection: Int?,
         updateStyle: Boolean
@@ -88,8 +92,8 @@ class EditorViewModel : ViewModel() {
         val data = model.data!!
         model.text = text.toString()
         if (updateStyle) {
-            data.inlineStyleRange.clear()
-            data.inlineStyleRange = CheckStyle.checkSpan(null, text)
+            model.inlineStyleRange.clear()
+            model.inlineStyleRange = CheckStyle.checkSpan(null, text)
         }
         data.style = style
         model.data = data
@@ -189,9 +193,8 @@ class EditorViewModel : ViewModel() {
 
     fun updateStyle(position: Int, editText: EditText) {
         val model = editerModel[position]
-        val data = model.data!!
-        data.inlineStyleRange.clear()
-        data.inlineStyleRange = CheckStyle.checkSpan(editText, "")
+        model.inlineStyleRange.clear()
+        model.inlineStyleRange = CheckStyle.checkSpan(editText, "")
         editorModelLiveData.postValue(editerModel)
     }
 
@@ -200,7 +203,7 @@ class EditorViewModel : ViewModel() {
         val data = Data()
         model.text = ""
         data.src = src
-        data.style = TextStyle.NORMAL
+        data.style = "normal"
         model.type = EditerViewType.IMAGE
         model.id = GenerateKey.getKey(editerModel)
         model.data = data
@@ -209,7 +212,7 @@ class EditorViewModel : ViewModel() {
         val model2 = EditerModel()
         val data2 = Data()
         model2.text = ""
-        data2.style = TextStyle.NORMAL
+        data2.style = "normal"
         model2.type = EditerViewType.EDIT_TEXT
         model2.id = GenerateKey.getKey(editerModel)
         model2.data = data2
@@ -249,7 +252,7 @@ class EditorViewModel : ViewModel() {
         val model2 = EditerModel()
         val data2 = Data()
         model2.text = ""
-        data2.style = TextStyle.NORMAL
+        data2.style = "normal"
         model2.type = EditerViewType.EDIT_TEXT
         model2.id = GenerateKey.getKey(editerModel)
         model2.data = data2
