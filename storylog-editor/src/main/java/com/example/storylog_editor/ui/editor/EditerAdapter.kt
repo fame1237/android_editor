@@ -133,23 +133,23 @@ class EditerAdapter(
 
             if (model[position].data != null) {
                 val ss1 = SpannableString(model[position].text)
-                model[position].data!!.inlineStyleRange.forEach {
+                model[position].inlineStyleRange.forEach {
                     var offset = it.offset
                     var lenght = it.lenght
                     when {
-                        it.style == TextStyle.BOLD -> ss1.setSpan(
+                        it.style == "BOLD" -> ss1.setSpan(
                             StyleSpan(Typeface.BOLD), offset,
                             offset + lenght, 0
                         )
-                        it.style == TextStyle.ITALIC -> ss1.setSpan(
+                        it.style == "ITALIC" -> ss1.setSpan(
                             StyleSpan(Typeface.ITALIC), offset,
                             offset + lenght, 0
                         )
-                        it.style == TextStyle.UNDERLINE -> ss1.setSpan(
+                        it.style == "UNDERLINE" -> ss1.setSpan(
                             UnderlineSpan(), offset,
                             offset + lenght, 0
                         )
-                        it.style == TextStyle.STRIKE_THROUGH -> ss1.setSpan(
+                        it.style == "STRIKETHROUGH" -> ss1.setSpan(
                             StrikethroughSpan(), offset,
                             offset + lenght, 0
                         )
@@ -593,15 +593,15 @@ class EditerAdapter(
                     var offset = it.offset
                     var lenght = it.lenght
                     when {
-                        it.style == TextStyle.BOLD -> ss1.setSpan(
+                        it.style == "BOLD" -> ss1.setSpan(
                             StyleSpan(Typeface.BOLD), offset,
                             offset + lenght, 0
                         )
-                        it.style == TextStyle.ITALIC -> ss1.setSpan(
+                        it.style == "ITALIC" -> ss1.setSpan(
                             StyleSpan(Typeface.ITALIC), offset,
                             offset + lenght, 0
                         )
-                        it.style == TextStyle.UNDERLINE -> ss1.setSpan(
+                        it.style == "UNDERLINE" -> ss1.setSpan(
                             UnderlineSpan(), offset,
                             offset + lenght, 0
                         )
@@ -762,15 +762,15 @@ class EditerAdapter(
                     var offset = it.offset
                     var lenght = it.lenght
                     when {
-                        it.style == TextStyle.BOLD -> ss1.setSpan(
+                        it.style == "BOLD" -> ss1.setSpan(
                             StyleSpan(Typeface.BOLD), offset,
                             offset + lenght, 0
                         )
-                        it.style == TextStyle.ITALIC -> ss1.setSpan(
+                        it.style == "ITALIC" -> ss1.setSpan(
                             StyleSpan(Typeface.ITALIC), offset,
                             offset + lenght, 0
                         )
-                        it.style == TextStyle.UNDERLINE -> ss1.setSpan(
+                        it.style == "UNDERLINE" -> ss1.setSpan(
                             UnderlineSpan(), offset,
                             offset + lenght, 0
                         )
@@ -798,20 +798,20 @@ class EditerAdapter(
                 }
                 if (index > 0 && (view as EditText).selectionEnd == 0) {
                     val ssPrevios = SpannableStringBuilder(model[index - 1].text)
-                    model[index - 1].data!!.inlineStyleRange.forEach {
+                    model[index - 1].inlineStyleRange.forEach {
                         var offset = it.offset
                         var lenght = it.lenght
                         if (offset + lenght <= ssPrevios.length) {
                             when {
-                                it.style == TextStyle.BOLD -> ssPrevios.setSpan(
+                                it.style == "BOLD" -> ssPrevios.setSpan(
                                     StyleSpan(Typeface.BOLD), offset,
                                     offset + lenght, 0
                                 )
-                                it.style == TextStyle.ITALIC -> ssPrevios.setSpan(
+                                it.style == "ITALIC" -> ssPrevios.setSpan(
                                     StyleSpan(Typeface.ITALIC), offset,
                                     offset + lenght, 0
                                 )
-                                it.style == TextStyle.UNDERLINE -> ssPrevios.setSpan(
+                                it.style == "UNDERLINE" -> ssPrevios.setSpan(
                                     UnderlineSpan(), offset,
                                     offset + lenght, 0
                                 )

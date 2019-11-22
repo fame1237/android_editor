@@ -27,7 +27,6 @@ import com.example.storylog_editor.extension.toClass
 import com.example.storylog_editor.model.Alignment
 import com.example.storylog_editor.model.EditerModel
 import com.example.storylog_editor.model.EditerViewType
-import com.example.storylog_editor.model.TextStyle
 import com.example.storylog_editor.util.KeyboardHelper
 import com.example.storylog_editor.view.SetAlignmentDialog
 import org.json.JSONArray

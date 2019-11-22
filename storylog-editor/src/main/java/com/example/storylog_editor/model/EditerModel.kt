@@ -8,6 +8,7 @@ class EditerModel {
     var isFocus = false
     var showBorder = false
     var text = ""
+    var inlineStyleRange: MutableList<InlineStyleRanges> = mutableListOf()
 
     override fun toString(): String {
         return "EditerModel(id=$id, type=$type, data=$data,  isFocus=$isFocus)"
