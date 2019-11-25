@@ -34,7 +34,7 @@ object CheckStyle {
                 Log.e("typeFace", it.toString())
 
                 if (it is StyleSpan && it.style == Typeface.BOLD) {
-                    inlineStyleRanges.style = TextStyle.BOLD
+                    inlineStyleRanges.style = "BOLD"
                     inlineStyleRanges.offset = textTypeFaceStartPosition
                     inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
                     var filterList = inlineStyleRangesList.filter {
@@ -46,7 +46,7 @@ object CheckStyle {
                         inlineStyleRangesList.add(inlineStyleRanges)
 
                 } else if (it is StyleSpan && it.style == Typeface.ITALIC) {
-                    inlineStyleRanges.style = TextStyle.ITALIC
+                    inlineStyleRanges.style = "ITALIC"
                     inlineStyleRanges.offset = textTypeFaceStartPosition
                     inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
                     var filterList = inlineStyleRangesList.filter {
@@ -57,7 +57,7 @@ object CheckStyle {
                     if (filterList.isEmpty())
                         inlineStyleRangesList.add(inlineStyleRanges)
                 } else if (it is UnderlineSpan) {
-                    inlineStyleRanges.style = TextStyle.UNDERLINE
+                    inlineStyleRanges.style = "UNDERLINE"
                     inlineStyleRanges.offset = textTypeFaceStartPosition
                     inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
                     var filterList = inlineStyleRangesList.filter {
@@ -69,7 +69,7 @@ object CheckStyle {
                         inlineStyleRangesList.add(inlineStyleRanges)
 
                 } else if (it is StrikethroughSpan) {
-                    inlineStyleRanges.style = TextStyle.STRIKE_THROUGH
+                    inlineStyleRanges.style = "STRIKETHROUGH"
                     inlineStyleRanges.offset = textTypeFaceStartPosition
                     inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
                     var filterList = inlineStyleRangesList.filter {
@@ -81,7 +81,7 @@ object CheckStyle {
                         inlineStyleRangesList.add(inlineStyleRanges)
 
                 } else {
-                    inlineStyleRanges.style = TextStyle.NORMAL
+                    inlineStyleRanges.style = "NORMAL"
                     inlineStyleRanges.offset = textTypeFaceStartPosition
                     inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
                     var filterList = inlineStyleRangesList.filter {

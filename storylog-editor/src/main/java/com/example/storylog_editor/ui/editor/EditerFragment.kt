@@ -27,7 +27,6 @@ import com.example.storylog_editor.extension.toClass
 import com.example.storylog_editor.model.Alignment
 import com.example.storylog_editor.model.EditerModel
 import com.example.storylog_editor.model.EditerViewType
-import com.example.storylog_editor.model.TextStyle
 import com.example.storylog_editor.util.KeyboardHelper
 import com.example.storylog_editor.view.SetAlignmentDialog
 import org.json.JSONArray
@@ -61,15 +60,15 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
     override fun onPasteText(position: Int, textList: MutableList<String>) {
         var count = 0
         if (textList.size == 1) {
-            mViewModel.updatePasteText(position, textList[0], TextStyle.NORMAL, true, null, false)
+            mViewModel.updatePasteText(position, textList[0], true, null, false)
         } else {
-            mViewModel.updatePasteText(position, textList[0], TextStyle.NORMAL, false, null, false)
+            mViewModel.updatePasteText(position, textList[0], false, null, false)
             textList.forEachIndexed { index, text ->
                 if (index > 0) {
                     count++
                     mViewModel.addView(
                         position + index,
-                        EditerViewType.EDIT_TEXT,
+                        "unstyled",
                         text,
                         mViewModel.getModel()[position].data!!.alight,
                         true
@@ -86,7 +85,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 
     override fun onNextLine(position: Int, text: CharSequence) {
         mViewModel.addView(
-            position, EditerViewType.EDIT_TEXT, text,
+            position, "unstyled", text,
             mViewModel.getModel()[position - 1].data!!.alight,
             true
         )
@@ -103,7 +102,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         var viewType = mViewModel.getModel()[position - 1].type
 
         when (viewType) {
-            EditerViewType.IMAGE -> {
+            "atomic:image" -> {
                 mViewModel.updateFocus(position, false)
                 mViewModel.showBorder(position - 1, true)
                 adapter?.let {
@@ -115,7 +114,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                 }
                 KeyboardHelper.hideSoftKeyboard(activity)
             }
-            EditerViewType.LINE -> {
+            "atomic:break" -> {
                 mViewModel.removeViewAndKeepFocus(position - 1, position)
                 adapter?.let {
                     it.upDateRemoveItemWithoutCurrentChange(position - 1)
@@ -125,7 +124,6 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                 mViewModel.updateText(
                     position - 1,
                     text,
-                    TextStyle.NORMAL,
                     true,
                     selection,
                     true
@@ -158,7 +156,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
     }
 
     override fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean) {
-        mViewModel.updateText(position, text, TextStyle.NORMAL, false, null, updateStyle)
+        mViewModel.updateText(position, text, false, null, updateStyle)
     }
 
     override fun updateCursorPosition(position: Int, view: View, imageIndex: MutableList<Int>) {
@@ -169,7 +167,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 
         context?.let {
             when {
-                mViewModel.getModel()[position].type == EditerViewType.QUOTE -> {
+                mViewModel.getModel()[position].type == "blockquote" -> {
                     btnQuote?.setColorFilter(
                         ContextCompat.getColor(it, R.color.colorOrange)
                         , PorterDuff.Mode.SRC_IN
@@ -179,7 +177,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                         , PorterDuff.Mode.SRC_IN
                     )
                 }
-                mViewModel.getModel()[position].type == EditerViewType.HEADER -> {
+                mViewModel.getModel()[position].type == "header-three" -> {
                     btnQuote?.setColorFilter(
                         ContextCompat.getColor(it, R.color.grey_image)
                         , PorterDuff.Mode.SRC_IN
@@ -203,7 +201,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         }
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].type != EditerViewType.IMAGE
+                mViewModel.getModel()[cursorPosition].type != "atomic:image"
             ) {
                 imageIndex.forEach {
                     adapter?.updateCurrentItem(it)
@@ -224,7 +222,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         mViewModel.clearFocus()
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].type != EditerViewType.IMAGE
+                mViewModel.getModel()[cursorPosition].type != "atomic:image"
             ) {
                 adapter?.notifyItemChanged(cursorPosition)
                 rvEditor?.post {
@@ -334,7 +332,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
             }
             mViewModel.setModel(editerModel)
         } else {
-            mViewModel.addView(0, EditerViewType.EDIT_TEXT, "", Alignment.START, true)
+            mViewModel.addView(0, "unstyled", "", Alignment.START, true)
         }
         initView()
     }
@@ -376,7 +374,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         context?.let { context ->
             btnQuote?.setOnClickListener {
                 if (cursorPosition <= mViewModel.getSize()) {
-                    if (mViewModel.getModel()[cursorPosition].type == EditerViewType.EDIT_TEXT) {
+                    if (mViewModel.getModel()[cursorPosition].type == "unstyled") {
                         adapter?.let {
                             mViewModel.changeToQuote(cursorPosition)
                             it.updateCurrentItem(cursorPosition)
@@ -386,7 +384,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                             ContextCompat.getColor(context, R.color.colorOrange)
                             , PorterDuff.Mode.SRC_IN
                         )
-                    } else if (mViewModel.getModel()[cursorPosition].type == EditerViewType.QUOTE) {
+                    } else if (mViewModel.getModel()[cursorPosition].type == "blockquote") {
                         adapter?.let {
                             mViewModel.changeToEditText(cursorPosition)
                             it.updateCurrentItem(cursorPosition)
@@ -412,7 +410,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 
             btnHeader?.setOnClickListener {
                 if (cursorPosition <= mViewModel.getSize()) {
-                    if (mViewModel.getModel()[cursorPosition].type == EditerViewType.EDIT_TEXT) {
+                    if (mViewModel.getModel()[cursorPosition].type == "unstyled") {
                         adapter?.let {
                             mViewModel.changeToHeader(cursorPosition)
                             it.updateCurrentItem(cursorPosition)
@@ -421,7 +419,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                                 , PorterDuff.Mode.SRC_IN
                             )
                         }
-                    } else if (mViewModel.getModel()[cursorPosition].type == EditerViewType.HEADER) {
+                    } else if (mViewModel.getModel()[cursorPosition].type == "header-three") {
                         adapter?.let {
                             mViewModel.changeToEditText(cursorPosition)
                             it.updateCurrentItem(cursorPosition)

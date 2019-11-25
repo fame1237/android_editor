@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.R
 import com.example.storylog_editor.model.EditerViewType
-import com.example.storylog_editor.model.TextStyle
 import com.example.storylog_editor.ui.editor.EditerAdapter
 import com.example.storylog_editor.ui.editor.EditorViewModel
 import com.example.storylog_editor.util.KeyboardHelper
@@ -67,7 +66,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
         mViewModel.clearFocus()
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].type != EditerViewType.IMAGE
+                mViewModel.getModel()[cursorPosition].type != "atomic:image"
             ) {
                 adapter?.notifyItemChanged(cursorPosition)
                 rvEditor.post {
@@ -88,7 +87,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
         mViewModel.goneBorder()
 
         when {
-            mViewModel.getModel()[position].type == EditerViewType.QUOTE -> {
+            mViewModel.getModel()[position].type == "blockquote" -> {
                 btnQuote.setColorFilter(
                     ContextCompat.getColor(this, R.color.colorOrange)
                     , PorterDuff.Mode.SRC_IN
@@ -98,7 +97,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                     , PorterDuff.Mode.SRC_IN
                 )
             }
-            mViewModel.getModel()[position].type == EditerViewType.HEADER -> {
+            mViewModel.getModel()[position].type == "header-three" -> {
                 btnQuote.setColorFilter(
                     ContextCompat.getColor(this, R.color.grey_image)
                     , PorterDuff.Mode.SRC_IN
@@ -124,7 +123,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 //        mViewModel.updateFocus(position, true)
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].type != EditerViewType.IMAGE
+                mViewModel.getModel()[cursorPosition].type != "atomic:image"
             ) {
                 imageIndex.forEach {
                     adapter?.updateCurrentItem(it)
@@ -154,7 +153,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
         Single.fromCallable {
             mViewModel.addView(
                 position,
-                EditerViewType.EDIT_TEXT,
+                "unstyled",
                 text,
                 mViewModel.getModel()[position - 1].data!!.alight,
                 true
@@ -185,7 +184,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
         var viewType = mViewModel.getModel()[position - 1].type
 
         when (viewType) {
-            EditerViewType.IMAGE -> {
+            "atomic:image" -> {
                 mViewModel.updateFocus(position, false)
                 mViewModel.showBorder(position - 1, true)
                 adapter?.let {
@@ -197,7 +196,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                 }
                 KeyboardHelper.hideSoftKeyboard(this)
             }
-            EditerViewType.LINE -> {
+            "atomic:break" -> {
                 mViewModel.removeViewAndKeepFocus(position - 1, position)
                 adapter?.let {
                     it.upDateRemoveItemWithoutCurrentChange(position - 1)
@@ -207,7 +206,6 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                 mViewModel.updateText(
                     position - 1,
                     text,
-                    TextStyle.NORMAL,
                     true,
                     selection,
                     true
@@ -225,7 +223,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
     }
 
     override fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean) {
-        mViewModel.updateText(position, text, TextStyle.NORMAL, false, null, updateStyle)
+        mViewModel.updateText(position, text, false, null, updateStyle)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -244,7 +242,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 //                    }
 //                    mViewModel.setModel(editerModel)
 //                } else {
-//                    mViewModel.addView(0, EditerViewType.EDIT_TEXT, "", Alignment.START, true)
+//                    mViewModel.addView(0, "unstyled", "", Alignment.START, true)
 //                }
 //                initView()
 //                initViewModel()
@@ -332,7 +330,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 
         btnQuote.setOnClickListener {
             if (cursorPosition <= mViewModel.getSize()) {
-                if (mViewModel.getModel()[cursorPosition].type == EditerViewType.EDIT_TEXT) {
+                if (mViewModel.getModel()[cursorPosition].type == "unstyled") {
                     adapter?.let {
                         mViewModel.changeToQuote(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
@@ -342,7 +340,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                         ContextCompat.getColor(this, R.color.colorOrange)
                         , PorterDuff.Mode.SRC_IN
                     )
-                } else if (mViewModel.getModel()[cursorPosition].type == EditerViewType.QUOTE) {
+                } else if (mViewModel.getModel()[cursorPosition].type == "blockquote") {
                     adapter?.let {
                         mViewModel.changeToEditText(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
@@ -368,7 +366,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 
         btnHeader.setOnClickListener {
             if (cursorPosition <= mViewModel.getSize()) {
-                if (mViewModel.getModel()[cursorPosition].type == EditerViewType.EDIT_TEXT) {
+                if (mViewModel.getModel()[cursorPosition].type == "unstyled") {
                     adapter?.let {
                         mViewModel.changeToHeader(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
@@ -377,7 +375,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                             , PorterDuff.Mode.SRC_IN
                         )
                     }
-                } else if (mViewModel.getModel()[cursorPosition].type == EditerViewType.HEADER) {
+                } else if (mViewModel.getModel()[cursorPosition].type == "header-three") {
                     adapter?.let {
                         mViewModel.changeToEditText(cursorPosition)
                         it.updateCurrentItem(cursorPosition)

@@ -3,11 +3,13 @@ package com.example.storylog_editor.model
 
 class EditerModel {
     var id: Long = 0
-    var type: EditerViewType? = null
+    var type: String? = null
     var data: Data? = null
     var isFocus = false
     var showBorder = false
     var text = ""
+    var inlineStyleRange: MutableList<InlineStyleRanges> = mutableListOf()
+
 
     override fun toString(): String {
         return "EditerModel(id=$id, type=$type, data=$data,  isFocus=$isFocus)"

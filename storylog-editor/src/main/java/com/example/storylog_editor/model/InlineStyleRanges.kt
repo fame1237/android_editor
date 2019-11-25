@@ -4,7 +4,7 @@ package com.example.storylog_editor.model
 class InlineStyleRanges {
     var offset = 0
     var lenght = 0
-    var style: TextStyle? = null
+    var style: String? = null
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

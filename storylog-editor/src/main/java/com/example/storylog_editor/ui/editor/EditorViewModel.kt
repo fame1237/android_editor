@@ -24,7 +24,7 @@ class EditorViewModel : ViewModel() {
 
     fun addView(
         position: Int,
-        viewType: EditerViewType,
+        viewType: String,
         text: CharSequence,
         align: Alignment,
         isFocus: Boolean = false
@@ -36,8 +36,7 @@ class EditorViewModel : ViewModel() {
         val model = EditerModel()
         val data = Data()
         model.text = text.toString()
-        data.style = TextStyle.NORMAL
-        data.inlineStyleRange = CheckStyle.checkSpan(null, text)
+        model.inlineStyleRange = CheckStyle.checkSpan(null, text)
         model.id = GenerateKey.getKey(editerModel)
         model.type = viewType
         model.isFocus = isFocus
@@ -50,8 +49,7 @@ class EditorViewModel : ViewModel() {
     }
 
     fun updateText(
-        position: Int, text: CharSequence, style: TextStyle,
-        isFocus: Boolean = false,
+        position: Int, text: CharSequence, isFocus: Boolean = false,
         selection: Int?,
         updateStyle: Boolean
     ) {
@@ -59,10 +57,9 @@ class EditorViewModel : ViewModel() {
         val data = model.data!!
         model.text = text.toString()
         if (updateStyle) {
-            data.inlineStyleRange.clear()
-            data.inlineStyleRange = CheckStyle.checkSpan(null, text)
+            model.inlineStyleRange.clear()
+            model.inlineStyleRange = CheckStyle.checkSpan(null, text)
         }
-        data.style = style
         model.data = data
         selection?.let {
             data.selection = selection
@@ -79,8 +76,7 @@ class EditorViewModel : ViewModel() {
     }
 
     fun updatePasteText(
-        position: Int, text: CharSequence, style: TextStyle,
-        isFocus: Boolean = false,
+        position: Int, text: CharSequence, isFocus: Boolean = false,
         selection: Int?,
         updateStyle: Boolean
     ) {
@@ -88,10 +84,9 @@ class EditorViewModel : ViewModel() {
         val data = model.data!!
         model.text = text.toString()
         if (updateStyle) {
-            data.inlineStyleRange.clear()
-            data.inlineStyleRange = CheckStyle.checkSpan(null, text)
+            model.inlineStyleRange.clear()
+            model.inlineStyleRange = CheckStyle.checkSpan(null, text)
         }
-        data.style = style
         model.data = data
         data.selection = text.length
 
@@ -190,8 +185,8 @@ class EditorViewModel : ViewModel() {
     fun updateStyle(position: Int, editText: EditText) {
         val model = editerModel[position]
         val data = model.data!!
-        data.inlineStyleRange.clear()
-        data.inlineStyleRange = CheckStyle.checkSpan(editText, "")
+        model.inlineStyleRange.clear()
+        model.inlineStyleRange = CheckStyle.checkSpan(editText, "")
         editorModelLiveData.postValue(editerModel)
     }
 
@@ -200,8 +195,7 @@ class EditorViewModel : ViewModel() {
         val data = Data()
         model.text = ""
         data.src = src
-        data.style = TextStyle.NORMAL
-        model.type = EditerViewType.IMAGE
+        model.type = "atomic:image"
         model.id = GenerateKey.getKey(editerModel)
         model.data = data
 
@@ -209,8 +203,7 @@ class EditorViewModel : ViewModel() {
         val model2 = EditerModel()
         val data2 = Data()
         model2.text = ""
-        data2.style = TextStyle.NORMAL
-        model2.type = EditerViewType.EDIT_TEXT
+        model2.type = "unstyled"
         model2.id = GenerateKey.getKey(editerModel)
         model2.data = data2
         model2.isFocus = true
@@ -228,7 +221,7 @@ class EditorViewModel : ViewModel() {
         val model = EditerModel()
         val data = Data()
         model.text = ""
-        model.type = EditerViewType.LINE
+        model.type = "atomic:break"
         model.id = GenerateKey.getKey(editerModel)
         model.data = data
 
@@ -240,7 +233,7 @@ class EditorViewModel : ViewModel() {
         val model = EditerModel()
         val data = Data()
         model.text = ""
-        model.type = EditerViewType.LINE
+        model.type = "atomic:break"
         model.id = GenerateKey.getKey(editerModel)
         model.data = data
 
@@ -249,8 +242,7 @@ class EditorViewModel : ViewModel() {
         val model2 = EditerModel()
         val data2 = Data()
         model2.text = ""
-        data2.style = TextStyle.NORMAL
-        model2.type = EditerViewType.EDIT_TEXT
+        model2.type = "unstyled"
         model2.id = GenerateKey.getKey(editerModel)
         model2.data = data2
         model2.isFocus = true
@@ -266,7 +258,7 @@ class EditorViewModel : ViewModel() {
 
         val model = editerModel[position]
         model.isFocus = true
-        model.type = EditerViewType.QUOTE
+        model.type = "blockquote"
         editorModelLiveData.postValue(editerModel)
     }
 
@@ -277,7 +269,7 @@ class EditorViewModel : ViewModel() {
 
         val model = editerModel[position]
         model.isFocus = true
-        model.type = EditerViewType.HEADER
+        model.type = "header-three"
         editorModelLiveData.postValue(editerModel)
     }
 
@@ -288,7 +280,7 @@ class EditorViewModel : ViewModel() {
 
         val model = editerModel[position]
         model.isFocus = true
-        model.type = EditerViewType.EDIT_TEXT
+        model.type = "unstyled"
         editorModelLiveData.postValue(editerModel)
     }
 
