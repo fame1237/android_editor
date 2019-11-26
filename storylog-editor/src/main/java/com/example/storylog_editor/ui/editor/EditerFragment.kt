@@ -3,8 +3,10 @@ package com.example.storylog_editor.ui.editor
 import android.Manifest
 import android.content.*
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +28,7 @@ import com.example.storylog_editor.R
 import com.example.storylog_editor.extension.toClass
 import com.example.storylog_editor.model.Alignment
 import com.example.storylog_editor.model.EditerModel
-import com.example.storylog_editor.model.EditerViewType
+import com.example.storylog_editor.util.ImageUtil
 import com.example.storylog_editor.util.KeyboardHelper
 import com.example.storylog_editor.view.SetAlignmentDialog
 import org.json.JSONArray
@@ -317,7 +319,14 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         btnHeader = view.findViewById(R.id.btnHeader)
         btnLine = view.findViewById(R.id.btnLine)
         btnQuote = view.findViewById(R.id.btnQuote)
+        initViewModel()
         return view
+    }
+
+    private fun initViewModel() {
+        mViewModel.uploadImageSuccessLiveData.observe(this, androidx.lifecycle.Observer {
+            adapter?.notifyItemChanged(it, false)
+        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -535,16 +544,26 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         if (resultCode == AppCompatActivity.RESULT_OK) {
             if (requestCode == REQUEST_SELECT_PICTURE) {
                 val selectedUri = data?.data
+
                 selectedUri?.let {
-                    addImageToModel(selectedUri.toString())
+                    var imageStream = activity!!.contentResolver.openInputStream(selectedUri)
+                    var imageBase64 =
+                        ImageUtil.bitmapToBase64(BitmapFactory.decodeStream(imageStream))
+
+                    addImageToModel()
+
+                    mViewModel.uploadImageToServer(
+                        mViewModel.getModel()[cursorPosition + 1].id,
+                        imageBase64
+                    )
                 }
             }
         }
     }
 
-    private fun addImageToModel(image: String) {
+    private fun addImageToModel() {
         adapter?.let {
-            mViewModel.addImageModel(cursorPosition + 1, image)
+            mViewModel.addImageModel(cursorPosition + 1, "")
             it.upDateImageItem(cursorPosition)
             rvEditor?.scrollToPosition(cursorPosition + 2)
         }

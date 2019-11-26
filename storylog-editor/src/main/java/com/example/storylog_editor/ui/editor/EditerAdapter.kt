@@ -35,6 +35,7 @@ import com.example.storylog_editor.extension.filterGetArrayIndex
 import com.example.storylog_editor.extension.filterGetIndex
 import com.example.storylog_editor.model.*
 import com.example.storylog_editor.view.ediitext.CutCopyPasteEditText
+import com.pnikosis.materialishprogress.ProgressWheel
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -245,14 +246,26 @@ class EditerAdapter(
                 var index = model.filterGetIndex {
                     it.id == viewHolder.myCustomEditTextListener.keyId
                 }
-                listener.onDeleteRow(index)
+
+                index?.let {
+                    listener.onDeleteRow(it)
+                }
             }
 
-            Glide.with(context)
-                .load(("https://s3.ap-southeast-1.amazonaws.com/media.fictionlog/statics/5d5bc72ewyIGManx.jpeg"))
-                .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
-                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
-                .into(viewHolder.image)
+            if (model[position].data?.src != null && model[position].data?.src != "") {
+                viewHolder.layoutImage.visibility = View.VISIBLE
+                viewHolder.layoutLoading.visibility = View.GONE
+                Glide.with(context)
+                    .load((model[position].data?.src))
+                    .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
+                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
+                    .into(viewHolder.image)
+
+            } else {
+                viewHolder.layoutImage.visibility = View.GONE
+                viewHolder.layoutLoading.visibility = View.VISIBLE
+                viewHolder.loading.spin()
+            }
 
 
             viewHolder.layoutRecycle?.layoutParams = LinearLayout.LayoutParams(
@@ -294,8 +307,7 @@ class EditerAdapter(
                         model[position].isFocus = false
                     }
                 }
-            }
-            else {
+            } else {
                 viewHolder.edtQuote.clearFocus()
             }
         } else if (viewHolder is MyHeaderViewHolder) {
@@ -353,8 +365,7 @@ class EditerAdapter(
                         model[position].isFocus = false
                     }
                 }
-            }
-            else {
+            } else {
                 viewHolder.edtHeader.clearFocus()
             }
         }
@@ -530,6 +541,10 @@ class EditerAdapter(
         var btnDeleteImage = v.findViewById<RelativeLayout>(R.id.btnDeleteImage)
         var layoutRecycle = v.findViewById<LinearLayout>(R.id.layoutRecycle)
         var image = v.findViewById<ImageView>(R.id.image)
+
+        var layoutLoading = v.findViewById<RelativeLayout>(R.id.layout_loading)
+        var loading = v.findViewById<ProgressWheel>(R.id.loading)
+
         var edtImage =
             v.findViewById<com.example.storylog_editor.view.ediitext.CutCopyPasteEditText>(R.id.edtImage)
         var myCustomEditTextListener = customEditTextListener
@@ -616,9 +631,10 @@ class EditerAdapter(
                     )
                 )
 
-                listener.onNextLine(index + 1, ss2)
-
-                view.setText(ss1)
+                index?.let {
+                    listener.onNextLine(it + 1, ss2)
+                    view.setText(ss1)
+                }
 
                 return true
             } else if (keyEvent.action == KeyEvent.ACTION_DOWN &&
@@ -648,7 +664,9 @@ class EditerAdapter(
                         it.type == "atomic:image"
                     }
                     var indexDataModel = IndexData()
-                    indexDataModel.index = index
+                    index?.let {
+                        indexDataModel.index = it
+                    }
                     indexDataModel.imageIndex = imageIndex
 
                     indexDataModel
@@ -677,10 +695,12 @@ class EditerAdapter(
             var index = model.filterGetIndex {
                 it.id == keyId
             }
-            if (model[index].type == "blockquote") {
-                listener.onUpdateText(index, charSequence, false)
-            } else {
-                listener.onUpdateText(index, charSequence, true)
+            index?.let { index ->
+                if (model[index].type == "blockquote") {
+                    listener.onUpdateText(index, charSequence, false)
+                } else {
+                    listener.onUpdateText(index, charSequence, true)
+                }
             }
         }
 
@@ -731,7 +751,9 @@ class EditerAdapter(
                     it.id == keyId
                 }
                 text?.let {
-                    listener.onPasteText(index, text.toMutableList())
+                    index?.let { index ->
+                        listener.onPasteText(index, text.toMutableList())
+                    }
                 }
             }
         }
@@ -785,9 +807,11 @@ class EditerAdapter(
                     )
                 )
 
-                listener.onNextLine(index + 1, ss2)
+                index?.let { index ->
+                    listener.onNextLine(index + 1, ss2)
 
-                view.setText(ss1)
+                    view.setText(ss1)
+                }
 
                 return true
             } else if (keyEvent.action == KeyEvent.ACTION_DOWN &&
@@ -797,37 +821,39 @@ class EditerAdapter(
                 var index = model.filterGetIndex {
                     it.id == keyId
                 }
-                if (index > 0 && (view as EditText).selectionEnd == 0) {
-                    val ssPrevios = SpannableStringBuilder(model[index - 1].text)
-                    model[index - 1].inlineStyleRange.forEach {
-                        var offset = it.offset
-                        var lenght = it.lenght
-                        if (offset + lenght <= ssPrevios.length) {
-                            when {
-                                it.style == "BOLD" -> ssPrevios.setSpan(
-                                    StyleSpan(Typeface.BOLD), offset,
-                                    offset + lenght, 0
-                                )
-                                it.style == "ITALIC" -> ssPrevios.setSpan(
-                                    StyleSpan(Typeface.ITALIC), offset,
-                                    offset + lenght, 0
-                                )
-                                it.style == "UNDERLINE" -> ssPrevios.setSpan(
-                                    UnderlineSpan(), offset,
-                                    offset + lenght, 0
-                                )
+                index?.let { index ->
+                    if (index > 0 && (view as EditText).selectionEnd == 0) {
+                        val ssPrevios = SpannableStringBuilder(model[index - 1].text)
+                        model[index - 1].inlineStyleRange.forEach {
+                            var offset = it.offset
+                            var lenght = it.lenght
+                            if (offset + lenght <= ssPrevios.length) {
+                                when {
+                                    it.style == "BOLD" -> ssPrevios.setSpan(
+                                        StyleSpan(Typeface.BOLD), offset,
+                                        offset + lenght, 0
+                                    )
+                                    it.style == "ITALIC" -> ssPrevios.setSpan(
+                                        StyleSpan(Typeface.ITALIC), offset,
+                                        offset + lenght, 0
+                                    )
+                                    it.style == "UNDERLINE" -> ssPrevios.setSpan(
+                                        UnderlineSpan(), offset,
+                                        offset + lenght, 0
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    val ssCurrent = SpannableStringBuilder(
-                        view.text.subSequence(
-                            view.selectionStart,
-                            view.text.toString().length
+                        val ssCurrent = SpannableStringBuilder(
+                            view.text.subSequence(
+                                view.selectionStart,
+                                view.text.toString().length
+                            )
                         )
-                    )
-                    var selection = ssPrevios.length
-                    listener.onPreviousLine(index, ssPrevios.append(ssCurrent), selection)
+                        var selection = ssPrevios.length
+                        listener.onPreviousLine(index, ssPrevios.append(ssCurrent), selection)
+                    }
                 }
                 return false
             } else {
@@ -848,10 +874,12 @@ class EditerAdapter(
                         it.type == "atomic:image"
                     }
                     var indexDataModel = IndexData()
-                    indexDataModel.index = index
-                    indexDataModel.imageIndex = imageIndex
-
+                    index?.let { index ->
+                        indexDataModel.index = index
+                        indexDataModel.imageIndex = imageIndex
+                    }
                     indexDataModel
+
                 }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.computation())
@@ -877,10 +905,12 @@ class EditerAdapter(
             var index = model.filterGetIndex {
                 it.id == keyId
             }
-            if (model[index].type == "blockquote") {
-                listener.onUpdateText(index, charSequence, false)
-            } else {
-                listener.onUpdateText(index, charSequence, true)
+            index?.let { index ->
+                if (model[index].type == "blockquote") {
+                    listener.onUpdateText(index, charSequence, false)
+                } else {
+                    listener.onUpdateText(index, charSequence, true)
+                }
             }
         }
 

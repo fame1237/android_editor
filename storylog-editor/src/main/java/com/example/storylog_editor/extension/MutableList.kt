@@ -1,16 +1,17 @@
 package com.example.storylog_editor.extension
 
-fun <T> Iterable<T>.filterGetIndex(predicate: (T) -> Boolean): Int {
+fun <T> Iterable<T>.filterGetIndex(predicate: (T) -> Boolean): Int? {
     return filterTo(predicate)
 }
 
-fun <T> Iterable<T>.filterTo(predicate: (T) -> Boolean): Int {
+fun <T> Iterable<T>.filterTo(predicate: (T) -> Boolean): Int? {
     for ((i, element) in this.withIndex()) {
         if (predicate(element)) {
             return i
         }
     }
-    return 0
+
+    return null
 }
 
 fun <T> Iterable<T>.filterGetArrayIndex(predicate: (T) -> Boolean): MutableList<Int> {

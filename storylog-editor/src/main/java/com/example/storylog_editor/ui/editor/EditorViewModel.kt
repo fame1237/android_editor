@@ -3,20 +3,34 @@ package com.example.storylog_editor.ui.editor
 import android.widget.EditText
 import androidx.lifecycle.ViewModel
 import com.example.storylog_editor.extension.SingleLiveEvent
+import com.example.storylog_editor.extension.filterGetIndex
 import com.example.storylog_editor.model.*
 import com.example.storylog_editor.util.CheckStyle
 import com.example.storylog_editor.util.GenerateKey
 
-data class UpdateImageData(var position: Int, var src: String)
+data class UpdateImageData(var keyId: Long, var src: String)
+
+data class UpdateImageSuccessData(var position: Int, var src: String)
 
 class EditorViewModel : ViewModel() {
 
     var editerModel: MutableList<EditerModel> = mutableListOf()
     var editorModelLiveData = SingleLiveEvent<MutableList<EditerModel>>()
 
-    var uploadImageToServer = SingleLiveEvent<String>()
+    var uploadImageToServerLiveData = SingleLiveEvent<UpdateImageData>()
 
-    var updateImage = SingleLiveEvent<UpdateImageData>()
+    var uploadImageSuccessLiveData = SingleLiveEvent<Int>()
+
+    fun uploadImageSuccess(keyId: Long, src: String) {
+
+        var index = editerModel.filterGetIndex {
+            it.id == keyId
+        }
+        index?.let {
+            editerModel[index].data?.src = src
+            uploadImageSuccessLiveData.postValue(it)
+        }
+    }
 
     fun setModel(model: MutableList<EditerModel>) {
         this.editerModel = model
@@ -303,6 +317,11 @@ class EditorViewModel : ViewModel() {
 
     fun getSize(): Int {
         return editerModel.size
+    }
+
+
+    fun uploadImageToServer(keyID: Long, base64: String) {
+        uploadImageToServerLiveData.postValue(UpdateImageData(keyID, base64))
     }
 
 

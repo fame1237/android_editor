@@ -1,0 +1,3 @@
+mutation UploadImage($input: UploadImageInput!) {
+    uploadImage(input: $input)
+}

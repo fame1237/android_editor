@@ -1,9 +1,6 @@
 package com.example.storylog_editor
 
 import android.app.Activity
-import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
-import android.content.ClipboardManager
-import android.content.Context
 import android.graphics.Typeface
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -51,35 +48,7 @@ class StyleCallback : ActionMode.Callback {
         val selectionEnd = bodyView!!.selectionEnd
         val ssb = SpannableStringBuilder(bodyView!!.text)
 
-
         when (item.itemId) {
-            android.R.id.copy -> {
-                Log.e("copy", "copy")
-            }
-            android.R.id.paste -> {
-//                Log.e("paste", "paste")
-//                var clipboard =
-//                    activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-//                var clipData = clipboard.primaryClip
-//                var itemCount = clipData?.itemCount ?: 0
-//                if (itemCount > 0) {
-//                    var item2 = clipData?.getItemAt(0)
-//                    var text = item2?.text.toString()
-//                    Log.e("paste_style_callback", text)
-//                }
-            }
-            android.R.id.pasteAsPlainText -> {
-//                Log.e("paste", "paste")
-//                var clipboard =
-//                    activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-//                var clipData = clipboard.primaryClip
-//                var itemCount = clipData?.itemCount ?: 0
-//                if (itemCount > 0) {
-//                    var item2 = clipData?.getItemAt(0)
-//                    var text = item2?.text.toString()
-//                    Log.e("paste_as_plain_text", text)
-//                }
-            }
             R.id.bold -> {
                 cs = StyleSpan(Typeface.BOLD)
 
@@ -202,7 +171,7 @@ class StyleCallback : ActionMode.Callback {
                     ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
                 if (typeface.isNotEmpty()) {
                     var isHaveItalic = typeface.filter {
-                        it is UnderlineSpan
+                        it is StrikethroughSpan
                     }
 
                     if (isHaveItalic.isEmpty()) {
@@ -210,11 +179,11 @@ class StyleCallback : ActionMode.Callback {
                             cs,
                             selectionStart,
                             selectionEnd,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     } else {
                         typeface.forEach {
-                            if (it is UnderlineSpan) {
+                            if (it is StrikethroughSpan) {
                                 setSpan(it, selectionStart, selectionEnd, ssb)
                             }
                         }
@@ -224,7 +193,7 @@ class StyleCallback : ActionMode.Callback {
                         cs,
                         selectionStart,
                         selectionEnd,
-                        Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                        SPAN_EXCLUSIVE_INCLUSIVE
                     )
                 }
                 bodyView!!.text = ssb
@@ -259,9 +228,9 @@ class StyleCallback : ActionMode.Callback {
                             Log.e("Error BoldStartPosition", textBoldStartPosition.toString())
                         }
                     }
-                    selectionStart == textBoldStartPosition && selectionEnd == textBoldEndPosition -> ssb.removeSpan(
-                        typeface
-                    )
+                    selectionStart == textBoldStartPosition && selectionEnd == textBoldEndPosition -> {
+                        ssb.removeSpan(typeface)
+                    }
                     selectionStart > textBoldStartPosition && selectionEnd < textBoldEndPosition -> {
                         ssb.removeSpan(typeface)
 
@@ -434,7 +403,7 @@ class StyleCallback : ActionMode.Callback {
                             typeface,
                             textBoldStartPosition,
                             selectionStart - 1,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                     selectionStart == textBoldStartPosition && selectionEnd == textBoldEndPosition -> {
@@ -450,14 +419,14 @@ class StyleCallback : ActionMode.Callback {
                             spanLeft,
                             textBoldStartPosition,
                             selectionStart,
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            SPAN_EXCLUSIVE_EXCLUSIVE
                         )
 
                         ssb.setSpan(
                             spanRight,
                             selectionEnd,
                             textBoldEndPosition,
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            SPAN_EXCLUSIVE_EXCLUSIVE
                         )
 
                     }
@@ -469,7 +438,7 @@ class StyleCallback : ActionMode.Callback {
                             newSpan,
                             selectionEnd,
                             textBoldEndPosition,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                     selectionStart == textBoldStartPosition && selectionEnd > textBoldEndPosition -> {
@@ -478,7 +447,7 @@ class StyleCallback : ActionMode.Callback {
                             typeface,
                             selectionStart,
                             selectionEnd,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                     selectionStart < textBoldStartPosition && selectionEnd == textBoldEndPosition -> {
@@ -487,7 +456,7 @@ class StyleCallback : ActionMode.Callback {
                             typeface,
                             selectionStart,
                             selectionEnd,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                     selectionStart > textBoldStartPosition && selectionEnd == textBoldEndPosition -> {
@@ -498,7 +467,7 @@ class StyleCallback : ActionMode.Callback {
                             newSpan,
                             textBoldStartPosition,
                             selectionStart,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                     selectionStart < textBoldStartPosition && selectionEnd > textBoldEndPosition -> {
@@ -507,7 +476,7 @@ class StyleCallback : ActionMode.Callback {
                             typeface,
                             selectionStart,
                             selectionEnd,
-                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            SPAN_EXCLUSIVE_INCLUSIVE
                         )
                     }
                 }
