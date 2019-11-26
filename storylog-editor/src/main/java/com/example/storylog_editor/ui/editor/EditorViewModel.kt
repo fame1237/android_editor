@@ -40,7 +40,6 @@ class EditorViewModel : ViewModel() {
         position: Int,
         viewType: String,
         text: CharSequence,
-        align: Alignment,
         isFocus: Boolean = false
     ) {
         editerModel.forEach {
@@ -56,7 +55,6 @@ class EditorViewModel : ViewModel() {
         model.isFocus = isFocus
         model.data = data
         data.selection = text.length
-        data.alight = align
 
         editerModel.add(position, model)
         editorModelLiveData.postValue(editerModel)
@@ -147,7 +145,7 @@ class EditorViewModel : ViewModel() {
         val data = model.data!!
         data.selection = selection
         model.data = data
-        data.alight = Alignment.INDENT
+        model.type = "indent"
         editerModel.forEach {
             it.isFocus = false
         }
@@ -159,8 +157,8 @@ class EditorViewModel : ViewModel() {
         val model = editerModel[position]
         val data = model.data!!
         data.selection = selection
-        data.alight = Alignment.START
         model.data = data
+        model.type = "unstyled"
         editerModel.forEach {
             it.isFocus = false
         }
@@ -174,8 +172,8 @@ class EditorViewModel : ViewModel() {
         val model = editerModel[position]
         val data = model.data!!
         data.selection = selection
-        data.alight = Alignment.CENTER
         model.data = data
+        model.type = "center"
         editerModel.forEach {
             it.isFocus = false
         }
@@ -187,7 +185,7 @@ class EditorViewModel : ViewModel() {
         val model = editerModel[position]
         val data = model.data!!
         data.selection = selection
-        data.alight = Alignment.END
+        model.type = "right"
         model.data = data
         editerModel.forEach {
             it.isFocus = false

@@ -1,6 +1,5 @@
 package chawan.fame.editerbook.ui.rveditor
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -10,7 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import chawan.fame.editerbook.R
 import chawan.fame.editerbook.domain.repo.CallService
-import com.example.storylog_editor.ui.editor.EditerFragment
+import com.example.storylog_editor.ui.editor.EditorFragment
 import com.example.storylog_editor.ui.editor.EditorViewModel
 
 
@@ -25,7 +24,7 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
         setContentView(R.layout.activity_sample)
         mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
         initViewModel()
-        replaceFragment(EditerFragment.newInstance())
+        replaceFragment(EditorFragment.newInstance())
     }
 
     private fun initViewModel() {
@@ -89,5 +88,244 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
             else -> {
             }
         }
+    }
+
+    fun getJson():String{
+        return "{\"contentRawState\":{ \n" +
+                "            \"blocks\":[ \n" +
+                "               { \n" +
+                "                  \"key\":\"57g11\",\n" +
+                "                  \"text\":\"นานมาแล้วไม่ได้จำ\",\n" +
+                "                  \"type\":\"unstyled\",\n" +
+                "                  \"depth\":0,\n" +
+                "                  \"inlineStyleRanges\":[ \n" +
+                "                  ],\n" +
+                "                  \"entityRanges\":[ \n" +
+                "                  ],\n" +
+                "                  \"data\":{ \n" +
+                "                  }\n" +
+                "               },\n" +
+                "               { \n" +
+                "                  \"key\":\"7r0pq\",\n" +
+                "                  \"text\":\"บุดด้า กำลัง ให้พรกับสาวกจำนวนมาก\",\n" +
+                "                  \"type\":\"atomic:image\",\n" +
+                "                  \"depth\":0,\n" +
+                "                  \"inlineStyleRanges\":[ \n" +
+                "                  ],\n" +
+                "                  \"entityRanges\":[ \n" +
+                "                  ],\n" +
+                "                  \"data\":{ \n" +
+                "                     \"src\":\"https://s3.ap-southeast-1.amazonaws.com/media-local.fictionlog/books/5d9b09c848a76d001a6e729f/5dd4e533OdAvpaXX.jpeg\",\n" +
+                "                     \"imageSize\":{ \n" +
+                "                        \"width\":610,\n" +
+                "                        \"height\":726\n" +
+                "                     }\n" +
+                "                  }\n" +
+                "               },\n" +
+                "               { \n" +
+                "                  \"key\":\"e0kin\",\n" +
+                "                  \"text\":\"คนอย่างฉันมันอาจไม่ใช่ Buddha ในฝันไม่มีอะไรเลิศเลอ มันเทียบกับใครไม่ได้\",\n" +
+                "                  \"type\":\"blockquote\",\n" +
+                "                  \"depth\":0,\n" +
+                "                  \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"entityRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"data\":{ \n" +
+                "\n" +
+                "                  }\n" +
+                "               },\n" +
+                "               { \n" +
+                "                  \"key\":\"63kj9\",\n" +
+                "                  \"text\":\"\",\n" +
+                "                  \"type\":\"unstyled\",\n" +
+                "                  \"depth\":0,\n" +
+                "                  \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"entityRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"data\":{ \n" +
+                "\n" +
+                "                  }\n" +
+                "               },\n" +
+                "               { \n" +
+                "                  \"key\":\"5l3d9\",\n" +
+                "                  \"text\":\"\",\n" +
+                "                  \"type\":\"atomic:break\",\n" +
+                "                  \"depth\":0,\n" +
+                "                  \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"entityRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"data\":{ \n" +
+                "\n" +
+                "                  }\n" +
+                "               },\n" +
+                "               { \n" +
+                "                  \"key\":\"8k8ln\",\n" +
+                "                  \"text\":\"และก็จะพอจะมี ทุกสิ่งที่มีให้เธอ\",\n" +
+                "                  \"type\":\"unstyled\",\n" +
+                "                  \"depth\":0,\n" +
+                "                  \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"entityRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"data\":{ \n" +
+                "\n" +
+                "                  }\n" +
+                "               },\n" +
+                "               { \n" +
+                "                  \"key\":\"ark6u\",\n" +
+                "                  \"text\":\"ที่มีอะไรนั้นมองไม่เห็น กับทางที่ฝันของฉันคนนี่ที่เธอต้องการ\",\n" +
+                "                  \"type\":\"header-three\",\n" +
+                "                  \"depth\":0,\n" +
+                "                  \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"entityRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"data\":{ \n" +
+                "\n" +
+                "                  }\n" +
+                "               },\n" +
+                "               { \n" +
+                "                  \"key\":\"ath5h\",\n" +
+                "                  \"text\":\"วันนั้นฉันเดินเข้าป่า ฉันเจอนกตัวนึงมันถามฉันว่าจะไปไหน\",\n" +
+                "                  \"type\":\"center\",\n" +
+                "                  \"depth\":0,\n" +
+                "                  \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"entityRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"data\":{ \n" +
+                "\n" +
+                "                  }\n" +
+                "               },\n" +
+                "               { \n" +
+                "                  \"key\":\"atvu9\",\n" +
+                "                  \"text\":\"ฉันจึงตอบอยากไปให้ไกล ไกลจนกว่าคนไร้หัวใจ โหวๆ โหวๆ\",\n" +
+                "                  \"type\":\"unstyled\",\n" +
+                "                  \"depth\":0,\n" +
+                "                  \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"entityRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"data\":{ \n" +
+                "\n" +
+                "                  }\n" +
+                "               },\n" +
+                "               { \n" +
+                "                  \"key\":\"34rtq\",\n" +
+                "                  \"text\":\"หกดกหดกหดหกดกหกกด\",\n" +
+                "                  \"type\":\"right\",\n" +
+                "                  \"depth\":0,\n" +
+                "                  \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"entityRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"data\":{ \n" +
+                "\n" +
+                "                  }\n" +
+                "               },\n" +
+                "               { \n" +
+                "                  \"key\":\"cn98p\",\n" +
+                "                  \"text\":\"กหดหกดหกด กหดหก พำพำย ดกย ดกยสพำ ยดกก\",\n" +
+                "                  \"type\":\"unstyled\",\n" +
+                "                  \"depth\":0,\n" +
+                "                  \"inlineStyleRanges\":[ \n" +
+                "                     { \n" +
+                "                        \"offset\":3,\n" +
+                "                        \"length\":3,\n" +
+                "                        \"style\":\"UNDERLINE\"\n" +
+                "                     },\n" +
+                "                     { \n" +
+                "                        \"offset\":18,\n" +
+                "                        \"length\":3,\n" +
+                "                        \"style\":\"UNDERLINE\"\n" +
+                "                     },\n" +
+                "                     { \n" +
+                "                        \"offset\":26,\n" +
+                "                        \"length\":4,\n" +
+                "                        \"style\":\"UNDERLINE\"\n" +
+                "                     },\n" +
+                "                     { \n" +
+                "                        \"offset\":33,\n" +
+                "                        \"length\":4,\n" +
+                "                        \"style\":\"UNDERLINE\"\n" +
+                "                     },\n" +
+                "                     { \n" +
+                "                        \"offset\":6,\n" +
+                "                        \"length\":3,\n" +
+                "                        \"style\":\"BOLD\"\n" +
+                "                     },\n" +
+                "                     { \n" +
+                "                        \"offset\":18,\n" +
+                "                        \"length\":3,\n" +
+                "                        \"style\":\"BOLD\"\n" +
+                "                     },\n" +
+                "                     { \n" +
+                "                        \"offset\":33,\n" +
+                "                        \"length\":4,\n" +
+                "                        \"style\":\"BOLD\"\n" +
+                "                     },\n" +
+                "                     { \n" +
+                "                        \"offset\":6,\n" +
+                "                        \"length\":3,\n" +
+                "                        \"style\":\"STRIKETHROUGH\"\n" +
+                "                     },\n" +
+                "                     { \n" +
+                "                        \"offset\":26,\n" +
+                "                        \"length\":4,\n" +
+                "                        \"style\":\"STRIKETHROUGH\"\n" +
+                "                     },\n" +
+                "                     { \n" +
+                "                        \"offset\":11,\n" +
+                "                        \"length\":2,\n" +
+                "                        \"style\":\"ITALIC\"\n" +
+                "                     }\n" +
+                "                  ],\n" +
+                "                  \"entityRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"data\":{ \n" +
+                "\n" +
+                "                  }\n" +
+                "               },\n" +
+                "               { \n" +
+                "                  \"key\":\"2ndfu\",\n" +
+                "                  \"text\":\"\",\n" +
+                "                  \"type\":\"unstyled\",\n" +
+                "                  \"depth\":0,\n" +
+                "                  \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"entityRanges\":[ \n" +
+                "\n" +
+                "                  ],\n" +
+                "                  \"data\":{ \n" +
+                "\n" +
+                "                  }\n" +
+                "               }\n" +
+                "            ],\n" +
+                "            \"entityMap\":{ \n" +
+                "\n" +
+                "            }\n" +
+                "         }\n" +
+                "}"
     }
 }

@@ -4,11 +4,11 @@ package com.example.storylog_editor.model
 class Data {
     var src = ""
     var selection: Int = 0
-    var alight: Alignment =
-        Alignment.START
+//    var alight: Alignment =
+//        Alignment.START
 
     override fun toString(): String {
-        return "Data( src='$src', selection=$selection,   alight=$alight)"
+        return "Data( src='$src', selection=$selection"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -17,7 +17,6 @@ class Data {
 
         if (src != other.src) return false
         if (selection != other.selection) return false
-        if (alight != other.alight) return false
 
         return true
     }
@@ -28,7 +27,7 @@ enum class TextStyle {
     BOLD, ITALIC, NORMAL, UNDERLINE, STRIKE_THROUGH
 }
 
-enum class Alignment {
-    START, CENTER, END, INDENT
-}
+//enum class Alignment {
+//    START, CENTER, END, INDENT
+//}
 

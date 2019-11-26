@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.example.storylog_editor.R
 import com.example.storylog_editor.ScreenUtil
-import com.example.storylog_editor.model.Alignment
 import kotlinx.android.synthetic.main.popup_alignment.*
 import java.lang.NullPointerException
 
@@ -28,9 +27,9 @@ class SetAlignmentDialog : DialogFragment() {
 
     companion object {
         var source: View? = null
-        var align: Alignment? = null
+        var align: String = ""
         var listener: OnClick? = null
-        fun newInstance(source: View, align: Alignment?, listener: OnClick): SetAlignmentDialog {
+        fun newInstance(source: View, align: String, listener: OnClick): SetAlignmentDialog {
             val fragment = SetAlignmentDialog()
             Companion.source = source
             Companion.align = align
@@ -105,7 +104,7 @@ class SetAlignmentDialog : DialogFragment() {
 
             try {
                 when (align) {
-                    Alignment.START -> {
+                    "unstyled" -> {
                         context?.let {
                             alignLeft.setColorFilter(
                                 ContextCompat.getColor(it, R.color.colorOrange)
@@ -126,7 +125,7 @@ class SetAlignmentDialog : DialogFragment() {
                             )
                         }
                     }
-                    Alignment.CENTER -> {
+                    "center" -> {
                         context?.let {
                             alignLeft.setColorFilter(
                                 ContextCompat.getColor(it, R.color.grey)
@@ -147,7 +146,7 @@ class SetAlignmentDialog : DialogFragment() {
                             )
                         }
                     }
-                    Alignment.END -> {
+                   "right" -> {
                         context?.let {
                             alignLeft.setColorFilter(
                                 ContextCompat.getColor(it, R.color.grey)
@@ -168,7 +167,7 @@ class SetAlignmentDialog : DialogFragment() {
                             )
                         }
                     }
-                    Alignment.INDENT -> {
+                    "indent" -> {
                         context?.let {
                             alignLeft.setColorFilter(
                                 ContextCompat.getColor(it, R.color.grey)
@@ -264,7 +263,7 @@ class SetAlignmentDialog : DialogFragment() {
 
     class Builder {
 
-        fun build(source: View, align: Alignment?, listener: OnClick): SetAlignmentDialog {
+        fun build(source: View, align: String, listener: OnClick): SetAlignmentDialog {
             val fragment = newInstance(
                 source,
                 align,
