@@ -144,7 +144,7 @@ class EditorAdapter(
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         if (viewHolder is MyEditTextViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
 
             if (model[position].isFocus) {
                 viewHolder.edt.post {
@@ -202,7 +202,7 @@ class EditorAdapter(
             model[position].data!!.selection = 0
 
         } else if (viewHolder is MyEditTextCenterViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
 
             if (model[position].isFocus) {
                 viewHolder.edt.post {
@@ -259,7 +259,7 @@ class EditorAdapter(
             model[position].data!!.selection = 0
 
         } else if (viewHolder is MyEditTextRightViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
 
             if (model[position].isFocus) {
                 viewHolder.edt.post {
@@ -317,7 +317,7 @@ class EditorAdapter(
             model[position].data!!.selection = 0
 
         } else if (viewHolder is MyEditTextIndentViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
 
             if (model[position].isFocus) {
                 viewHolder.edt.post {
@@ -374,7 +374,7 @@ class EditorAdapter(
             model[position].data!!.selection = 0
 
         } else if (viewHolder is MyImageViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id, viewHolder)
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key, viewHolder)
             if (model[position].showBorder) {
                 viewHolder.btnDeleteImage.visibility = View.VISIBLE
                 viewHolder.imageBackgroud.background =
@@ -406,7 +406,7 @@ class EditorAdapter(
 
             viewHolder.btnDeleteImage.setOnClickListener {
                 var index = model.filterGetIndex {
-                    it.id == viewHolder.myCustomEditTextListener.keyId
+                    it.key == viewHolder.myCustomEditTextListener.keyId
                 }
 
                 index?.let {
@@ -506,7 +506,7 @@ class EditorAdapter(
 
 
         } else if (viewHolder is MyQuoteViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
             if (model[position].data != null) {
                 viewHolder.edtQuote.post {
                     viewHolder.edtQuote.setText(model[position].text)
@@ -526,7 +526,7 @@ class EditorAdapter(
                 viewHolder.edtQuote.clearFocus()
             }
         } else if (viewHolder is MyHeaderViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
             if (model[position].data != null) {
                 viewHolder.edtHeader.setText(model[position].text)
             }
@@ -609,10 +609,6 @@ class EditorAdapter(
 
     override fun getItemCount(): Int {
         return model.size
-    }
-
-    override fun getItemId(position: Int): Long {
-        return model[position].id
     }
 
     override fun setHasStableIds(hasStableIds: Boolean) {
@@ -791,10 +787,10 @@ class EditorAdapter(
         View.OnKeyListener,
         View.AccessibilityDelegate() {
 
-        var keyId: Long = -1
+        var keyId: String = ""
         var viewHolder: MyImageViewHolder? = null
 
-        fun updatePosition(keyId: Long, viewHolder: MyImageViewHolder) {
+        fun updatePosition(keyId: String, viewHolder: MyImageViewHolder) {
             this.keyId = keyId
             this.viewHolder = viewHolder
         }
@@ -816,7 +812,7 @@ class EditorAdapter(
             ) {
 
                 var index = model.filterGetIndex {
-                    it.id == keyId
+                    it.key == keyId
                 }
 
                 val ss1 = SpannableString(
@@ -876,7 +872,7 @@ class EditorAdapter(
                 }
                 Single.fromCallable {
                     var index = model.filterGetIndex {
-                        it.id == keyId
+                        it.key == keyId
                     }
                     var imageIndex = model.filterGetArrayIndex {
                         it.type == "atomic:image"
@@ -911,7 +907,7 @@ class EditorAdapter(
 
         override fun onTextChanged(charSequence: CharSequence, i: Int, i2: Int, i3: Int) {
             var index = model.filterGetIndex {
-                it.id == keyId
+                it.key == keyId
             }
             index?.let { index ->
                 if (model[index].type == "blockquote") {
@@ -928,7 +924,7 @@ class EditorAdapter(
 
         override fun onSelectionChanged(selStart: Int, selEnd: Int, editText: AppCompatEditText?) {
 //            var index = model.filterGetIndex {
-//                it.id == keyId
+//                it.key == keyId
 //            }
 //            listener.onCursorChange(index, selStart, selEnd, editText!!)
         }
@@ -943,9 +939,9 @@ class EditorAdapter(
         CutCopyPasteEditText.OnCutCopyPasteListener {
 
 
-        var keyId: Long = -1
+        var keyId: String = ""
 
-        fun updatePosition(keyId: Long) {
+        fun updatePosition(keyId: String) {
             this.keyId = keyId
         }
 
@@ -966,7 +962,7 @@ class EditorAdapter(
                 var text = item2?.text?.split("\n")
 
                 var index = model.filterGetIndex {
-                    it.id == keyId
+                    it.key == keyId
                 }
                 text?.let {
                     index?.let { index ->
@@ -992,7 +988,7 @@ class EditorAdapter(
             ) {
 
                 var index = model.filterGetIndex {
-                    it.id == keyId
+                    it.key == keyId
                 }
 
                 val ss1 = SpannableString(
@@ -1037,7 +1033,7 @@ class EditorAdapter(
             ) {
 
                 var index = model.filterGetIndex {
-                    it.id == keyId
+                    it.key == keyId
                 }
                 index?.let { index ->
                     if (index > 0 && (view as EditText).selectionEnd == 0) {
@@ -1086,7 +1082,7 @@ class EditorAdapter(
                 }
                 Single.fromCallable {
                     var index = model.filterGetIndex {
-                        it.id == keyId
+                        it.key == keyId
                     }
                     var imageIndex = model.filterGetArrayIndex {
                         it.type == "atomic:image"
@@ -1121,7 +1117,7 @@ class EditorAdapter(
 
         override fun onTextChanged(charSequence: CharSequence, i: Int, i2: Int, i3: Int) {
             var index = model.filterGetIndex {
-                it.id == keyId
+                it.key == keyId
             }
             index?.let { index ->
                 if (model[index].type == "blockquote") {
@@ -1138,7 +1134,7 @@ class EditorAdapter(
 
         override fun onSelectionChanged(selStart: Int, selEnd: Int, editText: AppCompatEditText?) {
 //            var index = model.filterGetIndex {
-//                it.id == keyId
+//                it.key == keyId
 //            }
 //            listener.onCursorChange(index, selStart, selEnd, editText!!)
         }

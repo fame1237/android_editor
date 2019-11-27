@@ -9,31 +9,32 @@ import com.example.storylog_editor.model.*
 import com.example.storylog_editor.util.CheckStyle
 import com.example.storylog_editor.util.GenerateKey
 
-data class UpdateImageData(var keyId: Long, var src: String)
+data class UpdateImageData(var keyId: String, var src: String)
 
 data class UpdateImageSuccessData(var position: Int, var src: String)
 
 class EditorViewModel : ViewModel() {
 
-    var editerModel: MutableList<EditerModel> = mutableListOf()
-    var editorModelLiveData = SingleLiveEvent<MutableList<EditerModel>>()
+    var editerModel: ContentRawState = ContentRawState()
+    var editorModelLiveData = SingleLiveEvent<ContentRawState>()
 
     var uploadImageToServerLiveData = SingleLiveEvent<UpdateImageData>()
 
     var uploadImageSuccessLiveData = SingleLiveEvent<Int>()
 
-    fun uploadImageSuccess(keyId: Long, src: String) {
+    fun uploadImageSuccess(keyId: String, src: String) {
 
-        var index = editerModel.filterGetIndex {
-            it.id == keyId
+        var index = editerModel.blocks.filterGetIndex {
+            it.key == keyId
         }
+
         index?.let {
-            editerModel[index].data?.src = src
+            editerModel.blocks[index].data?.src = src
             uploadImageSuccessLiveData.postValue(it)
         }
     }
 
-    fun setModel(model: MutableList<EditerModel>) {
+    fun setModel(model: ContentRawState) {
         this.editerModel = model
     }
 
@@ -43,7 +44,7 @@ class EditorViewModel : ViewModel() {
         text: CharSequence,
         isFocus: Boolean = false
     ) {
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.isFocus = false
         }
 
@@ -51,13 +52,13 @@ class EditorViewModel : ViewModel() {
         val data = Data()
         model.text = text.toString()
         model.inlineStyleRange = CheckStyle.checkSpan(null, text)
-        model.id = GenerateKey.getKey(editerModel)
+        model.key = GenerateKey.getStringKey(editerModel.blocks)
         model.type = viewType
         model.isFocus = isFocus
         model.data = data
         data.selection = text.length
 
-        editerModel.add(position, model)
+        editerModel.blocks.add(position, model)
         editorModelLiveData.postValue(editerModel)
     }
 
@@ -66,7 +67,7 @@ class EditorViewModel : ViewModel() {
         selection: Int?,
         updateStyle: Boolean
     ) {
-        val model = editerModel[position]
+        val model = editerModel.blocks[position]
         val data = model.data!!
         model.text = text.toString()
         if (updateStyle) {
@@ -79,7 +80,7 @@ class EditorViewModel : ViewModel() {
         }
 
         if (isFocus) {
-            editerModel.forEach {
+            editerModel.blocks.forEach {
                 it.isFocus = false
             }
             model.isFocus = isFocus
@@ -93,7 +94,7 @@ class EditorViewModel : ViewModel() {
         selection: Int?,
         updateStyle: Boolean
     ) {
-        val model = editerModel[position]
+        val model = editerModel.blocks[position]
         val data = model.data!!
         model.text = text.toString()
         if (updateStyle) {
@@ -104,7 +105,7 @@ class EditorViewModel : ViewModel() {
         data.selection = text.length
 
         if (isFocus) {
-            editerModel.forEach {
+            editerModel.blocks.forEach {
                 it.isFocus = false
             }
             model.isFocus = isFocus
@@ -114,40 +115,40 @@ class EditorViewModel : ViewModel() {
     }
 
     fun clearFocus() {
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.isFocus = false
         }
     }
 
     fun updateFocus(position: Int, focus: Boolean) {
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.isFocus = false
         }
-        val model = editerModel[position]
+        val model = editerModel.blocks[position]
         model.isFocus = focus
     }
 
     fun goneBorder() {
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.showBorder = false
         }
     }
 
     fun showBorder(position: Int, isShow: Boolean) {
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.showBorder = false
         }
-        val model = editerModel[position]
+        val model = editerModel.blocks[position]
         model.showBorder = isShow
     }
 
     fun updateIndent(position: Int, selection: Int) {
-        val model = editerModel[position]
+        val model = editerModel.blocks[position]
         val data = model.data!!
         data.selection = selection
         model.data = data
         model.type = "indent"
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.isFocus = false
         }
         model.isFocus = true
@@ -155,12 +156,12 @@ class EditorViewModel : ViewModel() {
     }
 
     fun updateAlignLeft(position: Int, selection: Int) {
-        val model = editerModel[position]
+        val model = editerModel.blocks[position]
         val data = model.data!!
         data.selection = selection
         model.data = data
         model.type = "unstyled"
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.isFocus = false
         }
         model.isFocus = true
@@ -170,12 +171,12 @@ class EditorViewModel : ViewModel() {
     }
 
     fun updateAlignCenter(position: Int, selection: Int) {
-        val model = editerModel[position]
+        val model = editerModel.blocks[position]
         val data = model.data!!
         data.selection = selection
         model.data = data
         model.type = "center"
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.isFocus = false
         }
         model.isFocus = true
@@ -183,12 +184,12 @@ class EditorViewModel : ViewModel() {
     }
 
     fun updateAlignRight(position: Int, selection: Int) {
-        val model = editerModel[position]
+        val model = editerModel.blocks[position]
         val data = model.data!!
         data.selection = selection
         model.type = "right"
         model.data = data
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.isFocus = false
         }
         model.isFocus = true
@@ -196,7 +197,7 @@ class EditorViewModel : ViewModel() {
     }
 
     fun updateStyle(position: Int, editText: EditText) {
-        val model = editerModel[position]
+        val model = editerModel.blocks[position]
         val data = model.data!!
         model.inlineStyleRange.clear()
         model.inlineStyleRange = CheckStyle.checkSpan(editText, "")
@@ -209,7 +210,7 @@ class EditorViewModel : ViewModel() {
         model.text = ""
         data.uri = uri
         model.type = "atomic:image"
-        model.id = GenerateKey.getKey(editerModel)
+        model.key = GenerateKey.getStringKey(editerModel.blocks)
         model.data = data
 
 
@@ -217,16 +218,16 @@ class EditorViewModel : ViewModel() {
         val data2 = Data()
         model2.text = ""
         model2.type = "unstyled"
-        model2.id = GenerateKey.getKey(editerModel)
+        model2.key = GenerateKey.getStringKey(editerModel.blocks)
         model2.data = data2
         model2.isFocus = true
 
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.isFocus = false
         }
 
-        editerModel.add(position, model)
-        editerModel.add(position + 1, model2)
+        editerModel.blocks.add(position, model)
+        editerModel.blocks.add(position + 1, model2)
         editorModelLiveData.postValue(editerModel)
     }
 
@@ -235,10 +236,10 @@ class EditorViewModel : ViewModel() {
         val data = Data()
         model.text = ""
         model.type = "atomic:break"
-        model.id = GenerateKey.getKey(editerModel)
+        model.key = GenerateKey.getStringKey(editerModel.blocks)
         model.data = data
 
-        editerModel.add(position, model)
+        editerModel.blocks.add(position, model)
         editorModelLiveData.postValue(editerModel)
     }
 
@@ -247,51 +248,51 @@ class EditorViewModel : ViewModel() {
         val data = Data()
         model.text = ""
         model.type = "atomic:break"
-        model.id = GenerateKey.getKey(editerModel)
+        model.key = GenerateKey.getStringKey(editerModel.blocks)
         model.data = data
 
-        editerModel.add(position, model)
+        editerModel.blocks.add(position, model)
 
         val model2 = EditerModel()
         val data2 = Data()
         model2.text = ""
         model2.type = "unstyled"
-        model2.id = GenerateKey.getKey(editerModel)
+        model2.key = GenerateKey.getStringKey(editerModel.blocks)
         model2.data = data2
         model2.isFocus = true
 
-        editerModel.add(position + 1, model2)
+        editerModel.blocks.add(position + 1, model2)
         editorModelLiveData.postValue(editerModel)
     }
 
     fun changeToQuote(position: Int) {
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.isFocus = false
         }
 
-        val model = editerModel[position]
+        val model = editerModel.blocks[position]
         model.isFocus = true
         model.type = "blockquote"
         editorModelLiveData.postValue(editerModel)
     }
 
     fun changeToHeader(position: Int) {
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.isFocus = false
         }
 
-        val model = editerModel[position]
+        val model = editerModel.blocks[position]
         model.isFocus = true
         model.type = "header-three"
         editorModelLiveData.postValue(editerModel)
     }
 
     fun changeToEditText(position: Int) {
-        editerModel.forEach {
+        editerModel.blocks.forEach {
             it.isFocus = false
         }
 
-        val model = editerModel[position]
+        val model = editerModel.blocks[position]
         model.isFocus = true
         model.type = "unstyled"
         editorModelLiveData.postValue(editerModel)
@@ -299,27 +300,27 @@ class EditorViewModel : ViewModel() {
 
 
     fun getModel(): MutableList<EditerModel> {
-        return editerModel
+        return editerModel.blocks
     }
 
     fun removeViewAt(position: Int) {
-        editerModel.removeAt(position)
+        editerModel.blocks.removeAt(position)
         editorModelLiveData.postValue(editerModel)
     }
 
     fun removeViewAndKeepFocus(removePosition: Int, keepFocusPostion: Int) {
-        val model = editerModel[keepFocusPostion]
+        val model = editerModel.blocks[keepFocusPostion]
         model.isFocus = true
-        editerModel.removeAt(removePosition)
+        editerModel.blocks.removeAt(removePosition)
     }
 
 
     fun getSize(): Int {
-        return editerModel.size
+        return editerModel.blocks.size
     }
 
 
-    fun uploadImageToServer(keyID: Long, base64: String) {
+    fun uploadImageToServer(keyID: String, base64: String) {
         uploadImageToServerLiveData.postValue(UpdateImageData(keyID, base64))
     }
 

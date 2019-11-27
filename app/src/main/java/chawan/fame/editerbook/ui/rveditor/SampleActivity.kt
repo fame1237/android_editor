@@ -16,15 +16,14 @@ import com.example.storylog_editor.ui.editor.EditorViewModel
 class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
 
     lateinit var mViewModel: EditorViewModel
-
-    var keyId = 0L
+    var keyId = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sample)
         mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
         initViewModel()
-        replaceFragment(EditorFragment.newInstance())
+        replaceFragment(EditorFragment.newInstance(getJson()))
     }
 
     private fun initViewModel() {
@@ -64,7 +63,7 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
     override fun onServiceGraphQLError(value: String, tag: String) {
         when (tag) {
             "UPLOAD" -> {
-                val alertDialog: AlertDialog = AlertDialog.Builder(this) //set icon
+                AlertDialog.Builder(this) //set icon
                     .setTitle("Error") //set message
                     .setMessage(value) //set positive button
                     .setPositiveButton(
@@ -90,8 +89,8 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
         }
     }
 
-    fun getJson():String{
-        return "{\"contentRawState\":{ \n" +
+    fun getJson(): String {
+        return "{\n" +
                 "            \"blocks\":[ \n" +
                 "               { \n" +
                 "                  \"key\":\"57g11\",\n" +
@@ -323,9 +322,7 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
                 "               }\n" +
                 "            ],\n" +
                 "            \"entityMap\":{ \n" +
-                "\n" +
                 "            }\n" +
-                "         }\n" +
                 "}"
     }
 }

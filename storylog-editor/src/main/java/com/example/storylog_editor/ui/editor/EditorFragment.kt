@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.storylog_editor.R
 import com.example.storylog_editor.extension.toClass
+import com.example.storylog_editor.model.ContentRawState
 import com.example.storylog_editor.model.EditerModel
 import com.example.storylog_editor.util.ImageUtil
 import com.example.storylog_editor.util.KeyboardHelper
@@ -79,7 +80,6 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
             }
         }
         adapter?.let {
-            //            it.upDateItemInsertRange(position, count + 1)
             it.notifyDataSetChanged()
             rvEditor?.layoutManager?.scrollToPosition(position + count + 1)
         }
@@ -343,14 +343,12 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         myClipboard =
             activity!!.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?
         if (arguments != null && arguments!!.getString("data") != null) {
-            var editerModel: MutableList<EditerModel> = mutableListOf()
-            val json = JSONArray(arguments!!.getString("data"))
-            for (i in 0 until json.length()) {
-                editerModel.add((json.get(i) as JSONObject).toClass(EditerModel::class.java))
-            }
+            var editerModel = arguments!!.getString("data")!!.toClass(ContentRawState::class.java)
             mViewModel.setModel(editerModel)
+            cursorPosition = mViewModel.getSize() - 1
         } else {
             mViewModel.addView(0, "unstyled", "", true)
+            cursorPosition = mViewModel.getSize() - 1
         }
         initView()
     }
@@ -572,7 +570,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
                     addImageToModel(selectedUri)
 
                     mViewModel.uploadImageToServer(
-                        mViewModel.getModel()[cursorPosition + 1].id,
+                        mViewModel.getModel()[cursorPosition + 1].key,
                         imageBase64
                     )
                 }
