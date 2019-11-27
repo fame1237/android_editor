@@ -20,7 +20,7 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sample)
+        setContentView(R.layout.library_editor_activity_sample)
         mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
         initViewModel()
         replaceFragment(EditorFragment.newInstance(getJson()))

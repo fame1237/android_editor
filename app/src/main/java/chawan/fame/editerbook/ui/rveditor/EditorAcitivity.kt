@@ -26,10 +26,7 @@ import com.example.storylog_editor.ui.editor.EditorViewModel
 import com.example.storylog_editor.util.KeyboardHelper
 import com.example.storylog_editor.util.SetStyle
 import com.yalantis.ucrop.UCrop
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_editer.*
+import kotlinx.android.synthetic.main.library_editor_activity_editer.*
 import java.io.File
 import java.util.*
 
@@ -227,7 +224,7 @@ class EditorAcitivity : AppCompatActivity(), EditorAdapter.OnChange, com.example
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_editer)
+        setContentView(R.layout.library_editor_fragment_editer)
 //        mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
 //        EditorBookApplication.database!!.editerQuery().getContent(0)
 //            .subscribeOn(Schedulers.io())

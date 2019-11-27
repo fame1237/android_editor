@@ -29,12 +29,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.storylog_editor.R
 import com.example.storylog_editor.extension.toClass
 import com.example.storylog_editor.model.ContentRawState
-import com.example.storylog_editor.model.EditerModel
 import com.example.storylog_editor.util.ImageUtil
 import com.example.storylog_editor.util.KeyboardHelper
 import com.example.storylog_editor.view.SetAlignmentDialog
-import org.json.JSONArray
-import org.json.JSONObject
 import java.util.*
 
 class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.OnClick {
@@ -321,7 +318,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         activity?.let {
             mViewModel = ViewModelProviders.of(it).get(EditorViewModel::class.java)
         }
-        val view = inflater.inflate(R.layout.fragment_editer, container, false)
+        val view = inflater.inflate(R.layout.library_editor_fragment_editer, container, false)
         rvEditor = view.findViewById(R.id.rvEditor)
         btnAddImage = view.findViewById(R.id.btnAddImage)
         btnAlighment = view.findViewById(R.id.btnAlighment)

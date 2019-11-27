@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.example.storylog_editor.R
 import com.example.storylog_editor.ScreenUtil
-import kotlinx.android.synthetic.main.popup_alignment.*
+import kotlinx.android.synthetic.main.library_editor_popup_alignment.*
 import java.lang.NullPointerException
 
 
@@ -47,7 +47,7 @@ class SetAlignmentDialog : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.setDimAmount(0f)
         setDialogPosition()
-        return inflater.inflate(R.layout.popup_alignment, container, false)
+        return inflater.inflate(R.layout.library_editor_popup_alignment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

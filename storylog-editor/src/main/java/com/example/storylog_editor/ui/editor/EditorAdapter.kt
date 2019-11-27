@@ -3,10 +3,8 @@ package com.example.storylog_editor.ui.editor
 import android.app.Activity
 import android.content.ClipboardManager
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -25,12 +23,8 @@ import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import com.example.storylog_editor.util.CheckStyle
 import com.example.storylog_editor.util.KeyboardHelper
 import com.example.storylog_editor.R
@@ -40,7 +34,6 @@ import com.example.storylog_editor.StyleCallback
 import com.example.storylog_editor.extension.filterGetArrayIndex
 import com.example.storylog_editor.extension.filterGetIndex
 import com.example.storylog_editor.model.*
-import com.example.storylog_editor.util.ImageUtil
 import com.example.storylog_editor.view.ediitext.CutCopyPasteEditText
 import com.pnikosis.materialishprogress.ProgressWheel
 import com.squareup.picasso.Picasso
@@ -87,55 +80,55 @@ class EditorAdapter(
             1 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_edittext, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_edittext, viewGroup, false)
                 return MyEditTextViewHolder(itemView, MyCustomEditTextListener())
             }
             10 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_edittext, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_edittext, viewGroup, false)
                 return MyEditTextCenterViewHolder(itemView, MyCustomEditTextListener())
             }
             11 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_edittext, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_edittext, viewGroup, false)
                 return MyEditTextRightViewHolder(itemView, MyCustomEditTextListener())
             }
             12 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_edittext, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_edittext, viewGroup, false)
                 return MyEditTextIndentViewHolder(itemView, MyCustomEditTextListener())
             }
             2 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_image, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_image, viewGroup, false)
                 return MyImageViewHolder(itemView, MyCustomImageLayoutEditTextListener())
             }
             3 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_line, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_line, viewGroup, false)
                 return MyLineViewHolder(itemView)
             }
             4 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_quote, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_quote, viewGroup, false)
                 return MyQuoteViewHolder(itemView, MyCustomEditTextListener())
             }
             5 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_header, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_header, viewGroup, false)
                 return MyHeaderViewHolder(itemView, MyCustomEditTextListener())
             }
             else -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor, viewGroup, false)
                 return MyViewHolder(itemView, MyCustomEditTextListener())
             }
         }
