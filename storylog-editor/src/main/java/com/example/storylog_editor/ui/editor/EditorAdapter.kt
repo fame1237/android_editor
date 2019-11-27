@@ -24,6 +24,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
@@ -38,7 +39,6 @@ import com.example.storylog_editor.ScreenUtil.dpToPx
 import com.example.storylog_editor.StyleCallback
 import com.example.storylog_editor.extension.filterGetArrayIndex
 import com.example.storylog_editor.extension.filterGetIndex
-import com.example.storylog_editor.glide.GlideApp
 import com.example.storylog_editor.model.*
 import com.example.storylog_editor.util.ImageUtil
 import com.example.storylog_editor.view.ediitext.CutCopyPasteEditText
@@ -474,7 +474,7 @@ class EditorAdapter(
                 viewHolder.layoutLoading.visibility = View.VISIBLE
                 viewHolder.loading.spin()
 
-                GlideApp.with(context)
+                Glide.with(context)
                     .load(model[position].data?.uri!!)
                     .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
                     .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
