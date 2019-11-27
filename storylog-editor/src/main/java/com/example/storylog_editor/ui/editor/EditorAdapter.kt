@@ -3,8 +3,10 @@ package com.example.storylog_editor.ui.editor
 import android.app.Activity
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -22,8 +24,12 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.example.storylog_editor.util.CheckStyle
 import com.example.storylog_editor.util.KeyboardHelper
 import com.example.storylog_editor.R
@@ -37,6 +43,7 @@ import com.example.storylog_editor.model.*
 import com.example.storylog_editor.util.ImageUtil
 import com.example.storylog_editor.view.ediitext.CutCopyPasteEditText
 import com.pnikosis.materialishprogress.ProgressWheel
+import com.squareup.picasso.Picasso
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -151,7 +158,7 @@ class EditorAdapter(
 
             if (model[position].data != null) {
                 val ss1 = SpannableString(model[position].text)
-                model[position]!!.inlineStyleRange.forEach {
+                model[position].inlineStyleRange.forEach {
                     var offset = it.offset
                     var lenght = it.lenght
 
@@ -408,20 +415,71 @@ class EditorAdapter(
             }
 
             if (model[position].data?.src != null && model[position].data?.src != "") {
-                viewHolder.layoutImage.visibility = View.VISIBLE
-                viewHolder.layoutLoading.visibility = View.GONE
 
-                GlideApp.with(context)
+//                viewHolder.layoutImage.visibility = View.VISIBLE
+//                viewHolder.layoutLoading.visibility = View.GONE
+//
+//                GlideApp.with(context)
+//                    .load(model[position].data?.src!!)
+//                    .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
+//                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
+//                    .error(ColorDrawable(context.resources.getColor(R.color.colorOrange)))
+//                    .into(viewHolder.image)
+
+                Picasso.get()
                     .load(model[position].data?.src!!)
-                    .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
-                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
-                    .error(ColorDrawable(context.resources.getColor(R.color.colorOrange)))
-                    .into(viewHolder.image)
+                    .into(viewHolder.image, object : com.squareup.picasso.Callback {
+                        override fun onSuccess() {
+                            viewHolder.layoutImage.visibility = View.VISIBLE
+                            viewHolder.layoutLoading.visibility = View.GONE
+                        }
+
+                        override fun onError(e: Exception?) {
+                            viewHolder.layoutImage.visibility = View.VISIBLE
+                            viewHolder.layoutLoading.visibility = View.GONE
+                        }
+                    })
+
+//                GlideApp.with(context)
+//                    .asBitmap()
+//                    .load(model[position].data?.src!!)
+//                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
+//                    .listener(object : RequestListener<Bitmap> {
+//                        override fun onLoadFailed(
+//                            e: GlideException?,
+//                            model: Any?,
+//                            target: Target<Bitmap>?,
+//                            isFirstResource: Boolean
+//                        ): Boolean {
+//
+//                            return false
+//                        }
+//
+//                        override fun onResourceReady(
+//                            resource: Bitmap?,
+//                            model: Any?,
+//                            target: Target<Bitmap>?,
+//                            dataSource: DataSource?,
+//                            isFirstResource: Boolean
+//                        ): Boolean {
+//                            viewHolder.layoutImage.visibility = View.VISIBLE
+//                            viewHolder.layoutLoading.visibility = View.GONE
+//                            return true
+//                        }
+//                    })
+//                    .into(viewHolder.image)
 
             } else {
                 viewHolder.layoutImage.visibility = View.GONE
                 viewHolder.layoutLoading.visibility = View.VISIBLE
                 viewHolder.loading.spin()
+
+                GlideApp.with(context)
+                    .load(model[position].data?.uri!!)
+                    .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
+                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
+                    .error(ColorDrawable(context.resources.getColor(R.color.colorOrange)))
+                    .into(viewHolder.imageLoading)
             }
 
 
@@ -700,6 +758,7 @@ class EditorAdapter(
         var btnDeleteImage = v.findViewById<RelativeLayout>(R.id.btnDeleteImage)
         var layoutRecycle = v.findViewById<LinearLayout>(R.id.layoutRecycle)
         var image = v.findViewById<ImageView>(R.id.image)
+        var imageLoading = v.findViewById<ImageView>(R.id.image_loading)
 
         var layoutLoading = v.findViewById<RelativeLayout>(R.id.layout_loading)
         var loading = v.findViewById<ProgressWheel>(R.id.loading)

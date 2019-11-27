@@ -1,5 +1,6 @@
 package com.example.storylog_editor.ui.editor
 
+import android.net.Uri
 import android.widget.EditText
 import androidx.lifecycle.ViewModel
 import com.example.storylog_editor.extension.SingleLiveEvent
@@ -202,11 +203,11 @@ class EditorViewModel : ViewModel() {
         editorModelLiveData.postValue(editerModel)
     }
 
-    fun addImageModel(position: Int, src: String) {
+    fun addImageModel(position: Int, uri: Uri) {
         val model = EditerModel()
         val data = Data()
         model.text = ""
-        data.src = src
+        data.uri = uri
         model.type = "atomic:image"
         model.id = GenerateKey.getKey(editerModel)
         model.data = data

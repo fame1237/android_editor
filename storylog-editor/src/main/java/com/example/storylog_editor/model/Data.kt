@@ -1,8 +1,11 @@
 package com.example.storylog_editor.model
 
+import android.net.Uri
+
 
 class Data {
     var src = ""
+    var uri : Uri? = null
     var selection: Int = 0
 //    var alight: Alignment =
 //        Alignment.START

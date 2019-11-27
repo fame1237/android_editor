@@ -485,9 +485,9 @@ class EditorAcitivity : AppCompatActivity(), EditorAdapter.OnChange, com.example
 
     private fun addImageToModel(image: String) {
         adapter?.let {
-            mViewModel.addImageModel(cursorPosition + 1, image)
-            it.upDateImageItem(cursorPosition)
-            rvEditor.scrollToPosition(cursorPosition + 2)
+//            mViewModel.addImageModel(cursorPosition + 1, image)
+//            it.upDateImageItem(cursorPosition)
+//            rvEditor.scrollToPosition(cursorPosition + 2)
         }
     }
 

@@ -569,7 +569,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
                         )
                     }
 
-                    addImageToModel()
+                    addImageToModel(selectedUri)
 
                     mViewModel.uploadImageToServer(
                         mViewModel.getModel()[cursorPosition + 1].id,
@@ -580,9 +580,9 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         }
     }
 
-    private fun addImageToModel() {
+    private fun addImageToModel(uri: Uri) {
         adapter?.let {
-            mViewModel.addImageModel(cursorPosition + 1, "")
+            mViewModel.addImageModel(cursorPosition + 1, uri)
             it.upDateImageItem(cursorPosition)
             rvEditor?.scrollToPosition(cursorPosition + 2)
         }
