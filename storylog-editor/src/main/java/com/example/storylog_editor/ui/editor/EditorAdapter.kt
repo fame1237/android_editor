@@ -589,8 +589,7 @@ class EditorAdapter(
     }
 
     fun upDateImageItem(position: Int) {
-        notifyItemRangeChanged(position, 2)
-        notifyItemChanged(position - 1, false)
+        notifyDataSetChanged()
     }
 
     fun upDateRemoveItem(position: Int) {

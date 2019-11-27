@@ -11,7 +11,6 @@ import com.example.storylog_editor.util.GenerateKey
 
 data class UpdateImageData(var keyId: String, var src: String)
 
-data class UpdateImageSuccessData(var position: Int, var src: String)
 
 class EditorViewModel : ViewModel() {
 
