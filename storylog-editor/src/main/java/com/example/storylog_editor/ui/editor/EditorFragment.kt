@@ -577,7 +577,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
 
     private fun addImageToModel(uri: Uri) {
         adapter?.let {
-            mViewModel.addImageModel(cursorPosition + 1, uri)
+            mViewModel.addImageModel(cursorPosition + 1, uri.encodedPath!!)
             it.upDateImageItem(cursorPosition)
             rvEditor?.scrollToPosition(cursorPosition + 2)
         }

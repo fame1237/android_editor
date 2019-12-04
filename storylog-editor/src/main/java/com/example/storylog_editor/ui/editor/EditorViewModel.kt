@@ -203,7 +203,7 @@ class EditorViewModel : ViewModel() {
         editorModelLiveData.postValue(editerModel)
     }
 
-    fun addImageModel(position: Int, uri: Uri) {
+    fun addImageModel(position: Int, uri: String) {
         val model = EditerModel()
         val data = Data()
         model.text = ""

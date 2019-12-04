@@ -23,7 +23,7 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
         setContentView(R.layout.library_editor_activity_sample)
         mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
         initViewModel()
-        replaceFragment(EditorFragment.newInstance(getJson()))
+        replaceFragment(EditorFragment.newInstance())
     }
 
     private fun initViewModel() {
@@ -87,6 +87,46 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
             else -> {
             }
         }
+    }
+
+    fun getJson2(): String {
+        return "{ \n" +
+                "   \"blocks\":[ \n" +
+                "      {  },\n" +
+                "      { \n" +
+                "         \"data\":{ \n" +
+                "            \"selection\":0,\n" +
+                "            \"src\":\"https://s3.ap-southeast-1.amazonaws.com/media-local.fictionlog/books/5d9b076f48a76d001a6e7287/5de797f5NVJ8nRji.jpec\",\n" +
+                "            \"uri\":{ \n" +
+                "\n" +
+                "            }\n" +
+                "         },\n" +
+                "         \"inlineStyleRange\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"isFocus\":false,\n" +
+                "         \"key\":\"qktWp\",\n" +
+                "         \"showBorder\":false,\n" +
+                "         \"text\":\"qfhwtjjqth\",\n" +
+                "         \"type\":\"atomic:image\"\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"data\":{ \n" +
+                "            \"selection\":0,\n" +
+                "            \"src\":\"\",\n" +
+                "            \"uri\":null\n" +
+                "         },\n" +
+                "         \"inlineStyleRange\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"isFocus\":false,\n" +
+                "         \"key\":\"BWTir\",\n" +
+                "         \"showBorder\":false,\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"unstyled\"\n" +
+                "      }\n" +
+                "   ]\n" +
+                "}"
     }
 
     fun getJson(): String {
