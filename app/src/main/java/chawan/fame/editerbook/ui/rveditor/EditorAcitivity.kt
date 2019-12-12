@@ -21,26 +21,22 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import chawan.fame.editerbook.R
-import com.example.storylog_editor.model.EditerViewType
-import com.example.storylog_editor.ui.editor.EditerAdapter
+import com.example.storylog_editor.ui.editor.EditorAdapter
 import com.example.storylog_editor.ui.editor.EditorViewModel
 import com.example.storylog_editor.util.KeyboardHelper
 import com.example.storylog_editor.util.SetStyle
 import com.yalantis.ucrop.UCrop
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_editer.*
+import kotlinx.android.synthetic.main.library_editor_activity_editer.*
 import java.io.File
 import java.util.*
 
-class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.storylog_editor.view.SetAlignmentDialog.OnClick {
+class EditorAcitivity : AppCompatActivity(), EditorAdapter.OnChange, com.example.storylog_editor.view.SetAlignmentDialog.OnClick {
     override fun onPasteText(position: Int, textList: MutableList<String>) {
 
     }
 
     lateinit var mViewModel: EditorViewModel
-    var adapter: EditerAdapter? = null
+    var adapter: EditorAdapter? = null
     var cursorPosition = 0
     var edtView: View? = null
     var mAlertDialog: AlertDialog? = null
@@ -66,7 +62,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
         mViewModel.clearFocus()
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].type != EditerViewType.IMAGE
+                mViewModel.getModel()[cursorPosition].type != "atomic:image"
             ) {
                 adapter?.notifyItemChanged(cursorPosition)
                 rvEditor.post {
@@ -87,7 +83,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
         mViewModel.goneBorder()
 
         when {
-            mViewModel.getModel()[position].type == EditerViewType.QUOTE -> {
+            mViewModel.getModel()[position].type == "blockquote" -> {
                 btnQuote.setColorFilter(
                     ContextCompat.getColor(this, R.color.colorOrange)
                     , PorterDuff.Mode.SRC_IN
@@ -97,7 +93,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                     , PorterDuff.Mode.SRC_IN
                 )
             }
-            mViewModel.getModel()[position].type == EditerViewType.HEADER -> {
+            mViewModel.getModel()[position].type == "header-three" -> {
                 btnQuote.setColorFilter(
                     ContextCompat.getColor(this, R.color.grey_image)
                     , PorterDuff.Mode.SRC_IN
@@ -123,7 +119,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 //        mViewModel.updateFocus(position, true)
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].type != EditerViewType.IMAGE
+                mViewModel.getModel()[cursorPosition].type != "atomic:image"
             ) {
                 imageIndex.forEach {
                     adapter?.updateCurrentItem(it)
@@ -150,24 +146,24 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
     }
 
     override fun onNextLine(position: Int, text: CharSequence) {
-        Single.fromCallable {
-            mViewModel.addView(
-                position,
-                EditerViewType.EDIT_TEXT,
-                text,
-                mViewModel.getModel()[position - 1].data!!.alight,
-                true
-            )
-        }.observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.computation())
-            .subscribe { _ ->
-                adapter?.let {
-                    it.upDateItem(position)
-                    rvEditor.post {
-                        rvEditor.scrollToPosition(position)
-                    }
-                }
-            }
+//        Single.fromCallable {
+//            mViewModel.addView(
+//                position,
+//                "unstyled",
+//                text,
+//                mViewModel.getModel()[position - 1].data!!.alight,
+//                true
+//            )
+//        }.observeOn(AndroidSchedulers.mainThread())
+//            .subscribeOn(Schedulers.computation())
+//            .subscribe { _ ->
+//                adapter?.let {
+//                    it.upDateItem(position)
+//                    rvEditor.post {
+//                        rvEditor.scrollToPosition(position)
+//                    }
+//                }
+//            }
     }
 
     override fun onCursorChange(
@@ -184,7 +180,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
         var viewType = mViewModel.getModel()[position - 1].type
 
         when (viewType) {
-            EditerViewType.IMAGE -> {
+            "atomic:image" -> {
                 mViewModel.updateFocus(position, false)
                 mViewModel.showBorder(position - 1, true)
                 adapter?.let {
@@ -196,7 +192,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                 }
                 KeyboardHelper.hideSoftKeyboard(this)
             }
-            EditerViewType.LINE -> {
+            "atomic:break" -> {
                 mViewModel.removeViewAndKeepFocus(position - 1, position)
                 adapter?.let {
                     it.upDateRemoveItemWithoutCurrentChange(position - 1)
@@ -206,7 +202,6 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                 mViewModel.updateText(
                     position - 1,
                     text,
-                    "normal",
                     true,
                     selection,
                     true
@@ -224,12 +219,12 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
     }
 
     override fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean) {
-        mViewModel.updateText(position, text, "normal", false, null, updateStyle)
+        mViewModel.updateText(position, text, false, null, updateStyle)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_editer)
+        setContentView(R.layout.library_editor_fragment_editer)
 //        mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
 //        EditorBookApplication.database!!.editerQuery().getContent(0)
 //            .subscribeOn(Schedulers.io())
@@ -243,7 +238,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 //                    }
 //                    mViewModel.setModel(editerModel)
 //                } else {
-//                    mViewModel.addView(0, EditerViewType.EDIT_TEXT, "", Alignment.START, true)
+//                    mViewModel.addView(0, "unstyled", "", Alignment.START, true)
 //                }
 //                initView()
 //                initViewModel()
@@ -299,7 +294,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
     }
 
     private fun initView() {
-        adapter = EditerAdapter(this, this,this, mViewModel.getModel())
+        adapter = EditorAdapter(this, this,this, mViewModel.getModel())
         rvEditor.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rvEditor.adapter = adapter
         rvEditor.itemAnimator = null
@@ -331,7 +326,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 
         btnQuote.setOnClickListener {
             if (cursorPosition <= mViewModel.getSize()) {
-                if (mViewModel.getModel()[cursorPosition].type == EditerViewType.EDIT_TEXT) {
+                if (mViewModel.getModel()[cursorPosition].type == "unstyled") {
                     adapter?.let {
                         mViewModel.changeToQuote(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
@@ -341,7 +336,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                         ContextCompat.getColor(this, R.color.colorOrange)
                         , PorterDuff.Mode.SRC_IN
                     )
-                } else if (mViewModel.getModel()[cursorPosition].type == EditerViewType.QUOTE) {
+                } else if (mViewModel.getModel()[cursorPosition].type == "blockquote") {
                     adapter?.let {
                         mViewModel.changeToEditText(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
@@ -367,7 +362,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 
         btnHeader.setOnClickListener {
             if (cursorPosition <= mViewModel.getSize()) {
-                if (mViewModel.getModel()[cursorPosition].type == EditerViewType.EDIT_TEXT) {
+                if (mViewModel.getModel()[cursorPosition].type == "unstyled") {
                     adapter?.let {
                         mViewModel.changeToHeader(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
@@ -376,7 +371,7 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
                             , PorterDuff.Mode.SRC_IN
                         )
                     }
-                } else if (mViewModel.getModel()[cursorPosition].type == EditerViewType.HEADER) {
+                } else if (mViewModel.getModel()[cursorPosition].type == "header-three") {
                     adapter?.let {
                         mViewModel.changeToEditText(cursorPosition)
                         it.updateCurrentItem(cursorPosition)
@@ -487,9 +482,9 @@ class EditerActivity : AppCompatActivity(), EditerAdapter.OnChange, com.example.
 
     private fun addImageToModel(image: String) {
         adapter?.let {
-            mViewModel.addImageModel(cursorPosition + 1, image)
-            it.upDateImageItem(cursorPosition)
-            rvEditor.scrollToPosition(cursorPosition + 2)
+//            mViewModel.addImageModel(cursorPosition + 1, image)
+//            it.upDateImageItem(cursorPosition)
+//            rvEditor.scrollToPosition(cursorPosition + 2)
         }
     }
 

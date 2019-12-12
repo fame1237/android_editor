@@ -35,6 +35,8 @@ import com.example.storylog_editor.extension.filterGetArrayIndex
 import com.example.storylog_editor.extension.filterGetIndex
 import com.example.storylog_editor.model.*
 import com.example.storylog_editor.view.ediitext.CutCopyPasteEditText
+import com.pnikosis.materialishprogress.ProgressWheel
+import com.squareup.picasso.Picasso
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -46,7 +48,7 @@ import java.lang.Exception
  */
 
 
-class EditerAdapter(
+class EditorAdapter(
     val context: Context,
     val activity: Activity,
     var listener: OnChange,
@@ -78,37 +80,55 @@ class EditerAdapter(
             1 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_edittext, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_edittext, viewGroup, false)
                 return MyEditTextViewHolder(itemView, MyCustomEditTextListener())
+            }
+            10 -> {
+                val itemView =
+                    LayoutInflater.from(viewGroup.context)
+                        .inflate(R.layout.library_editor_item_editor_edittext, viewGroup, false)
+                return MyEditTextCenterViewHolder(itemView, MyCustomEditTextListener())
+            }
+            11 -> {
+                val itemView =
+                    LayoutInflater.from(viewGroup.context)
+                        .inflate(R.layout.library_editor_item_editor_edittext, viewGroup, false)
+                return MyEditTextRightViewHolder(itemView, MyCustomEditTextListener())
+            }
+            12 -> {
+                val itemView =
+                    LayoutInflater.from(viewGroup.context)
+                        .inflate(R.layout.library_editor_item_editor_edittext, viewGroup, false)
+                return MyEditTextIndentViewHolder(itemView, MyCustomEditTextListener())
             }
             2 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_image, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_image, viewGroup, false)
                 return MyImageViewHolder(itemView, MyCustomImageLayoutEditTextListener())
             }
             3 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_line, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_line, viewGroup, false)
                 return MyLineViewHolder(itemView)
             }
             4 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_quote, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_quote, viewGroup, false)
                 return MyQuoteViewHolder(itemView, MyCustomEditTextListener())
             }
             5 -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor_header, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor_header, viewGroup, false)
                 return MyHeaderViewHolder(itemView, MyCustomEditTextListener())
             }
             else -> {
                 val itemView =
                     LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.item_editor, viewGroup, false)
+                        .inflate(R.layout.library_editor_item_editor, viewGroup, false)
                 return MyViewHolder(itemView, MyCustomEditTextListener())
             }
         }
@@ -117,7 +137,7 @@ class EditerAdapter(
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         if (viewHolder is MyEditTextViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
 
             if (model[position].isFocus) {
                 viewHolder.edt.post {
@@ -126,30 +146,29 @@ class EditerAdapter(
                     }
                 }
             } else {
-//                viewHolder.edt.post {
                 viewHolder.edt.clearFocus()
-//                }
             }
 
-            if (model[position].inlineStyleRange.isNotEmpty()) {
+            if (model[position].data != null) {
                 val ss1 = SpannableString(model[position].text)
                 model[position].inlineStyleRange.forEach {
                     var offset = it.offset
                     var lenght = it.lenght
-                    when {
-                        it.style == "BOLD" -> ss1.setSpan(
+
+                    when (it.style) {
+                        "BOLD" -> ss1.setSpan(
                             StyleSpan(Typeface.BOLD), offset,
                             offset + lenght, 0
                         )
-                        it.style == "ITALIC" -> ss1.setSpan(
+                        "ITALIC" -> ss1.setSpan(
                             StyleSpan(Typeface.ITALIC), offset,
                             offset + lenght, 0
                         )
-                        it.style == "UNDERLINE" -> ss1.setSpan(
+                        "UNDERLINE" -> ss1.setSpan(
                             UnderlineSpan(), offset,
                             offset + lenght, 0
                         )
-                        it.style == "STRIKETHROUGH" -> ss1.setSpan(
+                        "STRIKETHROUGH" -> ss1.setSpan(
                             StrikethroughSpan(), offset,
                             offset + lenght, 0
                         )
@@ -159,48 +178,186 @@ class EditerAdapter(
             }
 
 
-            when (model[position].data!!.alight) {
-                Alignment.START -> {
-                    viewHolder.edt.gravity = Gravity.START
-                    viewHolder.edt.setText(
-                        createIndentedText(
-                            viewHolder.edt.text as CharSequence,
-                            0,
-                            0
-                        )
-                    )
-                }
-                Alignment.CENTER -> {
-                    viewHolder.edt.gravity = Gravity.CENTER
-                    viewHolder.edt.setText(
-                        createIndentedText(
-                            viewHolder.edt.text as CharSequence,
-                            0,
-                            0
-                        )
-                    )
-                }
-                Alignment.END -> {
-                    viewHolder.edt.gravity = Gravity.END
-                    viewHolder.edt.setText(
-                        createIndentedText(
-                            viewHolder.edt.text as CharSequence,
-                            0,
-                            0
-                        )
-                    )
-                }
-                Alignment.INDENT -> {
-                    viewHolder.edt.gravity = Gravity.START
-                    viewHolder.edt.setText(
-                        createIndentedText(
-                            viewHolder.edt.text as CharSequence,
-                            dpToPx(30f, context),
-                            0
-                        )
-                    )
-                }
+            viewHolder.edt.gravity = Gravity.START
+            viewHolder.edt.setText(
+                createIndentedText(
+                    viewHolder.edt.text as CharSequence,
+                    0,
+                    0
+                )
+            )
+
+            try {
+                viewHolder.edt.setSelection(model[position].data!!.selection)
+            } catch (ex: Exception) {
+                model[position].data!!.selection = 0
             }
+            model[position].data!!.selection = 0
+
+        } else if (viewHolder is MyEditTextCenterViewHolder) {
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
+
+            if (model[position].isFocus) {
+                viewHolder.edt.post {
+                    if (viewHolder.edt.requestFocus()) {
+                        model[position].isFocus = false
+                    }
+                }
+            } else {
+                viewHolder.edt.clearFocus()
+            }
+
+            if (model[position].data != null) {
+                val ss1 = SpannableString(model[position].text)
+                model[position]!!.inlineStyleRange.forEach {
+                    var offset = it.offset
+                    var lenght = it.lenght
+
+                    when (it.style) {
+                        "BOLD" -> ss1.setSpan(
+                            StyleSpan(Typeface.BOLD), offset,
+                            offset + lenght, 0
+                        )
+                        "ITALIC" -> ss1.setSpan(
+                            StyleSpan(Typeface.ITALIC), offset,
+                            offset + lenght, 0
+                        )
+                        "UNDERLINE" -> ss1.setSpan(
+                            UnderlineSpan(), offset,
+                            offset + lenght, 0
+                        )
+                        "STRIKETHROUGH" -> ss1.setSpan(
+                            StrikethroughSpan(), offset,
+                            offset + lenght, 0
+                        )
+                    }
+                }
+                viewHolder.edt.setText(ss1)
+            }
+
+            viewHolder.edt.gravity = Gravity.CENTER
+            viewHolder.edt.setText(
+                createIndentedText(
+                    viewHolder.edt.text as CharSequence,
+                    0,
+                    0
+                )
+            )
+
+            try {
+                viewHolder.edt.setSelection(model[position].data!!.selection)
+            } catch (ex: Exception) {
+                model[position].data!!.selection = 0
+            }
+            model[position].data!!.selection = 0
+
+        } else if (viewHolder is MyEditTextRightViewHolder) {
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
+
+            if (model[position].isFocus) {
+                viewHolder.edt.post {
+                    if (viewHolder.edt.requestFocus()) {
+                        model[position].isFocus = false
+                    }
+                }
+            } else {
+                viewHolder.edt.clearFocus()
+            }
+
+            if (model[position].data != null) {
+                val ss1 = SpannableString(model[position].text)
+                model[position]!!.inlineStyleRange.forEach {
+                    var offset = it.offset
+                    var lenght = it.lenght
+
+                    when (it.style) {
+                        "BOLD" -> ss1.setSpan(
+                            StyleSpan(Typeface.BOLD), offset,
+                            offset + lenght, 0
+                        )
+                        "ITALIC" -> ss1.setSpan(
+                            StyleSpan(Typeface.ITALIC), offset,
+                            offset + lenght, 0
+                        )
+                        "UNDERLINE" -> ss1.setSpan(
+                            UnderlineSpan(), offset,
+                            offset + lenght, 0
+                        )
+                        "STRIKETHROUGH" -> ss1.setSpan(
+                            StrikethroughSpan(), offset,
+                            offset + lenght, 0
+                        )
+                    }
+                }
+                viewHolder.edt.setText(ss1)
+            }
+
+
+            viewHolder.edt.gravity = Gravity.END
+            viewHolder.edt.setText(
+                createIndentedText(
+                    viewHolder.edt.text as CharSequence,
+                    0,
+                    0
+                )
+            )
+
+            try {
+                viewHolder.edt.setSelection(model[position].data!!.selection)
+            } catch (ex: Exception) {
+                model[position].data!!.selection = 0
+            }
+            model[position].data!!.selection = 0
+
+        } else if (viewHolder is MyEditTextIndentViewHolder) {
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
+
+            if (model[position].isFocus) {
+                viewHolder.edt.post {
+                    if (viewHolder.edt.requestFocus()) {
+                        model[position].isFocus = false
+                    }
+                }
+            } else {
+                viewHolder.edt.clearFocus()
+            }
+
+            if (model[position].data != null) {
+                val ss1 = SpannableString(model[position].text)
+                model[position]!!.inlineStyleRange.forEach {
+                    var offset = it.offset
+                    var lenght = it.lenght
+
+                    when (it.style) {
+                        "BOLD" -> ss1.setSpan(
+                            StyleSpan(Typeface.BOLD), offset,
+                            offset + lenght, 0
+                        )
+                        "ITALIC" -> ss1.setSpan(
+                            StyleSpan(Typeface.ITALIC), offset,
+                            offset + lenght, 0
+                        )
+                        "UNDERLINE" -> ss1.setSpan(
+                            UnderlineSpan(), offset,
+                            offset + lenght, 0
+                        )
+                        "STRIKETHROUGH" -> ss1.setSpan(
+                            StrikethroughSpan(), offset,
+                            offset + lenght, 0
+                        )
+                    }
+                }
+                viewHolder.edt.setText(ss1)
+            }
+
+            viewHolder.edt.gravity = Gravity.START
+            viewHolder.edt.setText(
+                createIndentedText(
+                    viewHolder.edt.text as CharSequence,
+                    dpToPx(30f, context),
+                    0
+                )
+            )
 
             try {
                 viewHolder.edt.setSelection(model[position].data!!.selection)
@@ -210,7 +367,7 @@ class EditerAdapter(
             model[position].data!!.selection = 0
 
         } else if (viewHolder is MyImageViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id, viewHolder)
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key, viewHolder)
             if (model[position].showBorder) {
                 viewHolder.btnDeleteImage.visibility = View.VISIBLE
                 viewHolder.imageBackgroud.background =
@@ -242,16 +399,81 @@ class EditerAdapter(
 
             viewHolder.btnDeleteImage.setOnClickListener {
                 var index = model.filterGetIndex {
-                    it.id == viewHolder.myCustomEditTextListener.keyId
+                    it.key == viewHolder.myCustomEditTextListener.keyId
                 }
-                listener.onDeleteRow(index)
+
+                index?.let {
+                    listener.onDeleteRow(it)
+                }
             }
 
-            Glide.with(context)
-                .load(("https://s3.ap-southeast-1.amazonaws.com/media.fictionlog/statics/5d5bc72ewyIGManx.jpeg"))
-                .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
-                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
-                .into(viewHolder.image)
+            if (model[position].data?.src != null && model[position].data?.src != "") {
+
+//                viewHolder.layoutImage.visibility = View.VISIBLE
+//                viewHolder.layoutLoading.visibility = View.GONE
+//
+//                GlideApp.with(context)
+//                    .load(model[position].data?.src!!)
+//                    .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
+//                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
+//                    .error(ColorDrawable(context.resources.getColor(R.color.colorOrange)))
+//                    .into(viewHolder.image)
+
+                Picasso.get()
+                    .load(model[position].data?.src!!)
+                    .into(viewHolder.image, object : com.squareup.picasso.Callback {
+                        override fun onSuccess() {
+                            viewHolder.layoutImage.visibility = View.VISIBLE
+                            viewHolder.layoutLoading.visibility = View.GONE
+                        }
+
+                        override fun onError(e: Exception?) {
+                            viewHolder.layoutImage.visibility = View.VISIBLE
+                            viewHolder.layoutLoading.visibility = View.GONE
+                        }
+                    })
+
+//                GlideApp.with(context)
+//                    .asBitmap()
+//                    .load(model[position].data?.src!!)
+//                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
+//                    .listener(object : RequestListener<Bitmap> {
+//                        override fun onLoadFailed(
+//                            e: GlideException?,
+//                            model: Any?,
+//                            target: Target<Bitmap>?,
+//                            isFirstResource: Boolean
+//                        ): Boolean {
+//
+//                            return false
+//                        }
+//
+//                        override fun onResourceReady(
+//                            resource: Bitmap?,
+//                            model: Any?,
+//                            target: Target<Bitmap>?,
+//                            dataSource: DataSource?,
+//                            isFirstResource: Boolean
+//                        ): Boolean {
+//                            viewHolder.layoutImage.visibility = View.VISIBLE
+//                            viewHolder.layoutLoading.visibility = View.GONE
+//                            return true
+//                        }
+//                    })
+//                    .into(viewHolder.image)
+
+            } else {
+                viewHolder.layoutImage.visibility = View.GONE
+                viewHolder.layoutLoading.visibility = View.VISIBLE
+                viewHolder.loading.spin()
+
+                Glide.with(context)
+                    .load(model[position].data?.uri!!)
+                    .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
+                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
+                    .error(ColorDrawable(context.resources.getColor(R.color.colorOrange)))
+                    .into(viewHolder.imageLoading)
+            }
 
 
             viewHolder.layoutRecycle?.layoutParams = LinearLayout.LayoutParams(
@@ -277,7 +499,7 @@ class EditerAdapter(
 
 
         } else if (viewHolder is MyQuoteViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
             if (model[position].data != null) {
                 viewHolder.edtQuote.post {
                     viewHolder.edtQuote.setText(model[position].text)
@@ -293,57 +515,13 @@ class EditerAdapter(
                         model[position].isFocus = false
                     }
                 }
-            }
-            else {
+            } else {
                 viewHolder.edtQuote.clearFocus()
             }
         } else if (viewHolder is MyHeaderViewHolder) {
-            viewHolder.myCustomEditTextListener.updatePosition(model[position].id)
+            viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
             if (model[position].data != null) {
                 viewHolder.edtHeader.setText(model[position].text)
-            }
-
-            when (model[position].data!!.alight) {
-                Alignment.START -> {
-                    viewHolder.edtHeader.gravity = Gravity.START
-                    viewHolder.edtHeader.setText(
-                        createIndentedText(
-                            viewHolder.edtHeader.text.toString(),
-                            0,
-                            0
-                        )
-                    )
-                }
-                Alignment.CENTER -> {
-                    viewHolder.edtHeader.gravity = Gravity.CENTER
-                    viewHolder.edtHeader.setText(
-                        createIndentedText(
-                            viewHolder.edtHeader.text as CharSequence,
-                            0,
-                            0
-                        )
-                    )
-                }
-                Alignment.END -> {
-                    viewHolder.edtHeader.gravity = Gravity.END
-                    viewHolder.edtHeader.setText(
-                        createIndentedText(
-                            viewHolder.edtHeader.text as CharSequence,
-                            0,
-                            0
-                        )
-                    )
-                }
-                Alignment.INDENT -> {
-                    viewHolder.edtHeader.gravity = Gravity.START
-                    viewHolder.edtHeader.setText(
-                        createIndentedText(
-                            viewHolder.edtHeader.text as CharSequence,
-                            dpToPx(30f, context),
-                            0
-                        )
-                    )
-                }
             }
 
             if (model[position].isFocus) {
@@ -352,8 +530,7 @@ class EditerAdapter(
                         model[position].isFocus = false
                     }
                 }
-            }
-            else {
+            } else {
                 viewHolder.edtHeader.clearFocus()
             }
         }
@@ -405,8 +582,7 @@ class EditerAdapter(
     }
 
     fun upDateImageItem(position: Int) {
-        notifyItemRangeChanged(position, 2)
-        notifyItemChanged(position - 1, false)
+        notifyDataSetChanged()
     }
 
     fun upDateRemoveItem(position: Int) {
@@ -427,29 +603,34 @@ class EditerAdapter(
         return model.size
     }
 
-    override fun getItemId(position: Int): Long {
-        return model[position].id
-    }
-
     override fun setHasStableIds(hasStableIds: Boolean) {
         super.setHasStableIds(true)
     }
 
     override fun getItemViewType(position: Int): Int {
         when (model[position].type) {
-            EditerViewType.EDIT_TEXT -> {
+            "unstyled" -> {
                 return 1
             }
-            EditerViewType.IMAGE -> {
+            "center" -> {
+                return 10
+            }
+            "right" -> {
+                return 11
+            }
+            "indent" -> {
+                return 12
+            }
+            "atomic:image" -> {
                 return 2
             }
-            EditerViewType.LINE -> {
+            "atomic:break" -> {
                 return 3
             }
-            EditerViewType.QUOTE -> {
+            "blockquote" -> {
                 return 4
             }
-            EditerViewType.HEADER -> {
+            "header-three" -> {
                 return 5
             }
             else -> {
@@ -471,6 +652,42 @@ class EditerAdapter(
             edt.customSelectionActionModeCallback = StyleCallback(edt, listener, activity)
 
             edt.setOnCutCopyPasteListener(myCustomEditTextListener)
+        }
+    }
+
+    inner class MyEditTextCenterViewHolder(
+        v: View,
+        customEditTextListener: MyCustomEditTextListener
+    ) :
+        RecyclerView.ViewHolder(v) {
+        var edt =
+            v.findViewById<CutCopyPasteEditText>(R.id.edt)
+        var myCustomEditTextListener = customEditTextListener
+
+        init {
+            edt.addTextChangedListener(myCustomEditTextListener)
+            edt.onFocusChangeListener = myCustomEditTextListener
+            edt.setOnKeyListener(myCustomEditTextListener)
+            edt.accessibilityDelegate = myCustomEditTextListener
+            edt.customSelectionActionModeCallback = StyleCallback(edt, listener, activity)
+        }
+    }
+
+    inner class MyEditTextRightViewHolder(
+        v: View,
+        customEditTextListener: MyCustomEditTextListener
+    ) :
+        RecyclerView.ViewHolder(v) {
+        var edt =
+            v.findViewById<CutCopyPasteEditText>(R.id.edt)
+        var myCustomEditTextListener = customEditTextListener
+
+        init {
+            edt.addTextChangedListener(myCustomEditTextListener)
+            edt.onFocusChangeListener = myCustomEditTextListener
+            edt.setOnKeyListener(myCustomEditTextListener)
+            edt.accessibilityDelegate = myCustomEditTextListener
+            edt.customSelectionActionModeCallback = StyleCallback(edt, listener, activity)
         }
     }
 
@@ -529,6 +746,11 @@ class EditerAdapter(
         var btnDeleteImage = v.findViewById<RelativeLayout>(R.id.btnDeleteImage)
         var layoutRecycle = v.findViewById<LinearLayout>(R.id.layoutRecycle)
         var image = v.findViewById<ImageView>(R.id.image)
+        var imageLoading = v.findViewById<ImageView>(R.id.image_loading)
+
+        var layoutLoading = v.findViewById<RelativeLayout>(R.id.layout_loading)
+        var loading = v.findViewById<ProgressWheel>(R.id.loading)
+
         var edtImage =
             v.findViewById<CutCopyPasteEditText>(R.id.edtImage)
         var myCustomEditTextListener = customEditTextListener
@@ -557,10 +779,10 @@ class EditerAdapter(
         View.OnKeyListener,
         View.AccessibilityDelegate() {
 
-        var keyId: Long = -1
+        var keyId: String = ""
         var viewHolder: MyImageViewHolder? = null
 
-        fun updatePosition(keyId: Long, viewHolder: MyImageViewHolder) {
+        fun updatePosition(keyId: String, viewHolder: MyImageViewHolder) {
             this.keyId = keyId
             this.viewHolder = viewHolder
         }
@@ -582,7 +804,7 @@ class EditerAdapter(
             ) {
 
                 var index = model.filterGetIndex {
-                    it.id == keyId
+                    it.key == keyId
                 }
 
                 val ss1 = SpannableString(
@@ -615,9 +837,10 @@ class EditerAdapter(
                     )
                 )
 
-                listener.onNextLine(index + 1, ss2)
-
-                view.setText(ss1)
+                index?.let {
+                    listener.onNextLine(it + 1, ss2)
+                    view.setText(ss1)
+                }
 
                 return true
             } else if (keyEvent.action == KeyEvent.ACTION_DOWN &&
@@ -641,13 +864,15 @@ class EditerAdapter(
                 }
                 Single.fromCallable {
                     var index = model.filterGetIndex {
-                        it.id == keyId
+                        it.key == keyId
                     }
                     var imageIndex = model.filterGetArrayIndex {
-                        it.type == EditerViewType.IMAGE
+                        it.type == "atomic:image"
                     }
                     var indexDataModel = IndexData()
-                    indexDataModel.index = index
+                    index?.let {
+                        indexDataModel.index = it
+                    }
                     indexDataModel.imageIndex = imageIndex
 
                     indexDataModel
@@ -674,12 +899,14 @@ class EditerAdapter(
 
         override fun onTextChanged(charSequence: CharSequence, i: Int, i2: Int, i3: Int) {
             var index = model.filterGetIndex {
-                it.id == keyId
+                it.key == keyId
             }
-            if (model[index].type == EditerViewType.QUOTE) {
-                listener.onUpdateText(index, charSequence, false)
-            } else {
-                listener.onUpdateText(index, charSequence, true)
+            index?.let { index ->
+                if (model[index].type == "blockquote") {
+                    listener.onUpdateText(index, charSequence, false)
+                } else {
+                    listener.onUpdateText(index, charSequence, true)
+                }
             }
         }
 
@@ -689,7 +916,7 @@ class EditerAdapter(
 
         override fun onSelectionChanged(selStart: Int, selEnd: Int, editText: AppCompatEditText?) {
 //            var index = model.filterGetIndex {
-//                it.id == keyId
+//                it.key == keyId
 //            }
 //            listener.onCursorChange(index, selStart, selEnd, editText!!)
         }
@@ -704,9 +931,9 @@ class EditerAdapter(
         CutCopyPasteEditText.OnCutCopyPasteListener {
 
 
-        var keyId: Long = -1
+        var keyId: String = ""
 
-        fun updatePosition(keyId: Long) {
+        fun updatePosition(keyId: String) {
             this.keyId = keyId
         }
 
@@ -727,10 +954,12 @@ class EditerAdapter(
                 var text = item2?.text?.split("\n")
 
                 var index = model.filterGetIndex {
-                    it.id == keyId
+                    it.key == keyId
                 }
                 text?.let {
-                    listener.onPasteText(index, text.toMutableList())
+                    index?.let { index ->
+                        listener.onPasteText(index, text.toMutableList())
+                    }
                 }
             }
         }
@@ -751,7 +980,7 @@ class EditerAdapter(
             ) {
 
                 var index = model.filterGetIndex {
-                    it.id == keyId
+                    it.key == keyId
                 }
 
                 val ss1 = SpannableString(
@@ -784,9 +1013,11 @@ class EditerAdapter(
                     )
                 )
 
-                listener.onNextLine(index + 1, ss2)
+                index?.let { index ->
+                    listener.onNextLine(index + 1, ss2)
 
-                view.setText(ss1)
+                    view.setText(ss1)
+                }
 
                 return true
             } else if (keyEvent.action == KeyEvent.ACTION_DOWN &&
@@ -794,39 +1025,41 @@ class EditerAdapter(
             ) {
 
                 var index = model.filterGetIndex {
-                    it.id == keyId
+                    it.key == keyId
                 }
-                if (index > 0 && (view as EditText).selectionEnd == 0) {
-                    val ssPrevios = SpannableStringBuilder(model[index - 1].text)
-                    model[index - 1].inlineStyleRange.forEach {
-                        var offset = it.offset
-                        var lenght = it.lenght
-                        if (offset + lenght <= ssPrevios.length) {
-                            when {
-                                it.style == "BOLD" -> ssPrevios.setSpan(
-                                    StyleSpan(Typeface.BOLD), offset,
-                                    offset + lenght, 0
-                                )
-                                it.style == "ITALIC" -> ssPrevios.setSpan(
-                                    StyleSpan(Typeface.ITALIC), offset,
-                                    offset + lenght, 0
-                                )
-                                it.style == "UNDERLINE" -> ssPrevios.setSpan(
-                                    UnderlineSpan(), offset,
-                                    offset + lenght, 0
-                                )
+                index?.let { index ->
+                    if (index > 0 && (view as EditText).selectionEnd == 0) {
+                        val ssPrevios = SpannableStringBuilder(model[index - 1].text)
+                        model[index - 1].inlineStyleRange.forEach {
+                            var offset = it.offset
+                            var lenght = it.lenght
+                            if (offset + lenght <= ssPrevios.length) {
+                                when {
+                                    it.style == "BOLD" -> ssPrevios.setSpan(
+                                        StyleSpan(Typeface.BOLD), offset,
+                                        offset + lenght, 0
+                                    )
+                                    it.style == "ITALIC" -> ssPrevios.setSpan(
+                                        StyleSpan(Typeface.ITALIC), offset,
+                                        offset + lenght, 0
+                                    )
+                                    it.style == "UNDERLINE" -> ssPrevios.setSpan(
+                                        UnderlineSpan(), offset,
+                                        offset + lenght, 0
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    val ssCurrent = SpannableStringBuilder(
-                        view.text.subSequence(
-                            view.selectionStart,
-                            view.text.toString().length
+                        val ssCurrent = SpannableStringBuilder(
+                            view.text.subSequence(
+                                view.selectionStart,
+                                view.text.toString().length
+                            )
                         )
-                    )
-                    var selection = ssPrevios.length
-                    listener.onPreviousLine(index, ssPrevios.append(ssCurrent), selection)
+                        var selection = ssPrevios.length
+                        listener.onPreviousLine(index, ssPrevios.append(ssCurrent), selection)
+                    }
                 }
                 return false
             } else {
@@ -841,16 +1074,18 @@ class EditerAdapter(
                 }
                 Single.fromCallable {
                     var index = model.filterGetIndex {
-                        it.id == keyId
+                        it.key == keyId
                     }
                     var imageIndex = model.filterGetArrayIndex {
-                        it.type == EditerViewType.IMAGE
+                        it.type == "atomic:image"
                     }
                     var indexDataModel = IndexData()
-                    indexDataModel.index = index
-                    indexDataModel.imageIndex = imageIndex
-
+                    index?.let { index ->
+                        indexDataModel.index = index
+                        indexDataModel.imageIndex = imageIndex
+                    }
                     indexDataModel
+
                 }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.computation())
@@ -874,12 +1109,14 @@ class EditerAdapter(
 
         override fun onTextChanged(charSequence: CharSequence, i: Int, i2: Int, i3: Int) {
             var index = model.filterGetIndex {
-                it.id == keyId
+                it.key == keyId
             }
-            if (model[index].type == EditerViewType.QUOTE) {
-                listener.onUpdateText(index, charSequence, false)
-            } else {
-                listener.onUpdateText(index, charSequence, true)
+            index?.let { index ->
+                if (model[index].type == "blockquote") {
+                    listener.onUpdateText(index, charSequence, false)
+                } else {
+                    listener.onUpdateText(index, charSequence, true)
+                }
             }
         }
 
@@ -889,7 +1126,7 @@ class EditerAdapter(
 
         override fun onSelectionChanged(selStart: Int, selEnd: Int, editText: AppCompatEditText?) {
 //            var index = model.filterGetIndex {
-//                it.id == keyId
+//                it.key == keyId
 //            }
 //            listener.onCursorChange(index, selStart, selEnd, editText!!)
         }

@@ -9,6 +9,7 @@ import android.text.style.UnderlineSpan
 import android.util.Log
 import android.widget.EditText
 import com.example.storylog_editor.model.InlineStyleRanges
+import com.example.storylog_editor.model.TextStyle
 
 
 object CheckStyle {
@@ -80,7 +81,7 @@ object CheckStyle {
                         inlineStyleRangesList.add(inlineStyleRanges)
 
                 } else {
-                    inlineStyleRanges.style = "normal"
+                    inlineStyleRanges.style = "NORMAL"
                     inlineStyleRanges.offset = textTypeFaceStartPosition
                     inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
                     var filterList = inlineStyleRangesList.filter {

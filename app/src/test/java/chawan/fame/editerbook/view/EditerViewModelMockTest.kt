@@ -44,15 +44,15 @@ class EditerViewModelMockTest {
         val model = EditerModel()
         val data = Data()
         data.text = "my text"
-        data.style = "normal"
+        data.style = "NORMAL"
         data.inlineStyleRange = CheckStyle.checkSpan(null, "")
-        model.type = EditerViewType.EDIT_TEXT
+        model.type = "unstyled"
         model.isFocus = true
         model.data = data
         data.selection = 0
         data.alight = Alignment.CENTER
 
-        editerViewModel.addView(0, EditerViewType.EDIT_TEXT, "my text", Alignment.CENTER, true)
+        editerViewModel.addView(0, "unstyled", "my text", Alignment.CENTER, true)
         model.id = editerViewModel.getModel()[0].id
         editerModel.add(model)
         val liveDataUnderTest = editerViewModel.editorModelLiveData.testObserver()
@@ -70,8 +70,8 @@ class EditerViewModelMockTest {
         val data = Data()
         data.text = ""
         data.src = "fictionlog"
-        data.style = "normal"
-        model.type = EditerViewType.IMAGE
+        data.style = "NORMAL"
+        model.type = "atomic:image"
         model.data = data
         model.isFocus = false
 
@@ -79,8 +79,8 @@ class EditerViewModelMockTest {
         val data2 = Data()
         data2.text = ""
         data2.src = ""
-        data2.style = "normal"
-        model2.type = EditerViewType.EDIT_TEXT
+        data2.style = "NORMAL"
+        model2.type = "unstyled"
         model2.data = data2
         model2.isFocus = true
 
@@ -106,7 +106,7 @@ class EditerViewModelMockTest {
         val data = Data()
         data.text = ""
         data.src = ""
-        model.type = EditerViewType.LINE
+        model.type = "atomic:break"
         model.data = data
         model.isFocus = false
 
@@ -114,8 +114,8 @@ class EditerViewModelMockTest {
         val data2 = Data()
         data2.text = ""
         data2.src = ""
-        data2.style = "normal"
-        model2.type = EditerViewType.EDIT_TEXT
+        data2.style = "NORMAL"
+        model2.type = "unstyled"
         model2.data = data2
         model2.isFocus = true
 
@@ -140,15 +140,15 @@ class EditerViewModelMockTest {
         val model = EditerModel()
         val data = Data()
         data.text = "my text"
-        data.style = "normal"
+        data.style = "NORMAL"
         data.inlineStyleRange = CheckStyle.checkSpan(null, "")
-        model.type = EditerViewType.QUOTE
+        model.type = "blockquote"
         model.isFocus = true
         model.data = data
         data.selection = 0
         data.alight = Alignment.CENTER
 
-        editerViewModel.addView(0, EditerViewType.EDIT_TEXT, "my text", Alignment.CENTER, true)
+        editerViewModel.addView(0, "unstyled", "my text", Alignment.CENTER, true)
         model.id = editerViewModel.getModel()[0].id
         editerModel.add(model)
         editerViewModel.changeToQuote(0)
@@ -166,15 +166,15 @@ class EditerViewModelMockTest {
         val model = EditerModel()
         val data = Data()
         data.text = "my text"
-        data.style = "normal"
+        data.style = "NORMAL"
         data.inlineStyleRange = CheckStyle.checkSpan(null, "")
-        model.type = EditerViewType.HEADER
+        model.type = "header-three"
         model.isFocus = true
         model.data = data
         data.selection = 0
         data.alight = Alignment.CENTER
 
-        editerViewModel.addView(0, EditerViewType.EDIT_TEXT, "my text", Alignment.CENTER, true)
+        editerViewModel.addView(0, "unstyled", "my text", Alignment.CENTER, true)
         model.id = editerViewModel.getModel()[0].id
         editerModel.add(model)
         editerViewModel.changeToHeader(0)
@@ -192,9 +192,9 @@ class EditerViewModelMockTest {
         val model = EditerModel()
         val data = Data()
         data.text = "my text1"
-        data.style = "normal"
+        data.style = "NORMAL"
         data.inlineStyleRange = CheckStyle.checkSpan(null, "")
-        model.type = EditerViewType.EDIT_TEXT
+        model.type = "unstyled"
         model.isFocus = false
         model.data = data
         data.selection = 0
@@ -203,9 +203,9 @@ class EditerViewModelMockTest {
         val model2 = EditerModel()
         val data2 = Data()
         data2.text = "my text2"
-        data2.style = "normal"
+        data2.style = "NORMAL"
         data2.inlineStyleRange = CheckStyle.checkSpan(null, "")
-        model2.type = EditerViewType.EDIT_TEXT
+        model2.type = "unstyled"
         model2.isFocus = false
         model2.data = data2
         data2.selection = 0
@@ -214,17 +214,17 @@ class EditerViewModelMockTest {
         val model3 = EditerModel()
         val data3 = Data()
         data3.text = "my text3"
-        data3.style = "normal"
+        data3.style = "NORMAL"
         data3.inlineStyleRange = CheckStyle.checkSpan(null, "")
-        model3.type = EditerViewType.EDIT_TEXT
+        model3.type = "unstyled"
         model3.isFocus = true
         model3.data = data3
         data3.selection = 0
         data3.alight = Alignment.CENTER
 
-        editerViewModel.addView(0, EditerViewType.EDIT_TEXT, "my text1", Alignment.CENTER, true)
-        editerViewModel.addView(1, EditerViewType.EDIT_TEXT, "my text2", Alignment.CENTER, true)
-        editerViewModel.addView(2, EditerViewType.EDIT_TEXT, "my text3", Alignment.CENTER, true)
+        editerViewModel.addView(0, "unstyled", "my text1", Alignment.CENTER, true)
+        editerViewModel.addView(1, "unstyled", "my text2", Alignment.CENTER, true)
+        editerViewModel.addView(2, "unstyled", "my text3", Alignment.CENTER, true)
         model.id = editerViewModel.getModel()[0].id
         model2.id = editerViewModel.getModel()[1].id
         model3.id = editerViewModel.getModel()[2].id
@@ -254,9 +254,9 @@ class EditerViewModelMockTest {
         val model = EditerModel()
         val data = Data()
         data.text = "my text1"
-        data.style = "normal"
+        data.style = "NORMAL"
         data.inlineStyleRange = CheckStyle.checkSpan(null, "")
-        model.type = EditerViewType.EDIT_TEXT
+        model.type = "unstyled"
         model.isFocus = false
         model.data = data
         data.selection = 0
@@ -265,9 +265,9 @@ class EditerViewModelMockTest {
         val model2 = EditerModel()
         val data2 = Data()
         data2.text = "my text2"
-        data2.style = "normal"
+        data2.style = "NORMAL"
         data2.inlineStyleRange = CheckStyle.checkSpan(null, "")
-        model2.type = EditerViewType.EDIT_TEXT
+        model2.type = "unstyled"
         model2.isFocus = false
         model2.data = data2
         data2.selection = 0
@@ -276,17 +276,17 @@ class EditerViewModelMockTest {
         val model3 = EditerModel()
         val data3 = Data()
         data3.text = "my text3"
-        data3.style = "normal"
+        data3.style = "NORMAL"
         data3.inlineStyleRange = CheckStyle.checkSpan(null, "")
-        model3.type = EditerViewType.EDIT_TEXT
+        model3.type = "unstyled"
         model3.isFocus = false
         model3.data = data3
         data3.selection = 0
         data3.alight = Alignment.CENTER
 
-        editerViewModel.addView(0, EditerViewType.EDIT_TEXT, "my text1", Alignment.CENTER, true)
-        editerViewModel.addView(1, EditerViewType.EDIT_TEXT, "my text2", Alignment.CENTER, true)
-        editerViewModel.addView(2, EditerViewType.EDIT_TEXT, "my text3", Alignment.CENTER, true)
+        editerViewModel.addView(0, "unstyled", "my text1", Alignment.CENTER, true)
+        editerViewModel.addView(1, "unstyled", "my text2", Alignment.CENTER, true)
+        editerViewModel.addView(2, "unstyled", "my text3", Alignment.CENTER, true)
         model.id = editerViewModel.getModel()[0].id
         model2.id = editerViewModel.getModel()[1].id
         model3.id = editerViewModel.getModel()[2].id

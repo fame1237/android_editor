@@ -6,6 +6,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.apollographql.android'
+
 group = 'com.github.storylog'
 
 android {
@@ -32,7 +34,32 @@ ext {
     robolectric_vertion = '4.3'
 }
 
+apollo {
+    outputPackageName = "com.example.storylog_editor.ui.editor.api"
+    customTypeMapping = [
+            "Date"              : "java.util.Date",
+            "JSON"              : "java.lang.String",
+            "ContentRawState"   : "java.lang.String",
+            "BigInt"            : "java.lang.Long",
+            "OneToOneHundredInt": "java.lang.Integer"
+    ]
+//    customTypeMapping['Date'] = "java.util.Date"
+//    customTypeMapping['JSON'] = "java.lang.String"
+//    customTypeMapping['BigInt'] = "java.lang.Long"
+//    customTypeMapping['OneToOneHundredInt'] = "java.lang.Integer"
+    suppressRawTypesWarning = true
+}
+
 dependencies {
+    final APOLLO_VERSION = '1.2.0'
+
+    implementation "com.apollographql.apollo:apollo-runtime:$APOLLO_VERSION"
+    implementation "com.apollographql.apollo:apollo-rx2-support:$APOLLO_VERSION"
+    implementation "com.apollographql.apollo:apollo-http-cache:$APOLLO_VERSION"
+    implementation "com.apollographql.apollo:apollo-android-support:$APOLLO_VERSION"
+    implementation "com.apollographql.apollo:apollo-runtime:$APOLLO_VERSION"
+    implementation "com.apollographql.apollo:apollo-coroutines-support:$APOLLO_VERSION"
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'

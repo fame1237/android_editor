@@ -3,8 +3,12 @@ package com.example.storylog_editor.ui.editor
 import android.Manifest
 import android.content.*
 import android.content.pm.PackageManager
+import android.graphics.ImageDecoder
 import android.graphics.PorterDuff
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,20 +28,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.storylog_editor.R
 import com.example.storylog_editor.extension.toClass
-import com.example.storylog_editor.model.Alignment
-import com.example.storylog_editor.model.EditerModel
-import com.example.storylog_editor.model.EditerViewType
+import com.example.storylog_editor.model.ContentRawState
+import com.example.storylog_editor.util.ImageUtil
 import com.example.storylog_editor.util.KeyboardHelper
 import com.example.storylog_editor.view.SetAlignmentDialog
-import org.json.JSONArray
-import org.json.JSONObject
 import java.util.*
 
-class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.OnClick {
+class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.OnClick {
 
 
     lateinit var mViewModel: EditorViewModel
-    var adapter: EditerAdapter? = null
+    var adapter: EditorAdapter? = null
     var cursorPosition = 0
     var edtView: View? = null
     var mAlertDialog: AlertDialog? = null
@@ -60,35 +61,42 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
     override fun onPasteText(position: Int, textList: MutableList<String>) {
         var count = 0
         if (textList.size == 1) {
-            mViewModel.updatePasteText(position, textList[0], "normal", true, null, false)
+            mViewModel.updatePasteText(position, textList[0], true, null, false)
         } else {
-            mViewModel.updatePasteText(position, textList[0], "normal", false, null, false)
+            mViewModel.updatePasteText(position, textList[0], false, null, false)
             textList.forEachIndexed { index, text ->
                 if (index > 0) {
                     count++
                     mViewModel.addView(
                         position + index,
-                        EditerViewType.EDIT_TEXT,
+                        mViewModel.getModel()[position].type,
                         text,
-                        mViewModel.getModel()[position].data!!.alight,
                         true
                     )
                 }
             }
         }
         adapter?.let {
-            //            it.upDateItemInsertRange(position, count + 1)
             it.notifyDataSetChanged()
             rvEditor?.layoutManager?.scrollToPosition(position + count + 1)
         }
     }
 
     override fun onNextLine(position: Int, text: CharSequence) {
-        mViewModel.addView(
-            position, EditerViewType.EDIT_TEXT, text,
-            mViewModel.getModel()[position - 1].data!!.alight,
-            true
+        if (mViewModel.getModel()[position - 1].type == "unstyled"
+            || mViewModel.getModel()[position - 1].type == "center"
+            || mViewModel.getModel()[position - 1].type == "right" ||
+            mViewModel.getModel()[position - 1].type == "indent"
         )
+            mViewModel.addView(
+                position, mViewModel.getModel()[position - 1].type, text,
+                true
+            )
+        else
+            mViewModel.addView(
+                position, "unstyled", text,
+                true
+            )
 
         adapter?.let {
             it.upDateItem(position)
@@ -102,7 +110,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         var viewType = mViewModel.getModel()[position - 1].type
 
         when (viewType) {
-            EditerViewType.IMAGE -> {
+            "atomic:image" -> {
                 mViewModel.updateFocus(position, false)
                 mViewModel.showBorder(position - 1, true)
                 adapter?.let {
@@ -114,7 +122,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                 }
                 KeyboardHelper.hideSoftKeyboard(activity)
             }
-            EditerViewType.LINE -> {
+            "atomic:break" -> {
                 mViewModel.removeViewAndKeepFocus(position - 1, position)
                 adapter?.let {
                     it.upDateRemoveItemWithoutCurrentChange(position - 1)
@@ -124,7 +132,6 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                 mViewModel.updateText(
                     position - 1,
                     text,
-                    "normal",
                     true,
                     selection,
                     true
@@ -157,7 +164,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
     }
 
     override fun onUpdateText(position: Int, text: CharSequence, updateStyle: Boolean) {
-        mViewModel.updateText(position, text, "normal", false, null, updateStyle)
+        mViewModel.updateText(position, text, false, null, updateStyle)
     }
 
     override fun updateCursorPosition(position: Int, view: View, imageIndex: MutableList<Int>) {
@@ -168,7 +175,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 
         context?.let {
             when {
-                mViewModel.getModel()[position].type == EditerViewType.QUOTE -> {
+                mViewModel.getModel()[position].type == "blockquote" -> {
                     btnQuote?.setColorFilter(
                         ContextCompat.getColor(it, R.color.colorOrange)
                         , PorterDuff.Mode.SRC_IN
@@ -178,7 +185,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                         , PorterDuff.Mode.SRC_IN
                     )
                 }
-                mViewModel.getModel()[position].type == EditerViewType.HEADER -> {
+                mViewModel.getModel()[position].type == "header-three" -> {
                     btnQuote?.setColorFilter(
                         ContextCompat.getColor(it, R.color.grey_image)
                         , PorterDuff.Mode.SRC_IN
@@ -202,7 +209,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         }
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].type != EditerViewType.IMAGE
+                mViewModel.getModel()[cursorPosition].type != "atomic:image"
             ) {
                 imageIndex.forEach {
                     adapter?.updateCurrentItem(it)
@@ -223,7 +230,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         mViewModel.clearFocus()
         if (cursorPosition > 0) {
             if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].type != EditerViewType.IMAGE
+                mViewModel.getModel()[cursorPosition].type != "atomic:image"
             ) {
                 adapter?.notifyItemChanged(cursorPosition)
                 rvEditor?.post {
@@ -287,16 +294,16 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 
 
     companion object {
-        fun newInstance(data: String): EditerFragment {
-            val fragment = EditerFragment()
+        fun newInstance(data: String): EditorFragment {
+            val fragment = EditorFragment()
             val args = Bundle()
             args.putString("data", data)
             fragment.arguments = args
             return fragment
         }
 
-        fun newInstance(): EditerFragment {
-            val fragment = EditerFragment()
+        fun newInstance(): EditorFragment {
+            val fragment = EditorFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment
@@ -311,14 +318,21 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         activity?.let {
             mViewModel = ViewModelProviders.of(it).get(EditorViewModel::class.java)
         }
-        val view = inflater.inflate(R.layout.fragment_editer, container, false)
+        val view = inflater.inflate(R.layout.library_editor_fragment_editer, container, false)
         rvEditor = view.findViewById(R.id.rvEditor)
         btnAddImage = view.findViewById(R.id.btnAddImage)
         btnAlighment = view.findViewById(R.id.btnAlighment)
         btnHeader = view.findViewById(R.id.btnHeader)
         btnLine = view.findViewById(R.id.btnLine)
         btnQuote = view.findViewById(R.id.btnQuote)
+        initViewModel()
         return view
+    }
+
+    private fun initViewModel() {
+        mViewModel.uploadImageSuccessLiveData.observe(this, androidx.lifecycle.Observer {
+            adapter?.notifyItemChanged(it, false)
+        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -326,20 +340,18 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         myClipboard =
             activity!!.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?
         if (arguments != null && arguments!!.getString("data") != null) {
-            var editerModel: MutableList<EditerModel> = mutableListOf()
-            val json = JSONArray(arguments!!.getString("data"))
-            for (i in 0 until json.length()) {
-                editerModel.add((json.get(i) as JSONObject).toClass(EditerModel::class.java))
-            }
+            var editerModel = arguments!!.getString("data")!!.toClass(ContentRawState::class.java)
             mViewModel.setModel(editerModel)
+            cursorPosition = mViewModel.getSize() - 1
         } else {
-            mViewModel.addView(0, EditerViewType.EDIT_TEXT, "", Alignment.START, true)
+            mViewModel.addView(0, "unstyled", "", true)
+            cursorPosition = mViewModel.getSize() - 1
         }
         initView()
     }
 
     private fun initView() {
-        adapter = EditerAdapter(context!!, activity!!, this, mViewModel.getModel())
+        adapter = EditorAdapter(context!!, activity!!, this, mViewModel.getModel())
         rvEditor?.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         rvEditor?.adapter = adapter
         rvEditor?.itemAnimator = null
@@ -350,7 +362,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                     var fragmentImageViewerDialog = SetAlignmentDialog.Builder()
                         .build(
                             it,
-                            mViewModel.getModel()[cursorPosition].data!!.alight,
+                            mViewModel.getModel()[cursorPosition].type,
                             this
                         )
 
@@ -358,7 +370,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                     fragmentImageViewerDialog.show(fragmentManager, "alignment")
                 } catch (ex: Exception) {
                     var fragmentImageViewerDialog = SetAlignmentDialog.Builder()
-                        .build(it, null, this)
+                        .build(it, "unstyled", this)
                     fragmentImageViewerDialog.retainInstance = true
                     fragmentImageViewerDialog.show(fragmentManager, "alignment")
                 }
@@ -375,7 +387,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         context?.let { context ->
             btnQuote?.setOnClickListener {
                 if (cursorPosition <= mViewModel.getSize()) {
-                    if (mViewModel.getModel()[cursorPosition].type == EditerViewType.EDIT_TEXT) {
+                    if (mViewModel.getModel()[cursorPosition].type == "unstyled") {
                         adapter?.let {
                             mViewModel.changeToQuote(cursorPosition)
                             it.updateCurrentItem(cursorPosition)
@@ -385,7 +397,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                             ContextCompat.getColor(context, R.color.colorOrange)
                             , PorterDuff.Mode.SRC_IN
                         )
-                    } else if (mViewModel.getModel()[cursorPosition].type == EditerViewType.QUOTE) {
+                    } else if (mViewModel.getModel()[cursorPosition].type == "blockquote") {
                         adapter?.let {
                             mViewModel.changeToEditText(cursorPosition)
                             it.updateCurrentItem(cursorPosition)
@@ -411,7 +423,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
 
             btnHeader?.setOnClickListener {
                 if (cursorPosition <= mViewModel.getSize()) {
-                    if (mViewModel.getModel()[cursorPosition].type == EditerViewType.EDIT_TEXT) {
+                    if (mViewModel.getModel()[cursorPosition].type == "unstyled") {
                         adapter?.let {
                             mViewModel.changeToHeader(cursorPosition)
                             it.updateCurrentItem(cursorPosition)
@@ -420,7 +432,7 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
                                 , PorterDuff.Mode.SRC_IN
                             )
                         }
-                    } else if (mViewModel.getModel()[cursorPosition].type == EditerViewType.HEADER) {
+                    } else if (mViewModel.getModel()[cursorPosition].type == "header-three") {
                         adapter?.let {
                             mViewModel.changeToEditText(cursorPosition)
                             it.updateCurrentItem(cursorPosition)
@@ -536,19 +548,54 @@ class EditerFragment : Fragment(), EditerAdapter.OnChange, SetAlignmentDialog.On
         if (resultCode == AppCompatActivity.RESULT_OK) {
             if (requestCode == REQUEST_SELECT_PICTURE) {
                 val selectedUri = data?.data
+
                 selectedUri?.let {
-                    addImageToModel(selectedUri.toString())
+                    //                    var imageStream = activity!!.contentResolver.openInputStream(selectedUri)
+                    var imageBase64 = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        val source =
+                            ImageDecoder.createSource(activity!!.contentResolver, selectedUri)
+                        ImageUtil.bitmapToBase64(ImageDecoder.decodeBitmap(source))
+                    } else {
+                        ImageUtil.bitmapToBase64(
+                            MediaStore.Images.Media.getBitmap(
+                                activity!!.contentResolver,
+                                selectedUri
+                            )
+                        )
+                    }
+
+                    addImageToModel(selectedUri)
+
+                    mViewModel.uploadImageToServer(
+                        mViewModel.getModel()[cursorPosition + 1].key,
+                        imageBase64
+                    )
                 }
             }
         }
     }
 
-    private fun addImageToModel(image: String) {
+    private fun addImageToModel(uri: Uri) {
         adapter?.let {
-            mViewModel.addImageModel(cursorPosition + 1, image)
+            mViewModel.addImageModel(cursorPosition + 1, uri.encodedPath!!)
             it.upDateImageItem(cursorPosition)
             rvEditor?.scrollToPosition(cursorPosition + 2)
         }
+    }
+
+    fun getPathFromURI(contentUri: Uri): String {
+        var res = ""
+//        var proj = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val proj = arrayOf(MediaStore.Images.Media._ID)
+        var cursor = activity!!.contentResolver.query(contentUri, proj, null, null, null)
+        cursor?.let {
+            if (cursor.moveToFirst()) {
+                var column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                res = cursor.getString(column_index)
+            }
+            cursor.close()
+        }
+        return res
     }
 
     override fun onStop() {

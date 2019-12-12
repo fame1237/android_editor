@@ -1,12 +1,8 @@
 package com.example.storylog_editor
 
 import android.app.Activity
-import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
-import android.content.ClipboardManager
-import android.content.Context
 import android.graphics.Typeface
 import android.text.SpannableStringBuilder
-import android.text.Spanned
 import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
 import android.text.Spanned.SPAN_EXCLUSIVE_INCLUSIVE
 import android.text.style.CharacterStyle
@@ -18,16 +14,16 @@ import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
-import com.example.storylog_editor.ui.editor.EditerAdapter
+import com.example.storylog_editor.ui.editor.EditorAdapter
 
 
 class StyleCallback : ActionMode.Callback {
 
     var bodyView: EditText? = null
-    var listener: EditerAdapter.OnChange? = null
+    var listener: EditorAdapter.OnChange? = null
     var activity: Activity? = null
 
-    constructor(bodyView: EditText, listener: EditerAdapter.OnChange, activity: Activity) {
+    constructor(bodyView: EditText, listener: EditorAdapter.OnChange, activity: Activity) {
         this.bodyView = bodyView
         this.listener = listener
         this.activity = activity
@@ -51,11 +47,7 @@ class StyleCallback : ActionMode.Callback {
         val selectionEnd = bodyView!!.selectionEnd
         val ssb = SpannableStringBuilder(bodyView!!.text)
 
-
         when (item.itemId) {
-            android.R.id.copy -> {
-                Log.e("copy", "copy")
-            }
             R.id.bold -> {
                 cs = StyleSpan(Typeface.BOLD)
 
@@ -178,7 +170,7 @@ class StyleCallback : ActionMode.Callback {
                     ssb.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)
                 if (typeface.isNotEmpty()) {
                     var isHaveItalic = typeface.filter {
-                        it is UnderlineSpan
+                        it is StrikethroughSpan
                     }
 
                     if (isHaveItalic.isEmpty()) {
@@ -190,7 +182,7 @@ class StyleCallback : ActionMode.Callback {
                         )
                     } else {
                         typeface.forEach {
-                            if (it is UnderlineSpan) {
+                            if (it is StrikethroughSpan) {
                                 setSpan(it, selectionStart, selectionEnd, ssb)
                             }
                         }
@@ -235,9 +227,9 @@ class StyleCallback : ActionMode.Callback {
                             Log.e("Error BoldStartPosition", textBoldStartPosition.toString())
                         }
                     }
-                    selectionStart == textBoldStartPosition && selectionEnd == textBoldEndPosition -> ssb.removeSpan(
-                        typeface
-                    )
+                    selectionStart == textBoldStartPosition && selectionEnd == textBoldEndPosition -> {
+                        ssb.removeSpan(typeface)
+                    }
                     selectionStart > textBoldStartPosition && selectionEnd < textBoldEndPosition -> {
                         ssb.removeSpan(typeface)
 
