@@ -1,6 +1,5 @@
 package com.example.storylog_editor.ui.editor
 
-import android.net.Uri
 import android.widget.EditText
 import androidx.lifecycle.ViewModel
 import com.example.storylog_editor.extension.SingleLiveEvent
@@ -50,7 +49,7 @@ class EditorViewModel : ViewModel() {
         val model = EditerModel()
         val data = Data()
         model.text = text.toString()
-        model.inlineStyleRange = CheckStyle.checkSpan(null, text)
+        model.inlineStyleRanges = CheckStyle.checkSpan(null, text)
         model.key = GenerateKey.getStringKey(editerModel.blocks)
         model.type = viewType
         model.isFocus = isFocus
@@ -70,8 +69,8 @@ class EditorViewModel : ViewModel() {
         val data = model.data!!
         model.text = text.toString()
         if (updateStyle) {
-            model.inlineStyleRange.clear()
-            model.inlineStyleRange = CheckStyle.checkSpan(null, text)
+            model.inlineStyleRanges.clear()
+            model.inlineStyleRanges = CheckStyle.checkSpan(null, text)
         }
         model.data = data
         selection?.let {
@@ -97,8 +96,8 @@ class EditorViewModel : ViewModel() {
         val data = model.data!!
         model.text = text.toString()
         if (updateStyle) {
-            model.inlineStyleRange.clear()
-            model.inlineStyleRange = CheckStyle.checkSpan(null, text)
+            model.inlineStyleRanges.clear()
+            model.inlineStyleRanges = CheckStyle.checkSpan(null, text)
         }
         model.data = data
         data.selection = text.length
@@ -198,8 +197,8 @@ class EditorViewModel : ViewModel() {
     fun updateStyle(position: Int, editText: EditText) {
         val model = editerModel.blocks[position]
         val data = model.data!!
-        model.inlineStyleRange.clear()
-        model.inlineStyleRange = CheckStyle.checkSpan(editText, "")
+        model.inlineStyleRanges.clear()
+        model.inlineStyleRanges = CheckStyle.checkSpan(editText, "")
         editorModelLiveData.postValue(editerModel)
     }
 

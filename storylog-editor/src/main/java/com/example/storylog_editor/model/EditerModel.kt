@@ -8,7 +8,7 @@ class EditerModel {
     var isFocus = false
     var showBorder = false
     var text = ""
-    var inlineStyleRange: MutableList<InlineStyleRanges> = mutableListOf()
+    var inlineStyleRanges: MutableList<InlineStyleRanges> = mutableListOf()
 
 
     override fun toString(): String {

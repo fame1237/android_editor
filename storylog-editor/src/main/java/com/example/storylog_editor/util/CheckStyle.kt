@@ -9,7 +9,6 @@ import android.text.style.UnderlineSpan
 import android.util.Log
 import android.widget.EditText
 import com.example.storylog_editor.model.InlineStyleRanges
-import com.example.storylog_editor.model.TextStyle
 
 
 object CheckStyle {
@@ -36,9 +35,9 @@ object CheckStyle {
                 if (it is StyleSpan && it.style == Typeface.BOLD) {
                     inlineStyleRanges.style = "BOLD"
                     inlineStyleRanges.offset = textTypeFaceStartPosition
-                    inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
+                    inlineStyleRanges.length = textTypeFaceEndPosition - textTypeFaceStartPosition
                     var filterList = inlineStyleRangesList.filter {
-                        it.lenght == inlineStyleRanges.lenght &&
+                        it.length == inlineStyleRanges.length &&
                                 it.offset == inlineStyleRanges.offset &&
                                 it.style == inlineStyleRanges.style
                     }
@@ -48,9 +47,9 @@ object CheckStyle {
                 } else if (it is StyleSpan && it.style == Typeface.ITALIC) {
                     inlineStyleRanges.style = "ITALIC"
                     inlineStyleRanges.offset = textTypeFaceStartPosition
-                    inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
+                    inlineStyleRanges.length = textTypeFaceEndPosition - textTypeFaceStartPosition
                     var filterList = inlineStyleRangesList.filter {
-                        it.lenght == inlineStyleRanges.lenght &&
+                        it.length == inlineStyleRanges.length &&
                                 it.offset == inlineStyleRanges.offset &&
                                 it.style == inlineStyleRanges.style
                     }
@@ -59,9 +58,9 @@ object CheckStyle {
                 } else if (it is UnderlineSpan) {
                     inlineStyleRanges.style = "UNDERLINE"
                     inlineStyleRanges.offset = textTypeFaceStartPosition
-                    inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
+                    inlineStyleRanges.length = textTypeFaceEndPosition - textTypeFaceStartPosition
                     var filterList = inlineStyleRangesList.filter {
-                        it.lenght == inlineStyleRanges.lenght &&
+                        it.length == inlineStyleRanges.length &&
                                 it.offset == inlineStyleRanges.offset &&
                                 it.style == inlineStyleRanges.style
                     }
@@ -71,9 +70,9 @@ object CheckStyle {
                 } else if (it is StrikethroughSpan) {
                     inlineStyleRanges.style = "STRIKETHROUGH"
                     inlineStyleRanges.offset = textTypeFaceStartPosition
-                    inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
+                    inlineStyleRanges.length = textTypeFaceEndPosition - textTypeFaceStartPosition
                     var filterList = inlineStyleRangesList.filter {
-                        it.lenght == inlineStyleRanges.lenght &&
+                        it.length == inlineStyleRanges.length &&
                                 it.offset == inlineStyleRanges.offset &&
                                 it.style == inlineStyleRanges.style
                     }
@@ -83,9 +82,9 @@ object CheckStyle {
                 } else {
                     inlineStyleRanges.style = "NORMAL"
                     inlineStyleRanges.offset = textTypeFaceStartPosition
-                    inlineStyleRanges.lenght = textTypeFaceEndPosition - textTypeFaceStartPosition
+                    inlineStyleRanges.length = textTypeFaceEndPosition - textTypeFaceStartPosition
                     var filterList = inlineStyleRangesList.filter {
-                        it.lenght == inlineStyleRanges.lenght &&
+                        it.length == inlineStyleRanges.length &&
                                 it.offset == inlineStyleRanges.offset &&
                                 it.style == inlineStyleRanges.style
                     }

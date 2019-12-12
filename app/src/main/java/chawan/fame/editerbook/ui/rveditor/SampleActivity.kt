@@ -94,48 +94,404 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
         return "{ \n" +
                 "   \"blocks\":[ \n" +
                 "      { \n" +
-                "         \"data\":{ \n" +
-                "            \"selection\":0,\n" +
-                "            \"src\":\"\"\n" +
-                "         },\n" +
-                "         \"inlineStyleRange\":[ \n" +
+                "         \"key\":\"77kua\",\n" +
+                "         \"text\":\"กาลครั้งหนึ่ง\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
                 "\n" +
                 "         ],\n" +
-                "         \"isFocus\":false,\n" +
-                "         \"key\":\"OTxsw\",\n" +
-                "         \"showBorder\":false,\n" +
-                "         \"text\":\"\",\n" +
-                "         \"type\":\"unstyled\"\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
                 "      },\n" +
                 "      { \n" +
-                "         \"data\":{ \n" +
-                "            \"selection\":0,\n" +
-                "            \"src\":\"https://s3.ap-southeast-1.amazonaws.com/media-local.fictionlog/books/5d9b09c848a76d001a6e729f/5df1ea6cfaUPqtsy.jpec\"\n" +
-                "         },\n" +
-                "         \"inlineStyleRange\":[ \n" +
+                "         \"key\":\"7k9le\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
                 "\n" +
                 "         ],\n" +
-                "         \"isFocus\":false,\n" +
-                "         \"key\":\"rxBTq\",\n" +
-                "         \"showBorder\":false,\n" +
-                "         \"text\":\"ห\",\n" +
-                "         \"type\":\"atomic:image\"\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
                 "      },\n" +
                 "      { \n" +
-                "         \"data\":{ \n" +
-                "            \"selection\":0,\n" +
-                "            \"src\":\"\"\n" +
-                "         },\n" +
-                "         \"inlineStyleRange\":[ \n" +
+                "         \"key\":\"7ddi2\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"atomic:break\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
                 "\n" +
                 "         ],\n" +
-                "         \"isFocus\":false,\n" +
-                "         \"key\":\"zpuXE\",\n" +
-                "         \"showBorder\":false,\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"31gto\",\n" +
                 "         \"text\":\"\",\n" +
-                "         \"type\":\"unstyled\"\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"1tk4o\",\n" +
+                "         \"text\":\"อิอิ\",\n" +
+                "         \"type\":\"atomic:image\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "            \"src\":\"https://s3.ap-southeast-1.amazonaws.com/media-local.fictionlog/chapters/5dd39c305ec258001ac96d9f/5dd39c47eG9wucOz.jpeg\",\n" +
+                "            \"imageSize\":{ \n" +
+                "               \"width\":1413,\n" +
+                "               \"height\":2000\n" +
+                "            }\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"e6t8p\",\n" +
+                "         \"text\":\"วันหนึ่ง ได้พบเจอผู้คน\",\n" +
+                "         \"type\":\"indent\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"ujj3\",\n" +
+                "         \"text\":\"งงดิ กูยังงงเลย\",\n" +
+                "         \"type\":\"blockquote\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"43ho6\",\n" +
+                "         \"text\":\"อิอิasdfasdf     wefwefwwef\",\n" +
+                "         \"type\":\"header-three\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "            { \n" +
+                "               \"offset\":17,\n" +
+                "               \"length\":10,\n" +
+                "               \"style\":\"STRIKETHROUGH\"\n" +
+                "            },\n" +
+                "            { \n" +
+                "               \"offset\":17,\n" +
+                "               \"length\":10,\n" +
+                "               \"style\":\"ITALIC\"\n" +
+                "            }\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"89km7\",\n" +
+                "         \"text\":\"อิอิ\",\n" +
+                "         \"type\":\"indent\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"4aeej\",\n" +
+                "         \"text\":\"อิอิอิอิอิอิอิอิ .   อิอิอิ.    แอแอ\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "            { \n" +
+                "               \"offset\":0,\n" +
+                "               \"length\":28,\n" +
+                "               \"style\":\"BOLD\"\n" +
+                "            },\n" +
+                "            { \n" +
+                "               \"offset\":8,\n" +
+                "               \"length\":13,\n" +
+                "               \"style\":\"ITALIC\"\n" +
+                "            },\n" +
+                "            { \n" +
+                "               \"offset\":21,\n" +
+                "               \"length\":7,\n" +
+                "               \"style\":\"UNDERLINE\"\n" +
+                "            }\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"falja\",\n" +
+                "         \"text\":\"dsfpas[lf[pdsalf[p\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "            { \n" +
+                "               \"offset\":10,\n" +
+                "               \"length\":6,\n" +
+                "               \"style\":\"STRIKETHROUGH\"\n" +
+                "            }\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"a12t8\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"4nfvv\",\n" +
+                "         \"text\":\"อิอิอิอิอิ\",\n" +
+                "         \"type\":\"right\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"9c1s3\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"3ec9q\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"atomic:break\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"cdp7n\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"9cmv1\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"d31hm\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"84nt7\",\n" +
+                "         \"text\":\"ddd\",\n" +
+                "         \"type\":\"atomic:image\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "            \"src\":\"https://s3.ap-southeast-1.amazonaws.com/media-local.fictionlog/chapters/5dd39c305ec258001ac96d9f/5dd79e9b5g5pKURi.jpeg\",\n" +
+                "            \"imageSize\":{ \n" +
+                "               \"width\":679,\n" +
+                "               \"height\":960\n" +
+                "            }\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"anmo1\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"datpc\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"518tc\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"2jq86\",\n" +
+                "         \"text\":\"ไม่เคยคิดว่ารบกวนเลยสักครั้ง.  ไม่เคยคิดว่ารบกวนเลยสักครั้ง. ไม่เคยคิดว่ารบกวนเลยสักครั้ง. ไม่เคยคิดว่ารบกวนเลยสักครั้ง\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"key\":\"6o4am\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"unstyled\",\n" +
+                "         \"depth\":0,\n" +
+                "         \"inlineStyleRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"entityRanges\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"data\":{ \n" +
+                "\n" +
+                "         }\n" +
                 "      }\n" +
-                "   ]\n" +
+                "   ],\n" +
+                "   \"entityMap\":{ \n" +
+                "\n" +
+                "   }\n" +
                 "}"
     }
 

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Typeface
-import android.graphics.drawable.ColorDrawable
 import android.text.Editable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -22,9 +21,6 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import com.example.storylog_editor.util.CheckStyle
 import com.example.storylog_editor.util.KeyboardHelper
 import com.example.storylog_editor.R
@@ -148,40 +144,34 @@ class EditorAdapter(
             } else {
                 viewHolder.edt.clearFocus()
             }
-
-            if (model[position].data != null) {
-                val ss1 = SpannableString(model[position].text)
-                model[position].inlineStyleRange.forEach {
-                    var offset = it.offset
-                    var lenght = it.lenght
-
-                    when (it.style) {
-                        "BOLD" -> ss1.setSpan(
-                            StyleSpan(Typeface.BOLD), offset,
-                            offset + lenght, 0
-                        )
-                        "ITALIC" -> ss1.setSpan(
-                            StyleSpan(Typeface.ITALIC), offset,
-                            offset + lenght, 0
-                        )
-                        "UNDERLINE" -> ss1.setSpan(
-                            UnderlineSpan(), offset,
-                            offset + lenght, 0
-                        )
-                        "STRIKETHROUGH" -> ss1.setSpan(
-                            StrikethroughSpan(), offset,
-                            offset + lenght, 0
-                        )
-                    }
+            val ss1 = SpannableString(model[position].text)
+            model[position].inlineStyleRanges.forEach {
+                var offset = it.offset
+                var lenght = it.length
+                when (it.style) {
+                    "BOLD" -> ss1.setSpan(
+                        StyleSpan(Typeface.BOLD), offset,
+                        offset + lenght, 0
+                    )
+                    "ITALIC" -> ss1.setSpan(
+                        StyleSpan(Typeface.ITALIC), offset,
+                        offset + lenght, 0
+                    )
+                    "UNDERLINE" -> ss1.setSpan(
+                        UnderlineSpan(), offset,
+                        offset + lenght, 0
+                    )
+                    "STRIKETHROUGH" -> ss1.setSpan(
+                        StrikethroughSpan(), offset,
+                        offset + lenght, 0
+                    )
                 }
-                viewHolder.edt.setText(ss1)
             }
-
-
+            viewHolder.edt.setText(ss1)
             viewHolder.edt.gravity = Gravity.START
             viewHolder.edt.setText(
                 createIndentedText(
-                    viewHolder.edt.text as CharSequence,
+                    ss1,
                     0,
                     0
                 )
@@ -207,33 +197,32 @@ class EditorAdapter(
                 viewHolder.edt.clearFocus()
             }
 
-            if (model[position].data != null) {
-                val ss1 = SpannableString(model[position].text)
-                model[position]!!.inlineStyleRange.forEach {
-                    var offset = it.offset
-                    var lenght = it.lenght
+            val ss1 = SpannableString(model[position].text)
+            model[position]!!.inlineStyleRanges.forEach {
+                var offset = it.offset
+                var lenght = it.length
 
-                    when (it.style) {
-                        "BOLD" -> ss1.setSpan(
-                            StyleSpan(Typeface.BOLD), offset,
-                            offset + lenght, 0
-                        )
-                        "ITALIC" -> ss1.setSpan(
-                            StyleSpan(Typeface.ITALIC), offset,
-                            offset + lenght, 0
-                        )
-                        "UNDERLINE" -> ss1.setSpan(
-                            UnderlineSpan(), offset,
-                            offset + lenght, 0
-                        )
-                        "STRIKETHROUGH" -> ss1.setSpan(
-                            StrikethroughSpan(), offset,
-                            offset + lenght, 0
-                        )
-                    }
+                when (it.style) {
+                    "BOLD" -> ss1.setSpan(
+                        StyleSpan(Typeface.BOLD), offset,
+                        offset + lenght, 0
+                    )
+                    "ITALIC" -> ss1.setSpan(
+                        StyleSpan(Typeface.ITALIC), offset,
+                        offset + lenght, 0
+                    )
+                    "UNDERLINE" -> ss1.setSpan(
+                        UnderlineSpan(), offset,
+                        offset + lenght, 0
+                    )
+                    "STRIKETHROUGH" -> ss1.setSpan(
+                        StrikethroughSpan(), offset,
+                        offset + lenght, 0
+                    )
                 }
-                viewHolder.edt.setText(ss1)
             }
+            viewHolder.edt.setText(ss1)
+
 
             viewHolder.edt.gravity = Gravity.CENTER
             viewHolder.edt.setText(
@@ -264,39 +253,38 @@ class EditorAdapter(
                 viewHolder.edt.clearFocus()
             }
 
-            if (model[position].data != null) {
-                val ss1 = SpannableString(model[position].text)
-                model[position]!!.inlineStyleRange.forEach {
-                    var offset = it.offset
-                    var lenght = it.lenght
+            val ss1 = SpannableString(model[position].text)
+            model[position]!!.inlineStyleRanges.forEach {
+                var offset = it.offset
+                var lenght = it.length
 
-                    when (it.style) {
-                        "BOLD" -> ss1.setSpan(
-                            StyleSpan(Typeface.BOLD), offset,
-                            offset + lenght, 0
-                        )
-                        "ITALIC" -> ss1.setSpan(
-                            StyleSpan(Typeface.ITALIC), offset,
-                            offset + lenght, 0
-                        )
-                        "UNDERLINE" -> ss1.setSpan(
-                            UnderlineSpan(), offset,
-                            offset + lenght, 0
-                        )
-                        "STRIKETHROUGH" -> ss1.setSpan(
-                            StrikethroughSpan(), offset,
-                            offset + lenght, 0
-                        )
-                    }
+                when (it.style) {
+                    "BOLD" -> ss1.setSpan(
+                        StyleSpan(Typeface.BOLD), offset,
+                        offset + lenght, 0
+                    )
+                    "ITALIC" -> ss1.setSpan(
+                        StyleSpan(Typeface.ITALIC), offset,
+                        offset + lenght, 0
+                    )
+                    "UNDERLINE" -> ss1.setSpan(
+                        UnderlineSpan(), offset,
+                        offset + lenght, 0
+                    )
+                    "STRIKETHROUGH" -> ss1.setSpan(
+                        StrikethroughSpan(), offset,
+                        offset + lenght, 0
+                    )
                 }
-                viewHolder.edt.setText(ss1)
             }
+            viewHolder.edt.setText(ss1)
+
 
 
             viewHolder.edt.gravity = Gravity.END
             viewHolder.edt.setText(
                 createIndentedText(
-                    viewHolder.edt.text as CharSequence,
+                    ss1,
                     0,
                     0
                 )
@@ -322,38 +310,38 @@ class EditorAdapter(
                 viewHolder.edt.clearFocus()
             }
 
-            if (model[position].data != null) {
-                val ss1 = SpannableString(model[position].text)
-                model[position]!!.inlineStyleRange.forEach {
-                    var offset = it.offset
-                    var lenght = it.lenght
 
-                    when (it.style) {
-                        "BOLD" -> ss1.setSpan(
-                            StyleSpan(Typeface.BOLD), offset,
-                            offset + lenght, 0
-                        )
-                        "ITALIC" -> ss1.setSpan(
-                            StyleSpan(Typeface.ITALIC), offset,
-                            offset + lenght, 0
-                        )
-                        "UNDERLINE" -> ss1.setSpan(
-                            UnderlineSpan(), offset,
-                            offset + lenght, 0
-                        )
-                        "STRIKETHROUGH" -> ss1.setSpan(
-                            StrikethroughSpan(), offset,
-                            offset + lenght, 0
-                        )
-                    }
+            val ss1 = SpannableString(model[position].text)
+            model[position]!!.inlineStyleRanges.forEach {
+                var offset = it.offset
+                var lenght = it.length
+
+                when (it.style) {
+                    "BOLD" -> ss1.setSpan(
+                        StyleSpan(Typeface.BOLD), offset,
+                        offset + lenght, 0
+                    )
+                    "ITALIC" -> ss1.setSpan(
+                        StyleSpan(Typeface.ITALIC), offset,
+                        offset + lenght, 0
+                    )
+                    "UNDERLINE" -> ss1.setSpan(
+                        UnderlineSpan(), offset,
+                        offset + lenght, 0
+                    )
+                    "STRIKETHROUGH" -> ss1.setSpan(
+                        StrikethroughSpan(), offset,
+                        offset + lenght, 0
+                    )
                 }
-                viewHolder.edt.setText(ss1)
             }
+            viewHolder.edt.setText(ss1)
+
 
             viewHolder.edt.gravity = Gravity.START
             viewHolder.edt.setText(
                 createIndentedText(
-                    viewHolder.edt.text as CharSequence,
+                    ss1,
                     dpToPx(30f, context),
                     0
                 )
@@ -476,11 +464,11 @@ class EditorAdapter(
 
             viewHolder.edtImage.gravity = Gravity.CENTER
 
-            if (model[position].data != null) {
-                viewHolder.edtImage.post {
-                    viewHolder.edtImage.setText(model[position].text)
-                }
+
+            viewHolder.edtImage.post {
+                viewHolder.edtImage.setText(model[position].text)
             }
+
 
             if (model[position].isFocus) {
                 viewHolder.edtImage.post {
@@ -493,11 +481,11 @@ class EditorAdapter(
 
         } else if (viewHolder is MyQuoteViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
-            if (model[position].data != null) {
-                viewHolder.edtQuote.post {
-                    viewHolder.edtQuote.setText(model[position].text)
-                }
+
+            viewHolder.edtQuote.post {
+                viewHolder.edtQuote.setText(model[position].text)
             }
+
 
             viewHolder.edtQuote.gravity = Gravity.CENTER
             viewHolder.edtQuote.setTypeface(null, Typeface.ITALIC)
@@ -513,9 +501,9 @@ class EditorAdapter(
             }
         } else if (viewHolder is MyHeaderViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[position].key)
-            if (model[position].data != null) {
-                viewHolder.edtHeader.setText(model[position].text)
-            }
+
+            viewHolder.edtHeader.setText(model[position].text)
+
 
             if (model[position].isFocus) {
                 viewHolder.edtHeader.post {
@@ -806,7 +794,7 @@ class EditorAdapter(
 
                 CheckStyle.checkSpan(null, ss1).forEach {
                     var offset = it.offset
-                    var lenght = it.lenght
+                    var lenght = it.length
                     when {
                         it.style == "BOLD" -> ss1.setSpan(
                             StyleSpan(Typeface.BOLD), offset,
@@ -982,7 +970,7 @@ class EditorAdapter(
 
                 CheckStyle.checkSpan(null, ss1).forEach {
                     var offset = it.offset
-                    var lenght = it.lenght
+                    var lenght = it.length
                     when {
                         it.style == "BOLD" -> ss1.setSpan(
                             StyleSpan(Typeface.BOLD), offset,
@@ -1023,9 +1011,9 @@ class EditorAdapter(
                 index?.let { index ->
                     if (index > 0 && (view as EditText).selectionEnd == 0) {
                         val ssPrevios = SpannableStringBuilder(model[index - 1].text)
-                        model[index - 1].inlineStyleRange.forEach {
+                        model[index - 1].inlineStyleRanges.forEach {
                             var offset = it.offset
-                            var lenght = it.lenght
+                            var lenght = it.length
                             if (offset + lenght <= ssPrevios.length) {
                                 when {
                                     it.style == "BOLD" -> ssPrevios.setSpan(
