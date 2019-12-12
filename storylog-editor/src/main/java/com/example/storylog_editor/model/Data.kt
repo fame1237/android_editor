@@ -5,10 +5,7 @@ import android.net.Uri
 
 class Data {
     var src = ""
-    var uri : String? = null
     var selection: Int = 0
-//    var alight: Alignment =
-//        Alignment.START
 
     override fun toString(): String {
         return "Data( src='$src', selection=$selection"

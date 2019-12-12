@@ -84,9 +84,9 @@
             <ImageView
                 android:id="@+id/image_loading"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="300dp"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ic_launcher_background"
+                android:background="@color/grey_150"
                 android:visibility="visible" />
 
             <com.pnikosis.materialishprogress.ProgressWheel

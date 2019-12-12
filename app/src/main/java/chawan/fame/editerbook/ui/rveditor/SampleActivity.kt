@@ -1,6 +1,7 @@
 package chawan.fame.editerbook.ui.rveditor
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -23,12 +24,12 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
         setContentView(R.layout.library_editor_activity_sample)
         mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
         initViewModel()
-        replaceFragment(EditorFragment.newInstance())
+        replaceFragment(EditorFragment.newInstance(getJson2()))
     }
 
     private fun initViewModel() {
         mViewModel.editorModelLiveData.observe(this, Observer {
-
+            Log.e("test", it.toString())
         })
 
         mViewModel.uploadImageToServerLiveData.observe(this, Observer {
@@ -92,35 +93,44 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
     fun getJson2(): String {
         return "{ \n" +
                 "   \"blocks\":[ \n" +
-                "      {  },\n" +
                 "      { \n" +
                 "         \"data\":{ \n" +
                 "            \"selection\":0,\n" +
-                "            \"src\":\"https://s3.ap-southeast-1.amazonaws.com/media-local.fictionlog/books/5d9b076f48a76d001a6e7287/5de797f5NVJ8nRji.jpec\",\n" +
-                "            \"uri\":{ \n" +
-                "\n" +
-                "            }\n" +
+                "            \"src\":\"\"\n" +
                 "         },\n" +
                 "         \"inlineStyleRange\":[ \n" +
                 "\n" +
                 "         ],\n" +
                 "         \"isFocus\":false,\n" +
-                "         \"key\":\"qktWp\",\n" +
+                "         \"key\":\"OTxsw\",\n" +
                 "         \"showBorder\":false,\n" +
-                "         \"text\":\"qfhwtjjqth\",\n" +
+                "         \"text\":\"\",\n" +
+                "         \"type\":\"unstyled\"\n" +
+                "      },\n" +
+                "      { \n" +
+                "         \"data\":{ \n" +
+                "            \"selection\":0,\n" +
+                "            \"src\":\"https://s3.ap-southeast-1.amazonaws.com/media-local.fictionlog/books/5d9b09c848a76d001a6e729f/5df1ea6cfaUPqtsy.jpec\"\n" +
+                "         },\n" +
+                "         \"inlineStyleRange\":[ \n" +
+                "\n" +
+                "         ],\n" +
+                "         \"isFocus\":false,\n" +
+                "         \"key\":\"rxBTq\",\n" +
+                "         \"showBorder\":false,\n" +
+                "         \"text\":\"ห\",\n" +
                 "         \"type\":\"atomic:image\"\n" +
                 "      },\n" +
                 "      { \n" +
                 "         \"data\":{ \n" +
                 "            \"selection\":0,\n" +
-                "            \"src\":\"\",\n" +
-                "            \"uri\":null\n" +
+                "            \"src\":\"\"\n" +
                 "         },\n" +
                 "         \"inlineStyleRange\":[ \n" +
                 "\n" +
                 "         ],\n" +
                 "         \"isFocus\":false,\n" +
-                "         \"key\":\"BWTir\",\n" +
+                "         \"key\":\"zpuXE\",\n" +
                 "         \"showBorder\":false,\n" +
                 "         \"text\":\"\",\n" +
                 "         \"type\":\"unstyled\"\n" +

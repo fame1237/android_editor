@@ -466,13 +466,6 @@ class EditorAdapter(
                 viewHolder.layoutImage.visibility = View.GONE
                 viewHolder.layoutLoading.visibility = View.VISIBLE
                 viewHolder.loading.spin()
-
-                Glide.with(context)
-                    .load(model[position].data?.uri!!)
-                    .placeholder(ColorDrawable(context.resources.getColor(R.color.grey)))
-                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
-                    .error(ColorDrawable(context.resources.getColor(R.color.colorOrange)))
-                    .into(viewHolder.imageLoading)
             }
 
 
