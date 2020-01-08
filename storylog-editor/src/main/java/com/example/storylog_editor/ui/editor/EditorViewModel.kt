@@ -48,13 +48,13 @@ class EditorViewModel : ViewModel() {
 
         val model = EditerModel()
         val data = Data()
+        data.selection = model.text.length
         model.text = text.toString()
         model.inlineStyleRanges = CheckStyle.checkSpan(null, text)
         model.key = GenerateKey.getStringKey(editerModel.blocks)
         model.type = viewType
         model.isFocus = isFocus
         model.data = data
-        data.selection = text.length
 
         editerModel.blocks.add(position, model)
         editorModelLiveData.postValue(editerModel)
@@ -100,7 +100,8 @@ class EditorViewModel : ViewModel() {
             model.inlineStyleRanges = CheckStyle.checkSpan(null, text)
         }
         model.data = data
-        data.selection = text.length
+
+        model.data?.selection = selection ?: 0
 
         if (isFocus) {
             editerModel.blocks.forEach {

@@ -24,7 +24,7 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
         setContentView(R.layout.library_editor_activity_sample)
         mViewModel = ViewModelProviders.of(this).get(EditorViewModel::class.java)
         initViewModel()
-        replaceFragment(EditorFragment.newInstance(getJson2()))
+        replaceFragment(EditorFragment.newInstance())
     }
 
     private fun initViewModel() {

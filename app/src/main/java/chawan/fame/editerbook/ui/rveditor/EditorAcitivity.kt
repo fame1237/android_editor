@@ -31,7 +31,7 @@ import java.io.File
 import java.util.*
 
 class EditorAcitivity : AppCompatActivity(), EditorAdapter.OnChange, com.example.storylog_editor.view.SetAlignmentDialog.OnClick {
-    override fun onPasteText(position: Int, textList: MutableList<String>) {
+    override fun onPasteText(position: Int, selStart: Int, textList: MutableList<String>) {
 
     }
 

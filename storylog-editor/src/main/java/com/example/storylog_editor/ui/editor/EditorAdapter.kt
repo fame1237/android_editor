@@ -68,7 +68,7 @@ class EditorAdapter(
         fun onUpdateBold()
         fun setShowBorderFalse(position: Int)
         fun clearFocus(position: Int)
-        fun onPasteText(position: Int, textList: MutableList<String>)
+        fun onPasteText(position: Int, selStart: Int, textList: MutableList<String>)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -925,21 +925,21 @@ class EditorAdapter(
         override fun onCopy() {
         }
 
-        override fun onPaste() {
-            var clipboard =
-                activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        override fun onPaste(selStart: Int?, selEnd: Int?, text: String?) {
+            var clipboard = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             var clipData = clipboard.primaryClip
             var itemCount = clipData?.itemCount ?: 0
             if (itemCount > 0) {
                 var item2 = clipData?.getItemAt(0)
-                var text = item2?.text?.split("\n")
+                var str = StringBuilder(text ?: "").insert(selStart ?: 0, item2?.text.toString())
+                var mText = str.split("\n")
 
                 var index = model.filterGetIndex {
                     it.key == keyId
                 }
-                text?.let {
+                mText?.let {
                     index?.let { index ->
-                        listener.onPasteText(index, text.toMutableList())
+                        listener.onPasteText(index, selStart ?: 0, mText.toMutableList())
                     }
                 }
             }

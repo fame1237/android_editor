@@ -12,7 +12,7 @@ public class CutCopyPasteEditText extends AppCompatEditText {
 
         void onCopy();
 
-        void onPaste();
+        void onPaste(Integer selStart, Integer selEnd, String text);
     }
 
     private OnCutCopyPasteListener mOnCutCopyPasteListener;
@@ -78,7 +78,8 @@ public class CutCopyPasteEditText extends AppCompatEditText {
      * Text was pasted into the EditText.
      */
     public void onPaste() {
-        if (mOnCutCopyPasteListener != null)
-            mOnCutCopyPasteListener.onPaste();
+        if (mOnCutCopyPasteListener != null) {
+            mOnCutCopyPasteListener.onPaste(this.getSelectionStart(), this.getSelectionEnd(), this.getText().toString());
+        }
     }
 }

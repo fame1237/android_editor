@@ -58,12 +58,11 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
     private var myClipboard: ClipboardManager? = null
     private var myClip: ClipData? = null
 
-    override fun onPasteText(position: Int, textList: MutableList<String>) {
+    override fun onPasteText(position: Int, selStart: Int, textList: MutableList<String>) {
         var count = 0
         if (textList.size == 1) {
-            mViewModel.updatePasteText(position, textList[0], true, null, false)
+            mViewModel.updatePasteText(position, textList[0], true, selStart, false)
         } else {
-            mViewModel.updatePasteText(position, textList[0], false, null, false)
             textList.forEachIndexed { index, text ->
                 if (index > 0) {
                     count++
@@ -71,20 +70,20 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
                         position + index,
                         mViewModel.getModel()[position].type,
                         text,
-                        true
+                        false
                     )
                 }
             }
+            mViewModel.updatePasteText(position, textList[0], true, selStart, false)
         }
         adapter?.let {
             it.notifyDataSetChanged()
-            rvEditor?.layoutManager?.scrollToPosition(position + count + 1)
+            it.notifyItemChanged(position)
         }
     }
 
     override fun onNextLine(position: Int, text: CharSequence) {
-        if (mViewModel.getModel()[position - 1].type == "unstyled"
-            || mViewModel.getModel()[position - 1].type == "center"
+        if (mViewModel.getModel()[position - 1].type == "center"
             || mViewModel.getModel()[position - 1].type == "right" ||
             mViewModel.getModel()[position - 1].type == "indent"
         )
