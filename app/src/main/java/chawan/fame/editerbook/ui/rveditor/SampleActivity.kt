@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import chawan.fame.editerbook.R
 import chawan.fame.editerbook.domain.repo.CallService
+import com.example.storylog_editor.extension.toJson
 import com.example.storylog_editor.ui.editor.EditorFragment
 import com.example.storylog_editor.ui.editor.EditorViewModel
 
@@ -29,7 +30,7 @@ class SampleActivity : AppCompatActivity(), CallService.GraphQLServiceCallBack {
 
     private fun initViewModel() {
         mViewModel.editorModelLiveData.observe(this, Observer {
-            Log.e("test", it.toString())
+            Log.e("test", it.toJson())
         })
 
         mViewModel.uploadImageToServerLiveData.observe(this, Observer {
