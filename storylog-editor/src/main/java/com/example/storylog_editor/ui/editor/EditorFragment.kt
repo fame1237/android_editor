@@ -39,7 +39,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
 
     lateinit var mViewModel: EditorViewModel
     var adapter: EditorAdapter? = null
-    var cursorPosition = 0
+    var modelPosition = 0
     var edtView: View? = null
     var mAlertDialog: AlertDialog? = null
     var timer = Timer()
@@ -54,6 +54,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
     var btnLine: ImageView? = null
     var btnAlighment: ImageView? = null
     var btnAddImage: ImageView? = null
+    var haveTitle = false
 
     private var myClipboard: ClipboardManager? = null
     private var myClip: ClipData? = null
@@ -78,8 +79,15 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         }
         adapter?.let {
             it.notifyDataSetChanged()
-            it.notifyItemChanged(position)
+            if (haveTitle)
+                it.notifyItemChanged(position + 1)
+            else
+                it.notifyItemChanged(position)
         }
+    }
+
+    override fun updateTitleText(str: CharSequence) {
+        mViewModel.updateTitleText(str.toString())
     }
 
     override fun onNextLine(position: Int, text: CharSequence) {
@@ -100,7 +108,10 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         adapter?.let {
             it.upDateItem(position)
 //            rvEditor?.post {
-            rvEditor?.layoutManager?.scrollToPosition(position)
+            if (haveTitle) {
+                rvEditor?.layoutManager?.scrollToPosition(position + 1)
+            } else
+                rvEditor?.layoutManager?.scrollToPosition(position)
 //            }
         }
     }
@@ -140,7 +151,11 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
                 adapter?.let {
                     it.upDateRemoveItem(position)
                     rvEditor?.post {
-                        rvEditor?.scrollToPosition(position - 1)
+                        if (haveTitle) {
+                            rvEditor?.scrollToPosition(position)
+                        } else {
+                            rvEditor?.scrollToPosition(position - 1)
+                        }
                     }
                 }
             }
@@ -168,7 +183,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
 
     override fun updateCursorPosition(position: Int, view: View, imageIndex: MutableList<Int>) {
         edtView = null
-        cursorPosition = position
+        modelPosition = position
         edtView = view
         mViewModel.goneBorder()
 
@@ -206,9 +221,9 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
                 }
             }
         }
-        if (cursorPosition > 0) {
-            if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].type != "atomic:image"
+        if (modelPosition > 0) {
+            if (mViewModel.getSize() < modelPosition ||
+                mViewModel.getModel()[modelPosition].type != "atomic:image"
             ) {
                 imageIndex.forEach {
                     adapter?.updateCurrentItem(it)
@@ -218,7 +233,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
     }
 
     override fun onUpdateBold() {
-        mViewModel.updateStyle(cursorPosition, edtView as EditText)
+        mViewModel.updateStyle(modelPosition, edtView as EditText)
     }
 
     override fun setShowBorderFalse(position: Int) {
@@ -227,11 +242,11 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
 
     override fun clearFocus(position: Int) {
         mViewModel.clearFocus()
-        if (cursorPosition > 0) {
-            if (mViewModel.getSize() < cursorPosition ||
-                mViewModel.getModel()[cursorPosition].type != "atomic:image"
+        if (modelPosition > 0) {
+            if (mViewModel.getSize() < modelPosition ||
+                mViewModel.getModel()[modelPosition].type != "atomic:image"
             ) {
-                adapter?.notifyItemChanged(cursorPosition)
+                adapter?.notifyItemChanged(modelPosition)
                 rvEditor?.post {
                     rvEditor?.scrollToPosition(position)
                 }
@@ -258,8 +273,8 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
     private fun editTextSetTextIndent() {
         adapter?.let {
             if (edtView is EditText) {
-                mViewModel.updateIndent(cursorPosition, (edtView as EditText).selectionEnd)
-                it.updateCurrentItem(cursorPosition)
+                mViewModel.updateIndent(modelPosition, (edtView as EditText).selectionEnd)
+                it.updateCurrentItem(modelPosition)
             }
         }
     }
@@ -267,8 +282,8 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
     private fun editTextSetTextAlignLeft() {
         adapter?.let {
             if (edtView is EditText) {
-                mViewModel.updateAlignLeft(cursorPosition, (edtView as EditText).selectionEnd)
-                it.updateCurrentItem(cursorPosition)
+                mViewModel.updateAlignLeft(modelPosition, (edtView as EditText).selectionEnd)
+                it.updateCurrentItem(modelPosition)
             }
         }
     }
@@ -276,8 +291,8 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
     private fun editTextSetTextAlignCenter() {
         adapter?.let {
             if (edtView is EditText) {
-                mViewModel.updateAlignCenter(cursorPosition, (edtView as EditText).selectionEnd)
-                it.updateCurrentItem(cursorPosition)
+                mViewModel.updateAlignCenter(modelPosition, (edtView as EditText).selectionEnd)
+                it.updateCurrentItem(modelPosition)
             }
         }
     }
@@ -285,8 +300,8 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
     private fun editTextSetTextAlignRight() {
         adapter?.let {
             if (edtView is EditText) {
-                mViewModel.updateAlignRight(cursorPosition, (edtView as EditText).selectionEnd)
-                it.updateCurrentItem(cursorPosition)
+                mViewModel.updateAlignRight(modelPosition, (edtView as EditText).selectionEnd)
+                it.updateCurrentItem(modelPosition)
             }
         }
     }
@@ -304,6 +319,23 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         fun newInstance(): EditorFragment {
             val fragment = EditorFragment()
             val args = Bundle()
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(data: String, haveTitle: Boolean): EditorFragment {
+            val fragment = EditorFragment()
+            val args = Bundle()
+            args.putString("data", data)
+            args.putBoolean("haveTitle", haveTitle)
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(haveTitle: Boolean): EditorFragment {
+            val fragment = EditorFragment()
+            val args = Bundle()
+            args.putBoolean("haveTitle", haveTitle)
             fragment.arguments = args
             return fragment
         }
@@ -339,18 +371,24 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         myClipboard =
             activity!!.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?
         if (arguments != null && arguments!!.getString("data") != null) {
-            var editerModel = arguments!!.getString("data")!!.toClass(ContentRawState::class.java)
+            var editerModel =
+                arguments!!.getString("data")!!.toClass(ContentRawState::class.java)
             mViewModel.setModel(editerModel)
-            cursorPosition = mViewModel.getSize() - 1
+            modelPosition = mViewModel.getSize() - 1
+
+        } else if (arguments != null && arguments!!.getBoolean("haveTitle")) {
+            haveTitle = arguments!!.getBoolean("haveTitle")
+            mViewModel.addView(0, "unstyled", "", true)
         } else {
             mViewModel.addView(0, "unstyled", "", true)
-            cursorPosition = mViewModel.getSize() - 1
+            mViewModel.getSize() - 1
+            modelPosition = mViewModel.getSize() - 1
         }
         initView()
     }
 
     private fun initView() {
-        adapter = EditorAdapter(context!!, activity!!, this, mViewModel.getModel())
+        adapter = EditorAdapter(context!!, activity!!, this, haveTitle, mViewModel.getModel())
         rvEditor?.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         rvEditor?.adapter = adapter
         rvEditor?.itemAnimator = null
@@ -361,7 +399,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
                     var fragmentImageViewerDialog = SetAlignmentDialog.Builder()
                         .build(
                             it,
-                            mViewModel.getModel()[cursorPosition].type,
+                            mViewModel.getModel()[modelPosition].type,
                             this
                         )
 
@@ -385,21 +423,21 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
 
         context?.let { context ->
             btnQuote?.setOnClickListener {
-                if (cursorPosition <= mViewModel.getSize()) {
-                    if (mViewModel.getModel()[cursorPosition].type == "unstyled") {
+                if (modelPosition <= mViewModel.getSize()) {
+                    if (mViewModel.getModel()[modelPosition].type == "unstyled") {
                         adapter?.let {
-                            mViewModel.changeToQuote(cursorPosition)
-                            it.updateCurrentItem(cursorPosition)
+                            mViewModel.changeToQuote(modelPosition)
+                            it.updateCurrentItem(modelPosition)
                         }
 
                         btnQuote?.setColorFilter(
                             ContextCompat.getColor(context, R.color.colorOrange)
                             , PorterDuff.Mode.SRC_IN
                         )
-                    } else if (mViewModel.getModel()[cursorPosition].type == "blockquote") {
+                    } else if (mViewModel.getModel()[modelPosition].type == "blockquote") {
                         adapter?.let {
-                            mViewModel.changeToEditText(cursorPosition)
-                            it.updateCurrentItem(cursorPosition)
+                            mViewModel.changeToEditText(modelPosition)
+                            it.updateCurrentItem(modelPosition)
                         }
 
                         btnQuote?.setColorFilter(
@@ -408,8 +446,8 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
                         )
                     } else {
                         adapter?.let {
-                            mViewModel.changeToQuote(cursorPosition)
-                            it.updateCurrentItem(cursorPosition)
+                            mViewModel.changeToQuote(modelPosition)
+                            it.updateCurrentItem(modelPosition)
                         }
 
                         btnQuote?.setColorFilter(
@@ -421,20 +459,20 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
             }
 
             btnHeader?.setOnClickListener {
-                if (cursorPosition <= mViewModel.getSize()) {
-                    if (mViewModel.getModel()[cursorPosition].type == "unstyled") {
+                if (modelPosition <= mViewModel.getSize()) {
+                    if (mViewModel.getModel()[modelPosition].type == "unstyled") {
                         adapter?.let {
-                            mViewModel.changeToHeader(cursorPosition)
-                            it.updateCurrentItem(cursorPosition)
+                            mViewModel.changeToHeader(modelPosition)
+                            it.updateCurrentItem(modelPosition)
                             btnHeader?.setColorFilter(
                                 ContextCompat.getColor(context, R.color.colorOrange)
                                 , PorterDuff.Mode.SRC_IN
                             )
                         }
-                    } else if (mViewModel.getModel()[cursorPosition].type == "header-three") {
+                    } else if (mViewModel.getModel()[modelPosition].type == "header-three") {
                         adapter?.let {
-                            mViewModel.changeToEditText(cursorPosition)
-                            it.updateCurrentItem(cursorPosition)
+                            mViewModel.changeToEditText(modelPosition)
+                            it.updateCurrentItem(modelPosition)
                         }
                         btnHeader?.setColorFilter(
                             ContextCompat.getColor(context, R.color.grey_image)
@@ -442,8 +480,8 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
                         )
                     } else {
                         adapter?.let {
-                            mViewModel.changeToHeader(cursorPosition)
-                            it.updateCurrentItem(cursorPosition)
+                            mViewModel.changeToHeader(modelPosition)
+                            it.updateCurrentItem(modelPosition)
                             btnHeader?.setColorFilter(
                                 ContextCompat.getColor(context, R.color.colorOrange)
                                 , PorterDuff.Mode.SRC_IN
@@ -471,16 +509,9 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
 
     private fun addLine() {
         adapter?.let {
-            //            if (cursorPosition + 1 >= mViewModel.getSize()) {
-            mViewModel.addLineWithEditText(cursorPosition + 1)
-            it.upDateLineItemWithEditText(cursorPosition)
-            rvEditor?.post {
-                rvEditor?.scrollToPosition(cursorPosition + 2)
-            }
-//            } else {
-//                mViewModel.addLine(cursorPosition + 1)
-//                it.upDateLineItem(cursorPosition)
-//            }
+            mViewModel.addLineWithEditText(modelPosition + 1)
+            it.notifyDataSetChanged()
+            hideKeyboard()
         }
     }
 
@@ -566,7 +597,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
                     addImageToModel(selectedUri)
 
                     mViewModel.uploadImageToServer(
-                        mViewModel.getModel()[cursorPosition + 1].key,
+                        mViewModel.getModel()[modelPosition + 1].key,
                         imageBase64
                     )
                 }
@@ -576,9 +607,9 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
 
     private fun addImageToModel(uri: Uri) {
         adapter?.let {
-            mViewModel.addImageModel(cursorPosition + 1)
-            it.upDateImageItem(cursorPosition)
-            rvEditor?.scrollToPosition(cursorPosition + 2)
+            mViewModel.addImageModel(modelPosition + 1)
+            it.upDateImageItem(modelPosition)
+            rvEditor?.scrollToPosition(modelPosition + 2)
         }
     }
 

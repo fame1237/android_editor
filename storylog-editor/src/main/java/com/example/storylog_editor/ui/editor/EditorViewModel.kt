@@ -16,9 +16,15 @@ class EditorViewModel : ViewModel() {
     var editerModel: ContentRawState = ContentRawState()
     var editorModelLiveData = SingleLiveEvent<ContentRawState>()
 
+    var titleLiveData = SingleLiveEvent<String>()
+
     var uploadImageToServerLiveData = SingleLiveEvent<UpdateImageData>()
 
     var uploadImageSuccessLiveData = SingleLiveEvent<Int>()
+
+    fun updateTitleText(str: String) {
+        titleLiveData.postValue(str)
+    }
 
     fun uploadImageSuccess(keyId: String, src: String) {
 
@@ -248,7 +254,7 @@ class EditorViewModel : ViewModel() {
         model.type = "atomic:break"
         model.key = GenerateKey.getStringKey(editerModel.blocks)
         model.data = data
-
+        model.isFocus = false
         editerModel.blocks.add(position, model)
 
         val model2 = EditerModel()
@@ -257,7 +263,7 @@ class EditorViewModel : ViewModel() {
         model2.type = "unstyled"
         model2.key = GenerateKey.getStringKey(editerModel.blocks)
         model2.data = data2
-        model2.isFocus = true
+        model2.isFocus = false
 
         editerModel.blocks.add(position + 1, model2)
         editorModelLiveData.postValue(editerModel)
