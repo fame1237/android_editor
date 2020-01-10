@@ -371,8 +371,8 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         myClipboard =
             activity!!.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?
         if (arguments != null && arguments!!.getString("data") != null) {
-            var editerModel =
-                arguments!!.getString("data")!!.toClass(ContentRawState::class.java)
+            haveTitle = arguments!!.getBoolean("haveTitle", false)
+            var editerModel = arguments!!.getString("data")!!.toClass(ContentRawState::class.java)
             mViewModel.setModel(editerModel)
             modelPosition = mViewModel.getSize() - 1
 
