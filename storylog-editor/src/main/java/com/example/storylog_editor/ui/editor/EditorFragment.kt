@@ -54,7 +54,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
     var btnLine: ImageView? = null
     var btnAlighment: ImageView? = null
     var btnAddImage: ImageView? = null
-    var haveTitle = false
+    var title: String? = null
 
     private var myClipboard: ClipboardManager? = null
     private var myClip: ClipData? = null
@@ -79,7 +79,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         }
         adapter?.let {
             it.notifyDataSetChanged()
-            if (haveTitle)
+            if (title!=null)
                 it.notifyItemChanged(position + 1)
             else
                 it.notifyItemChanged(position)
@@ -108,7 +108,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         adapter?.let {
             it.upDateItem(position)
 //            rvEditor?.post {
-            if (haveTitle) {
+            if (title!=null) {
                 rvEditor?.layoutManager?.scrollToPosition(position + 1)
             } else
                 rvEditor?.layoutManager?.scrollToPosition(position)
@@ -151,7 +151,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
                 adapter?.let {
                     it.upDateRemoveItem(position)
                     rvEditor?.post {
-                        if (haveTitle) {
+                        if (title!=null) {
                             rvEditor?.scrollToPosition(position)
                         } else {
                             rvEditor?.scrollToPosition(position - 1)
@@ -323,19 +323,19 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
             return fragment
         }
 
-        fun newInstance(data: String, haveTitle: Boolean): EditorFragment {
+        fun newInstance(data: String, title: String?): EditorFragment {
             val fragment = EditorFragment()
             val args = Bundle()
             args.putString("data", data)
-            args.putBoolean("haveTitle", haveTitle)
+            args.putString("title", title)
             fragment.arguments = args
             return fragment
         }
 
-        fun newInstance(haveTitle: Boolean): EditorFragment {
+        fun newInstance(haveTitle: Boolean, title: String?): EditorFragment {
             val fragment = EditorFragment()
             val args = Bundle()
-            args.putBoolean("haveTitle", haveTitle)
+            args.putString("title", title)
             fragment.arguments = args
             return fragment
         }
@@ -371,13 +371,13 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         myClipboard =
             activity!!.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?
         if (arguments != null && arguments!!.getString("data") != null) {
-            haveTitle = arguments!!.getBoolean("haveTitle", false)
+            title = arguments!!.getString("title")
             var editerModel = arguments!!.getString("data")!!.toClass(ContentRawState::class.java)
             mViewModel.setModel(editerModel)
             modelPosition = mViewModel.getSize() - 1
 
-        } else if (arguments != null && arguments!!.getBoolean("haveTitle")) {
-            haveTitle = arguments!!.getBoolean("haveTitle")
+        } else if (arguments != null && !arguments!!.getString("title").isNullOrEmpty()) {
+            title = arguments!!.getString("title")
             mViewModel.addView(0, "unstyled", "", true)
         } else {
             mViewModel.addView(0, "unstyled", "", true)
@@ -388,7 +388,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
     }
 
     private fun initView() {
-        adapter = EditorAdapter(context!!, activity!!, this, haveTitle, mViewModel.getModel())
+        adapter = EditorAdapter(context!!, activity!!, this, title, mViewModel.getModel())
         rvEditor?.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         rvEditor?.adapter = adapter
         rvEditor?.itemAnimator = null

@@ -48,7 +48,7 @@ class EditorAdapter(
     val context: Context,
     val activity: Activity,
     var listener: OnChange,
-    var haveTitle: Boolean,
+    var title: String?,
     var model: MutableList<EditerModel>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -140,7 +140,7 @@ class EditorAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
-        var mPosition = if (haveTitle) {
+        var mPosition = if (title!=null) {
             if (position > 0)
                 position - 1
             else
@@ -151,6 +151,7 @@ class EditorAdapter(
         if (viewHolder is MyEditTextTitle) {
             viewHolder.edtHeader.hint = "ชื่อตอน"
             viewHolder.edtHeader.gravity = Gravity.CENTER
+            viewHolder.edtHeader.setText(title ?: "")
 
         } else if (viewHolder is MyEditTextViewHolder) {
             viewHolder.myCustomEditTextListener.updatePosition(model[mPosition].key)
@@ -544,7 +545,7 @@ class EditorAdapter(
     }
 
     fun upDateItem(position: Int) {
-        var mPosition = if (haveTitle)
+        var mPosition = if (title!=null)
             position + 1
         else
             position
@@ -553,7 +554,7 @@ class EditorAdapter(
     }
 
     fun upDateLineItemWithEditText(position: Int) {
-        var mPosition = if (haveTitle)
+        var mPosition = if (title!=null)
             position + 1
         else
             position
@@ -565,7 +566,7 @@ class EditorAdapter(
     }
 
     fun upDateRemoveItem(position: Int) {
-        var mPosition = if (haveTitle)
+        var mPosition = if (title!=null)
             position + 1
         else
             position
@@ -574,7 +575,7 @@ class EditorAdapter(
     }
 
     fun upDateRemoveItemWithoutCurrentChange(position: Int) {
-        var mPosition = if (haveTitle)
+        var mPosition = if (title!=null)
             position + 1
         else
             position
@@ -582,7 +583,7 @@ class EditorAdapter(
     }
 
     fun updateCurrentItem(position: Int) {
-        var mPosition = if (haveTitle)
+        var mPosition = if (title!=null)
             position + 1
         else
             position
@@ -591,7 +592,7 @@ class EditorAdapter(
 
 
     override fun getItemCount(): Int {
-        if (haveTitle) {
+        if (title!=null) {
             return model.size + 1
         } else {
             return model.size
@@ -603,7 +604,7 @@ class EditorAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (haveTitle) {
+        if (title!=null) {
             if (position == 0) {
                 return 3000
             } else {

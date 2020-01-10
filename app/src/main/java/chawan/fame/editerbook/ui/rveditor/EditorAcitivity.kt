@@ -298,7 +298,7 @@ class EditorAcitivity : AppCompatActivity(), EditorAdapter.OnChange, com.example
     }
 
     private fun initView() {
-        adapter = EditorAdapter(this, this,this,true, mViewModel.getModel())
+        adapter = EditorAdapter(this, this,this,"", mViewModel.getModel())
         rvEditor.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rvEditor.adapter = adapter
         rvEditor.itemAnimator = null
