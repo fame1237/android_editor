@@ -79,7 +79,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         }
         adapter?.let {
             it.notifyDataSetChanged()
-            if (title!=null)
+            if (title != null)
                 it.notifyItemChanged(position + 1)
             else
                 it.notifyItemChanged(position)
@@ -108,7 +108,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
         adapter?.let {
             it.upDateItem(position)
 //            rvEditor?.post {
-            if (title!=null) {
+            if (title != null) {
                 rvEditor?.layoutManager?.scrollToPosition(position + 1)
             } else
                 rvEditor?.layoutManager?.scrollToPosition(position)
@@ -151,7 +151,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
                 adapter?.let {
                     it.upDateRemoveItem(position)
                     rvEditor?.post {
-                        if (title!=null) {
+                        if (title != null) {
                             rvEditor?.scrollToPosition(position)
                         } else {
                             rvEditor?.scrollToPosition(position - 1)
@@ -173,7 +173,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
     override fun onDeleteRow(position: Int) {
         mViewModel.removeViewAt(position)
         adapter?.let {
-            it.upDateRemoveItemWithoutCurrentChange(position)
+            it.notifyDataSetChanged()
         }
     }
 
@@ -362,7 +362,7 @@ class EditorFragment : Fragment(), EditorAdapter.OnChange, SetAlignmentDialog.On
 
     private fun initViewModel() {
         mViewModel.uploadImageSuccessLiveData.observe(this, androidx.lifecycle.Observer {
-            adapter?.notifyItemChanged(it, false)
+            adapter?.notifyDataSetChanged()
         })
     }
 
